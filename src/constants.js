@@ -1,0 +1,8 @@
+export const HOME_URL = '/'
+export const ABOUT_US_URL = '/about-us'
+export const TUTORIAL_URL = '/tutorial'
+export const CONTACT_URL = '/contact'
+export const TERMS_CONDITIONS_URL = '/terms-conditions'
+export const ACCOUNT_URL = '/account'
+export const LOGIN_URL = '/login'
+export const REGISTER_URL = '/register'
