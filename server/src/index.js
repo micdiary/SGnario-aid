@@ -1,0 +1,40 @@
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+import { userRouter } from "./routes/users.js";
+
+const PORT = 3001;
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+app.use("/auth", userRouter);
+
+mongoose.connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@sgnario-aid.4zibt9s.mongodb.net/sgnario-aid?retryWrites=true&w=majority`,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+);
+
+// Get the default connection
+const db = mongoose.connection;
+
+// Listen for the "connected" event
+db.on("connected", () => {
+    console.log("Mongoose connection is successful!");
+});
+
+// Listen for the "error" event
+db.on("error", (err) => {
+    console.error("Mongoose connection error:", err);
+});
+
+// Listen for the "disconnected" event
+db.on("disconnected", () => {
+    console.log("Mongoose connection disconnected");
+});
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
