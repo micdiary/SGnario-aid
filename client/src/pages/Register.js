@@ -3,11 +3,15 @@ import { Link } from "react-router-dom";
 import React from "react";
 
 import * as constants from "../constants";
+import { register } from "../api/account";
 
 const { TextArea } = Input;
 
 const onFinish = (values) => {
   console.log("Received values of form: ", values);
+  register(values.username, values.password).then((res) => {
+    console.log(res);
+  });
 };
 
 const formItem = [
