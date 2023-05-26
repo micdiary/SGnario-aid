@@ -5,57 +5,66 @@ import { Menu, Row, Breadcrumb, Col } from "antd";
 import * as constants from "../constants";
 
 const Header = () => {
-  const config = [
+  const menuItems = [
     {
-      label: "Home",
-      url: constants.HOME_URL,
+      label: <a href={constants.HOME_URL}>Home</a>,
+      key: "home",
     },
     {
-      label: "About Us",
-      url: constants.ABOUT_US_URL,
+      label: <a href={constants.ABOUT_US_URL}>About Us</a>,
+      key: "about-us",
     },
     {
-      label: "Tutorial",
-      url: constants.TUTORIAL_URL,
+      label: <a href={constants.TUTORIAL_URL}>Tutorial</a>,
+      key: "tutorial",
     },
     {
-      label: "Contact",
-      url: constants.CONTACT_URL,
+      label: <a href={constants.CONTACT_URL}>Contact</a>,
+      key: "contact",
     },
     {
-      label: "Terms & Conditions",
-      url: constants.TERMS_CONDITIONS_URL,
+      label: <a href={constants.TERMS_CONDITIONS_URL}>Terms & Conditions</a>,
+      key: "terms-conditions",
     },
     {
-      label: "Account",
-      url: constants.ACCOUNT_URL,
+      label: <a href={constants.ACCOUNT_URL}>Account</a>,
+      key: "account",
+    },
+  ];
+
+  const pathBreadcrumbItems = [
+    {
+      title: <a href={constants.HOME_URL}>Home</a>,
+    },
+  ];
+
+  const loginBreadcrumbItems = [
+    {
+      title: <a href={constants.LOGIN_URL}>Login</a>,
+    },
+    {
+      title: <a href={constants.REGISTER_URL}>Register</a>,
     },
   ];
 
   return (
     <>
       <Row>
-        <Menu theme="dark" mode="horizontal" disabledOverflow>
-          {config.map((item, index) => {
-            return (
-              <Menu.Item key={index}>
-                <Link to={item.url}>{item.label}</Link>
-              </Menu.Item>
-            );
-          })}
-        </Menu>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          disabledOverflow
+          triggerSubMenuAction="hover"
+          forceSubMenuRender
+          items={menuItems}
+        />
       </Row>
       <Row justify="start">
         <Col span={8}>
-          <Breadcrumb>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb items={pathBreadcrumbItems} />
         </Col>
         <Col span={8} offset={8} push={6}>
-          <Breadcrumb>
-            <Breadcrumb.Item href={constants.LOGIN_URL}>Login</Breadcrumb.Item>
-            <Breadcrumb.Item href={constants.REGISTER_URL}>Register</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb items={loginBreadcrumbItems} />
         </Col>
       </Row>
     </>
