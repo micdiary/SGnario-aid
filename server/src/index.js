@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import { userRouter } from "./routes/users.js";
+import { recordRouter } from "./routes/records.js";
 
 const PORT = 3001;
 const app = express();
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use("/auth", userRouter);
+app.use("/api", recordRouter);
 
 mongoose.connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@sgnario-aid.4zibt9s.mongodb.net/sgnario-aid?retryWrites=true&w=majority`,

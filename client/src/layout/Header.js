@@ -30,6 +30,10 @@ const Header = () => {
       label: <a href={constants.ACCOUNT_URL}>Account</a>,
       key: "account",
     },
+    {
+      label: <a href={constants.RECORDS}>Records</a>,
+      key: "records",
+    },
   ];
 
   const pathBreadcrumbItems = [

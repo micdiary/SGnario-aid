@@ -7,7 +7,8 @@ export const ACCOUNT_URL = "/account";
 export const PROFILE_URL = `${ACCOUNT_URL}/profile`;
 export const LOGIN_URL = "/login";
 export const REGISTER_URL = "/register";
+export const RECORDS = "/records";
 
-const URL = "http://localhost:3001";
+export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
 export const LOGIN_API = `${URL}/auth/login`;

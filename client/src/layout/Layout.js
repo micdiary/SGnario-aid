@@ -14,6 +14,7 @@ import Account from "../pages/Account";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";
+import Records from "../pages/RecordsList"
 
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
@@ -38,6 +39,7 @@ const Layout = () => {
             <Route path={constants.CONTACT_URL} element={<Contact />}/>
             <Route path={constants.TERMS_CONDITIONS_URL} element={<TermsConditions />}/>
             <Route path={constants.ACCOUNT_URL} element={<Account />}/>
+            <Route path={constants.RECORDS} element={<Records />}/>
             <Route path={constants.LOGIN_URL} element={<Login />}/>
             <Route path={constants.REGISTER_URL} element={<Register />}/>
             <Route path="*" element={<NoMatch />}/>  
