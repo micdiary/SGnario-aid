@@ -16,6 +16,10 @@ const RecordSchema = new mongoose.Schema({
   feedback: {
     type: String,
     required: true
+  },
+  video_name: {
+    type: String,
+    required: true 
   }
 });
 
