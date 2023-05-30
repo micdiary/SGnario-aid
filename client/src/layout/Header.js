@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Row, Breadcrumb, Col } from "antd";
 
 import * as constants from "../constants";
+import { getUserID, removeToken, removeUserID } from "../utils/account";
+import { userStore } from "../utils/store";
 
 const Header = () => {
+  const userID = userStore((state) => state.userID);
+  const removeID = userStore((state) => state.removeID);
   const menuItems = [
     {
       label: <a href={constants.HOME_URL}>Home</a>,
@@ -42,14 +46,32 @@ const Header = () => {
     },
   ];
 
-  const loginBreadcrumbItems = [
-    {
-      title: <a href={constants.LOGIN_URL}>Login</a>,
-    },
-    {
-      title: <a href={constants.REGISTER_URL}>Register</a>,
-    },
-  ];
+  const loginBreadcrumbItems =
+    userID !== null
+      ? [
+          {
+            title: (
+              <a
+                href={constants.HOME_URL}
+                onClick={() => {
+                  removeToken();
+                  removeUserID();
+                  removeID();
+                }}
+              >
+                Logout
+              </a>
+            ),
+          },
+        ]
+      : [
+          {
+            title: <a href={constants.LOGIN_URL}>Login</a>,
+          },
+          {
+            title: <a href={constants.REGISTER_URL}>Register</a>,
+          },
+        ];
 
   return (
     <>

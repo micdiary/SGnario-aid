@@ -1,63 +1,85 @@
 import { Button, Checkbox, Form, Input } from "antd";
+import { useNavigate } from "react-router-dom";
 import React from "react";
-
-const onFinish = (values) => {
-  console.log("Received values of form: ", values);
-};
-
-const formItem = [
-  {
-    label: "Username",
-    name: "username",
-    rules: [
-      {
-        required: true,
-        message: "Please input your username!",
-      },
-    ],
-    input: <Input />,
-  },
-  {
-    label: "Password",
-    name: "password",
-    rules: [
-      {
-        required: true,
-        message: "Please input your password!",
-      },
-    ],
-    input: <Input.Password />,
-  },
-  {
-    name: "remember",
-    rules: [],
-    input: <Checkbox>Remember me</Checkbox>,
-    valuePropName: "checked",
-    wrapperCol: {
-      offset: 6,
-      span: 14,
-    },
-  },
-];
-
-const generateForm = (formItem) => {
-  return formItem.map((item, index) => {
-    return (
-      <Form.Item
-        wrapperCol={item.wrapperCol}
-        name={item.name}
-        label={item.label}
-        rules={item.rules}
-        key={index}
-        valuePropName={item.valuePropName}
-      >
-        {item.input}
-      </Form.Item>
-    );
-  });
-};
+import { login } from "../api/account";
+import * as constants from "../constants";
+import { setToken, setUserID } from "../utils/account";
+import { userStore } from "../utils/store";
 
 const Login = () => {
+  let navigate = useNavigate();
+  const updateUserID = userStore((state) => state.setID);
+
+  const onFinish = (values) => {
+    const req = {
+      email: values.email,
+      password: values.password,
+    };
+
+    login(req).then((res) => {
+      if (res.userID !== undefined) {
+        setToken(res.token);
+        setUserID(res.userID);
+        updateUserID(res.userID);
+        navigate(constants.HOME_URL);
+      } else {
+        alert("Invalid email or password!");
+      }
+    });
+  };
+
+  const formItem = [
+    {
+      label: "Email",
+      name: "email",
+      rules: [
+        {
+          required: true,
+          message: "Please input your email!",
+        },
+      ],
+      input: <Input />,
+    },
+    {
+      label: "Password",
+      name: "password",
+      rules: [
+        {
+          required: true,
+          message: "Please input your password!",
+        },
+      ],
+      input: <Input.Password />,
+    },
+    {
+      name: "remember",
+      rules: [],
+      input: <Checkbox>Remember me</Checkbox>,
+      valuePropName: "checked",
+      wrapperCol: {
+        offset: 6,
+        span: 14,
+      },
+    },
+  ];
+
+  const generateForm = (formItem) => {
+    return formItem.map((item, index) => {
+      return (
+        <Form.Item
+          wrapperCol={item.wrapperCol}
+          name={item.name}
+          label={item.label}
+          rules={item.rules}
+          key={index}
+          valuePropName={item.valuePropName}
+        >
+          {item.input}
+        </Form.Item>
+      );
+    });
+  };
+
   return (
     <>
       <h1>Please Login:</h1>

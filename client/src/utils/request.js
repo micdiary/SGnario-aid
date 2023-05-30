@@ -9,13 +9,12 @@ async function requestHandler(api, body = {}, method = 'GET') {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(body),
+			body: JSON.stringify(body.req),
 		}
 	}
 
 	const response = await fetch(api, requestOptions)
-	const { data } = await response.json()
-	return data.res
+	return response.json()
 }
 
 export async function requestGet(api) {
