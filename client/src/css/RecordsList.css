@@ -36,6 +36,30 @@ h1 {
   margin-top: 10px;
 }
 
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination button {
+  border: none;
+  background-color: #f0f0f0;
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #e0e0e0;
+}
+
+.pagination button.active {
+  background-color: #ccc;
+}
+
 .record-modal {
   position: fixed;
   top: 0;
@@ -116,5 +140,3 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
-
-/* Add additional styles and customize as needed */
