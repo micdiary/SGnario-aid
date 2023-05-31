@@ -10,7 +10,7 @@ import AboutUs from "../pages/AboutUs";
 import Tutorial from "../pages/Tutorial";
 import Contact from "../pages/Contact";
 import TermsConditions from "../pages/TermsConditions";
-import Account from "../pages/Account";
+import Account from "../pages/Account/Account";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";

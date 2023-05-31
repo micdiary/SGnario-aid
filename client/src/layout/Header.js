@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Menu, Row, Breadcrumb, Col } from "antd";
 
 import * as constants from "../constants";
-import { getUserID, removeToken, removeUserID } from "../utils/account";
+import { removeToken, removeUserID, getUserID } from "../utils/account";
 import { userStore } from "../utils/store";
 
 const Header = () => {
-  const userID = userStore((state) => state.userID);
+  const localUserID = getUserID();
+  const storeUserID = userStore((state) => state.userID);
+  const [userID, setUserID] = useState(
+    localUserID !== null ? localUserID : storeUserID
+  );
+  useEffect(() => {
+    setUserID(localUserID !== null ? localUserID : storeUserID);
+  }, [localUserID, storeUserID]);
+
   const removeID = userStore((state) => state.removeID);
   const menuItems = [
     {

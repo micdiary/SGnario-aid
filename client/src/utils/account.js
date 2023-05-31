@@ -3,7 +3,7 @@ export function setToken(token) {
 }
 
 export function removeToken() {
-  return localStorage.removeItem("token");
+  localStorage.removeItem("token");
 }
 
 export function getToken() {
@@ -15,7 +15,7 @@ export function setUserID(userID) {
 }
 
 export function removeUserID() {
-  return localStorage.removeItem("userID");
+  localStorage.removeItem("userID");
 }
 
 export function getUserID() {
