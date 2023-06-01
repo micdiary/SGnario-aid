@@ -127,29 +127,43 @@ router.post("/forgot-password", async (req, res) => {
             res.status(200).json({ message: "Reset email sent" });
         }
     });
+});
 
-    // Reset Password
-    router.post("/reset-password", async (req, res) => {
-        const { token, newPassword } = req.body;
+// Reset Password
+router.post("/reset-password", async (req, res) => {
+    const { token, newPassword } = req.body;
 
-        try {
-            // Verify JWT token
-            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-            const { email } = decodedToken;
+    try {
+        // Verify JWT token
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { email } = decodedToken;
 
-            // Hashing password
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Hashing password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            // Update user password
-            const user = await UserModel.findOne({ email: email });
-            user.password = hashedPassword;
-            await user.save();
+        // Update user password
+        const user = await UserModel.findOne({ email: email });
+        user.password = hashedPassword;
+        await user.save();
 
-            res.status(200).json({ message: "Password successfully resetted" });
-        } catch (err) {
-            res.status(401).json({ error: "Invalid or expired token" });
-        }
+        res.status(200).json({ message: "Password successfully resetted" });
+    } catch (err) {
+        res.status(401).json({ error: "Invalid or expired token" });
+    }
+});
+
+// Get therapists
+router.get("/therapists", async (req, res) => {
+    const therapists = await SuperuserModel.find({ role: "therapist" });
+    let therapistsNames = [];
+    console.log(therapists);
+
+    therapists.forEach((therapist) => {
+        const tempId = `${therapist.name} [${therapist.email}]`;
+        therapistsNames.push(tempId);
     });
+
+    res.status(200).json({ "therapists": therapistsNames });
 });
 
 export { router as userRouter };
