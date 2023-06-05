@@ -11,4 +11,5 @@ export const SCENARIOS = "/scenarios";
 
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
+export const GET_ALL_THERAPIST_API = `${URL}/auth/therapists`;
 export const LOGIN_API = `${URL}/auth/login`;

@@ -1,14 +1,26 @@
-import { Button, Checkbox, Form, Input, Radio, DatePicker } from "antd";
+import { Button, Checkbox, Form, Input, Radio, DatePicker, Select } from "antd";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import * as constants from "../constants";
 import { register } from "../api/account";
+import { getTherapists } from "../api/account";
 
 const { TextArea } = Input;
 
 const Register = () => {
   const [date, setDate] = useState(null);
+  const [therapists, setTherapists] = useState([]);
+
+  useEffect(() => {
+    getTherapists().then((res) => {
+      let temp = [];
+      for (const therapist in res.therapists) {
+        temp.push({ value: therapist, label: res.therapists[therapist] });
+      }
+      setTherapists(temp);
+    });
+  }, []);
 
   const formItem = [
     {
@@ -90,7 +102,7 @@ const Register = () => {
           message: "Please select your therapist!",
         },
       ],
-      input: <Input />,
+      input: <Select options={therapists} />,
     },
     {
       label: "Issue",
@@ -101,7 +113,16 @@ const Register = () => {
           message: "Please input your reason of use!",
         },
       ],
-      input: <TextArea />,
+      input: (
+        <Select
+          mode="tags"
+          options={[
+            { value: "Stuttering", label: "Stuttering" },
+            { value: "Voice Disorder", label: "Voice Disorder" },
+            { value: "Stroke Recovery", label: "Stroke Recovery" },
+          ]}
+        />
+      ),
     },
     {
       label: (
