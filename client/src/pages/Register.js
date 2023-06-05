@@ -1,14 +1,14 @@
 import { Button, Checkbox, Form, Input, Radio, DatePicker, Select } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+
 
 import * as constants from "../constants";
 import { register } from "../api/account";
 import { getTherapists } from "../api/account";
 
-const { TextArea } = Input;
-
 const Register = () => {
+  let navigate = useNavigate();
   const [date, setDate] = useState(null);
   const [therapists, setTherapists] = useState([]);
 
@@ -177,7 +177,7 @@ const Register = () => {
     };
 
     register(req).then((res) => {
-      console.log(res);
+      navigate(constants.LOGIN_URL);
     });
   };
 
