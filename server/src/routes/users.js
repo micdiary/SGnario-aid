@@ -1,5 +1,5 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+import jwt, { verify } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import * as dotenv from "dotenv";
@@ -7,6 +7,7 @@ dotenv.config();
 
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
+import { AdminModel } from "../models/Admins.js";
 
 const router = express.Router();
 
@@ -14,10 +15,11 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
     const { name, email, password, dob, gender, issue, therapist } = req.body;
     const user = await UserModel.findOne({ email: email });
+    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Checking if user exists
-    if (user) {
-        return res.json({ message: "User already exists!" });
+    if (user || superuser) {
+        return res.status(409).json({ message: "User already exists!" });
     }
 
     // Hashing password
@@ -43,11 +45,12 @@ router.post("/register", async (req, res) => {
 // Register new therapist/educator
 router.post("/register-superuser", async (req, res) => {
     const { name, email, password, role, purpose, organisation } = req.body;
-    const user = await SuperuserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email });
+    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Checking if user exists
-    if (user) {
-        return res.json({ message: "User already exists!" });
+    if (user || superuser) {
+        return res.status(409).json({ message: "User already exists!" });
     }
 
     // Hashing password
@@ -67,41 +70,67 @@ router.post("/register-superuser", async (req, res) => {
     res.status(201).json({ message: "User registered successfully!" });
 });
 
-// Login user
+// Login
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    const user = await UserModel.findOne({ email: email });
 
-    // Check if user exists
-    if (!user) {
-        return res.json({ message: "User doesn't exist!" });
+    const user = await UserModel.findOne({ email: email });
+    const superuser = await SuperuserModel.findOne({ email: email });
+    const admin = await AdminModel.findOne({ email: email });
+
+    let isPasswordValid;
+    let id;
+    let accountRole;
+    // Check if user exists and
+    // Check if credentials are valid
+    if (!user && !superuser && !admin) {
+        return res.status(404).json({ message: "User doesn't exists!" });
+    } else if (user) {
+        ({ isPasswordValid, id, accountRole } = await verifyAccount(
+            user,
+            password
+        ));
+    } else if (superuser) {
+        ({ isPasswordValid, id, accountRole } = await verifyAccount(
+            superuser,
+            password
+        ));
+    } else if (admin) {
+        ({ isPasswordValid, id, accountRole } = await verifyAccount(
+            admin,
+            password
+        ));
     }
 
-    // Check if credentials are valid
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
-        return res.json({ message: "Email or password is incorrect" });
+        return res
+            .status(401)
+            .json({ message: "Email or password is incorrect" });
     }
 
     // Login user and return JWT token for cookie storage
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ token: token, userID: user._id });
+    const token = jwt.sign(
+        { id: id, role: accountRole },
+        process.env.JWT_SECRET
+    );
+
+    res.status(200).json({ token: token, userID: id });
 });
 
 // Forgot password
-// TODO to use jwt cookie instead of email for verification
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
     const user = await UserModel.findOne({ email: email });
+    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Check if user exists
-    if (!user) {
-        return res.json({ message: "User doesn't exist!" });
+    if (!user && !superuser) {
+        return res.status(404).json({ message: "User doesn't exist!" });
     }
 
     // Generate JWT token for password reset
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    // Token expiry time: 20 minutes
+    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
         expiresIn: "1200s",
     });
 
@@ -117,7 +146,7 @@ router.post("/forgot-password", async (req, res) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Password Reset",
-        text: `Click the following link to reset your password: http:localhost:3000/reset-password/${token}`,
+        text: `Click the following link to reset your password: http:localhost:3000/reset-password?token=${resetToken}`,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
@@ -136,13 +165,30 @@ router.post("/reset-password", async (req, res) => {
     try {
         // Verify JWT token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        const { email } = decodedToken;
 
         // Hashing password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
+        let user;
+        if (decodedToken.email !== undefined) {
+            // user was not logged in
+            const { email } = decodedToken;
+            const userFound = await UserModel.findOne({ email: email });
+            const superuserFound = await SuperuserModel.findOne({
+                email: email,
+            });
+            user = userFound || superuserFound;
+        } else {
+            // user is logged in
+            const { id, role } = decodedToken;
+            if (role == "user") {
+                user = await UserModel.findOne({ _id: id });
+            } else {
+                user = await SuperuserModel.findOne({ _id: id });
+            }
+        }
 
         // Update user password
-        const user = await UserModel.findOne({ email: email });
+        // const user = await UserModel.findOne({ email: email });
         user.password = hashedPassword;
         await user.save();
 
@@ -156,14 +202,42 @@ router.post("/reset-password", async (req, res) => {
 router.get("/therapists", async (req, res) => {
     const therapists = await SuperuserModel.find({ role: "therapist" });
     let therapistsNames = [];
-    console.log(therapists);
 
     therapists.forEach((therapist) => {
-        const tempId = `${therapist.name} [${therapist.email}]`;
-        therapistsNames.push(tempId);
+        therapistsNames[therapist.email] = therapist.name;
     });
 
     res.status(200).json({ "therapists": therapistsNames });
 });
+
+// Get User's Role
+router.post("/roles", async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        // Verify token
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id } = decodedToken;
+
+        let user;
+        const userFound = await UserModel.findOne({ _id: id });
+        const superuserFound = await SuperuserModel.findOne({ _id: id });
+        const adminFound = await AdminModel.findOne({ _id: id });
+
+        user = userFound || superuserFound || adminFound;
+
+        return res.status(201).json({ "role:": user.role });
+    } catch (err) {
+        res.status(401).json({ error: "Invalid token" });
+    }
+});
+
+// Helper functions
+// Login
+async function verifyAccount(account, password) {
+    const isPasswordValid = await bcrypt.compare(password, account.password);
+    const { _id: id, role: accountRole } = account;
+    return { isPasswordValid, id, accountRole };
+}
 
 export { router as userRouter };
