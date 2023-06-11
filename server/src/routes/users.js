@@ -202,6 +202,7 @@ router.post("/reset-password", async (req, res) => {
 router.get("/therapists", async (req, res) => {
     const therapists = await SuperuserModel.find({ role: "therapist" });
     let therapistsNames = [];
+    console.log(therapists);
 
     therapists.forEach((therapist) => {
         therapistsNames[therapist.email] = therapist.name;

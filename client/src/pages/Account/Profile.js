@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, Row, Col, Card, Input, Button } from "antd";
+import { Row, Col, Card, Input, Button } from "antd";
 
 const Profile = () => {
   const [isDisabled, setIsDisabled] = useState(true);

@@ -22,6 +22,10 @@ const Header = () => {
       key: "home",
     },
     {
+      label: <a href={constants.SCENARIOS}>Scenarios</a>,
+      key: "scenarios",
+    },
+    {
       label: <a href={constants.ABOUT_US_URL}>About Us</a>,
       key: "about-us",
     },
@@ -40,10 +44,7 @@ const Header = () => {
     {
       label: <a href={constants.ACCOUNT_URL}>Account</a>,
       key: "account",
-    },
-    {
-      label: <a href={constants.RECORDS}>Records</a>,
-      key: "records",
+      hidden : userID === null,
     },
   ];
 
