@@ -1,0 +1,63 @@
+### Register User
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+    "email": "test22@gmail.com",
+    "password": "password",
+    "name": "test",
+    "role": "user",
+    "dob": "01-01-1999",
+    "gender": "male",
+    "therapist": "therapist1",
+    "issue": ["issue1"]
+}
+
+### Register Therapist
+POST http://localhost:3001/auth/register-superuser
+Content-Type: application/json
+
+{
+    "email": "therapist3@gmail.com",
+    "password": "password",
+    "name": "therapist",
+    "role": "therapist",
+    "purpose": ["treatment", "education"],
+    "organisation": "SIT"
+}
+
+### Login
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+    "email": "therapist2@gmail.com",
+    "password": "password"
+}
+
+### Forgot Password
+POST http://localhost:3001/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "zemuskoh99@gmail.com"
+}
+
+### Reset Password
+POST http://localhost:3001/auth/reset-password 
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg2Mzg2NTgzfQ.pyeGpAzpcc4YDXhR6cfnQC066d0bGla_Ilw3Ry_jrww",
+    "newPassword": "password1"
+}
+
+### Get Therapists
+GET http://localhost:3001/auth/therapists
+
+
+### Get Role
+GET http://localhost:3001/auth/role/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzM5MWY0ODJhNWU2NzAxZjM4NTMyZiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY0NTcyMDJ9.qpyQu-iQFX5NM44jAMCMd8q7msJBb_WTldnTeWVzNbo
+
+
+
