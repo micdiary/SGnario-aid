@@ -14,11 +14,9 @@ const router = express.Router();
 // Register new user
 router.post("/register", async (req, res) => {
     const { name, email, password, dob, gender, issue, therapist } = req.body;
-    const user = await UserModel.findOne({ email: email });
-    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Checking if user exists
-    if (user || superuser) {
+    if (await userExists(email)) {
         return res.status(409).json({ message: "User already exists!" });
     }
 
@@ -45,11 +43,9 @@ router.post("/register", async (req, res) => {
 // Register new therapist/educator
 router.post("/register-superuser", async (req, res) => {
     const { name, email, password, role, purpose, organisation } = req.body;
-    const user = await UserModel.findOne({ email: email });
-    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Checking if user exists
-    if (user || superuser) {
+    if (await userExists(email)) {
         return res.status(409).json({ message: "User already exists!" });
     }
 
@@ -70,6 +66,30 @@ router.post("/register-superuser", async (req, res) => {
     res.status(201).json({ message: "User registered successfully!" });
 });
 
+router.post("/register-admin", async (req, res) => {
+    const { name, email, password, dob, gender, issue, therapist } = req.body;
+
+    // Checking if user exists
+    if (await userExists(email)) {
+        return res.status(409).json({ message: "User already exists!" });
+    }
+
+    // Hashing password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = new AdminModel({
+        name: name,
+        email: email,
+        password: hashedPassword,
+        role: "admin",
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: "Admin registered successfully!" });
+});
+
 // Login
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
@@ -83,7 +103,7 @@ router.post("/login", async (req, res) => {
     let accountRole;
     // Check if user exists and
     // Check if credentials are valid
-    if (!user && !superuser && !admin) {
+    if (!(await userExists(email))) {
         return res.status(404).json({ message: "User doesn't exists!" });
     } else if (user) {
         ({ isPasswordValid, id, accountRole } = await verifyAccount(
@@ -120,11 +140,9 @@ router.post("/login", async (req, res) => {
 // Forgot password
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
-    const user = await UserModel.findOne({ email: email });
-    const superuser = await SuperuserModel.findOne({ email: email });
 
     // Check if user exists
-    if (!user && !superuser) {
+    if (!(await userExists(email))) {
         return res.status(404).json({ message: "User doesn't exist!" });
     }
 
@@ -176,14 +194,17 @@ router.post("/reset-password", async (req, res) => {
             const superuserFound = await SuperuserModel.findOne({
                 email: email,
             });
-            user = userFound || superuserFound;
+            const adminFound = await AdminModel.findOne({});
+            user = userFound || superuserFound || adminFound;
         } else {
             // user is logged in
             const { id, role } = decodedToken;
             if (role == "user") {
                 user = await UserModel.findOne({ _id: id });
-            } else {
+            } else if (role == "therapist" || role == "educator") {
                 user = await SuperuserModel.findOne({ _id: id });
+            } else if (role == "admin") {
+                user = await AdminModel.findOne({ _id: id });
             }
         }
 
@@ -233,12 +254,23 @@ router.get("/role/:token", async (req, res) => {
     }
 });
 
-// Helper functions
+/** Helper functions **/
 // Login
 async function verifyAccount(account, password) {
     const isPasswordValid = await bcrypt.compare(password, account.password);
     const { _id: id, role: accountRole } = account;
     return { isPasswordValid, id, accountRole };
+}
+
+// User Exists
+async function userExists(email) {
+    const user = await UserModel.findOne({ email: email });
+    const superuser = await SuperuserModel.findOne({ email: email });
+    const admin = await AdminModel.findOne({ email: email });
+    if (user || superuser || admin) {
+        return true;
+    }
+    return false;
 }
 
 export { router as authRouter };
