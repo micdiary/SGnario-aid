@@ -222,13 +222,11 @@ router.post("/reset-password", async (req, res) => {
 // Get therapists
 router.get("/therapists", async (req, res) => {
     const therapists = await SuperuserModel.find({ role: "therapist" });
-    let therapistsNames = [];
-    console.log(therapists);
+    let therapistsNames = {};
 
     therapists.forEach((therapist) => {
         therapistsNames[therapist.email] = therapist.name;
     });
-
     res.status(200).json({ "therapists": therapistsNames });
 });
 

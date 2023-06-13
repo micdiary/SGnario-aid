@@ -2,7 +2,6 @@ import { Button, Checkbox, Form, Input, Radio, DatePicker, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-
 import * as constants from "../constants";
 import { register } from "../api/account";
 import { getTherapists } from "../api/account";

@@ -1,18 +1,10 @@
 import React, { useState } from "react";
 import { Menu, Row, Col } from "antd";
-import {
-  UserOutlined,
-  HomeOutlined,
-  VideoCameraOutlined,
-  HistoryOutlined,
-  BarChartOutlined,
-} from "@ant-design/icons";
+import { UserOutlined, HomeOutlined } from "@ant-design/icons";
 
 import Profile from "./Profile";
-import Recordings from "./Recordings";
 import Dashboard from "./Dashboard";
 import Evaluation from "./Evaluation";
-import Upload from "./Upload";
 
 const menuItems = [
   {
@@ -25,25 +17,11 @@ const menuItems = [
     key: "dashboard",
     icon: <HomeOutlined />,
   },
-  {
-    label: "Upload Recordings",
-    key: "upload-recordings",
-    icon: <VideoCameraOutlined />,
-  },
-  {
-    label: "Past Recordings",
-    key: "past-recordings",
-    icon: <HistoryOutlined />,
-  },
-  {
-    label: "Self Evaluation",
-    key: "self-evaluation",
-    icon: <BarChartOutlined />,
-  },
 ];
 
 const Account = () => {
   const [view, setView] = useState("profile");
+  const [evaluationID, setEvaluationID] = useState(null);
   // change views between menus
   const menuOnClick = (e) => {
     setView(e.key);
@@ -65,10 +43,8 @@ const Account = () => {
       </Col>
       <Col>
         {view === "profile" && <Profile />}
-        {view === "past-recordings" && <Recordings />}
-        {view === "self-evaluation" && <Evaluation />}
-        {view === "dashboard" && <Dashboard />}
-        {view === "upload-recordings" && <Upload />}
+        {view === "dashboard" && <Dashboard setView={setView} setEvaluationID={setEvaluationID} />}
+        {view === "evaluation" && <Evaluation evaluationID={evaluationID} />}
       </Col>
     </Row>
   );
