@@ -19,6 +19,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import { getUserID } from "../utils/account";
 import { userStore } from "../utils/store";
+import AdminLogin from "../pages/Admin/AdminLogin";
 
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
@@ -47,7 +48,7 @@ const Layout = () => {
         >
           <Routes>
             <Route exact path={constants.HOME_URL} element={<Home />} />
-            <Route path={constants.SCENARIOS} element={<Records />} />
+            <Route path={constants.SCENARIOS_URL} element={<Records />} />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
             <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
             <Route path={constants.CONTACT_URL} element={<Contact />} />
@@ -65,6 +66,7 @@ const Layout = () => {
             />
             <Route path={constants.LOGIN_URL} element={<Login />} />
             <Route path={constants.REGISTER_URL} element={<Register />} />
+            <Route path={constants.ADMIN_LOGIN_URL} element={<AdminLogin />} />
             <Route path="*" element={<NoMatch />} />
           </Routes>
         </Content>

@@ -15,7 +15,7 @@ const Register = () => {
     getTherapists().then((res) => {
       let temp = [];
       for (const therapist in res.therapists) {
-        temp.push({ value: therapist, label: res.therapists[therapist] });
+        temp.push({ value: therapist, label: `${res.therapists[therapist]} (${therapist})` });
       }
       setTherapists(temp);
     });

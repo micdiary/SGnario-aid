@@ -22,7 +22,7 @@ const Header = () => {
       key: "home",
     },
     {
-      label: <a href={constants.SCENARIOS}>Scenarios</a>,
+      label: <a href={constants.SCENARIOS_URL}>Scenarios</a>,
       key: "scenarios",
     },
     {

@@ -7,12 +7,21 @@ export const ACCOUNT_URL = "/account";
 export const PROFILE_URL = `${ACCOUNT_URL}/profile`;
 export const LOGIN_URL = "/login";
 export const REGISTER_URL = "/register";
-export const SCENARIOS = "/scenarios";
+export const SCENARIOS_URL = "/scenarios";
+
+export const ADMIN_LOGIN_URL = "/admin/login";
 
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
 export const GET_ALL_THERAPIST_API = `${URL}/auth/therapists`;
 export const LOGIN_API = `${URL}/auth/login`;
+export const FORGOT_PASSWORD_API = `${URL}/auth/forgot-password`;
+export const RESET_PASSWORD_API = `${URL}/auth/reset-password`;
+
+
+export const PROFILE_API = `${URL}/users/profile`;
+export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
+
 
 export const SUBMITTED_TAG = "Submitted";
 export const NOT_SUBMITTED_TAG = "Not Submitted";
