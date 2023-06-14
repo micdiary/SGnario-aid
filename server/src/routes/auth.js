@@ -182,8 +182,8 @@ router.post("/reset-password", async (req, res) => {
 
     try {
         // Verify JWT token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);        
+        
         // Hashing password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         let user;
@@ -194,7 +194,7 @@ router.post("/reset-password", async (req, res) => {
             const superuserFound = await SuperuserModel.findOne({
                 email: email,
             });
-            const adminFound = await AdminModel.findOne({});
+            const adminFound = await AdminModel.findOne({email: email});
             user = userFound || superuserFound || adminFound;
         } else {
             // user is logged in

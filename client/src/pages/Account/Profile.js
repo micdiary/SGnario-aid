@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
+import dayjs from "dayjs";
 import {
-  Row,
-  Col,
   Card,
   Input,
   Button,
@@ -9,18 +8,23 @@ import {
   Select,
   Form,
   Radio,
+  Row,
+  Col,
+  Typography,
 } from "antd";
 import { editProfile, getProfile } from "../../api/profile";
 import { getToken } from "../../utils/account";
-import dayjs from "dayjs";
+import Loader from "../../components/Loader";
+import { resetPassword } from "../../api/account";
 
-const { Option } = Select;
+const { Title } = Typography;
 
 const Profile = () => {
   const [form] = Form.useForm();
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [cardToSubmit, setCardToSubmit] = useState(0);
+  const [isProfileDisabled, setIsProfileDisabled] = useState(true);
+  const [isPasswordDisabled, setIsPasswordDisabled] = useState(true);
   const [profile, setProfile] = useState({});
-  const [date, setDate] = useState(null);
 
   useEffect(() => {
     let token = getToken();
@@ -30,22 +34,15 @@ const Profile = () => {
     form.setFieldsValue({
       name: profile.name,
       email: profile.email,
-      dob: date,
+      dob: dayjs(profile.dob),
       gender: profile.gender,
       therapist: profile.therapist,
       issue: profile.issue,
     });
-  }, [date]);
-
-  useEffect(() => {
-    if (profile.dob) {
-      setDate(dayjs(profile.dob, "YYYY-MM-DD"));
-    } else {
-      setDate(null);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.dob]);
 
-  const formItem = [
+  const profileFormItem = [
     {
       label: "Name",
       name: "name",
@@ -55,7 +52,7 @@ const Profile = () => {
           message: "Please input your name!",
         },
       ],
-      input: <Input disabled={isDisabled} />,
+      input: <Input disabled={isProfileDisabled} />,
     },
     {
       label: "Email",
@@ -83,11 +80,7 @@ const Profile = () => {
       ],
       input: (
         <DatePicker
-          value={date}
-          disabled={isDisabled}
-          onChange={(date, dateString) => {
-            setDate(dateString);
-          }}
+          disabled={isProfileDisabled}
         />
       ),
     },
@@ -101,7 +94,7 @@ const Profile = () => {
         },
       ],
       input: (
-        <Radio.Group disabled={isDisabled}>
+        <Radio.Group disabled={isProfileDisabled}>
           <Radio value="male">Male</Radio>
           <Radio value="female">Female</Radio>
         </Radio.Group>
@@ -129,9 +122,23 @@ const Profile = () => {
             { value: "Voice Disorder", label: "Voice Disorder" },
             { value: "Stroke Recovery", label: "Stroke Recovery" },
           ]}
-          disabled={isDisabled}
+          disabled={isProfileDisabled}
         />
       ),
+    },
+  ];
+
+  const passwordFormItem = [
+    {
+      label: "New Password",
+      name: "password",
+      // rules: [
+      //   {
+      //     required: true,
+      //     message: "Please input your new password!",
+      //   },
+      // ],
+      input: <Input.Password disabled={isPasswordDisabled} />,
     },
   ];
 
@@ -152,21 +159,25 @@ const Profile = () => {
     });
   };
 
-  const generateCard = () => {
+  const generateProfileCard = () => {
     return (
       <Card
         extra={
           <>
             <Button
-              hidden={!isDisabled}
-              onClick={() => setIsDisabled(!isDisabled)}
+              hidden={!isProfileDisabled}
+              onClick={() => {
+                setCardToSubmit(0);
+                setIsProfileDisabled(!isProfileDisabled);
+                setIsPasswordDisabled(true);
+              }}
             >
               Edit Profile
             </Button>
             <Button
-              hidden={isDisabled}
+              hidden={isProfileDisabled}
               onClick={() => {
-                setIsDisabled(!isDisabled);
+                setIsProfileDisabled(!isProfileDisabled);
                 form.submit();
               }}
             >
@@ -178,15 +189,50 @@ const Profile = () => {
           width: 720,
         }}
       >
-        {generateForm(formItem)}
+        {generateForm(profileFormItem)}
       </Card>
     );
   };
 
-  const onFinish = (values) => {
+  const generatePasswordCard = () => {
+    return (
+      <Card
+        extra={
+          <>
+            <Button
+              hidden={!isPasswordDisabled}
+              onClick={() => {
+                setCardToSubmit(1);
+                setIsPasswordDisabled(!isPasswordDisabled);
+                setIsProfileDisabled(true);
+              }}
+            >
+              Edit Password
+            </Button>
+            <Button
+              hidden={isPasswordDisabled}
+              onClick={() => {
+                setIsPasswordDisabled(!isPasswordDisabled);
+                form.submit();
+              }}
+            >
+              Save
+            </Button>
+          </>
+        }
+        style={{
+          width: 720,
+        }}
+      >
+        {generateForm(passwordFormItem)}
+      </Card>
+    );
+  };
+
+  const onProfileFinish = (values) => {
     const req = {
       name: values.name,
-      dob: date,
+      dob: values.dob,
       gender: values.gender,
       issue: values.issue,
     };
@@ -196,7 +242,18 @@ const Profile = () => {
     });
   };
 
-  return (
+  const onPasswordFinish = (values) => {
+    const req = {
+      newPassword: values.password,
+    };
+    // Handle the form submission
+    console.log(req)
+    resetPassword(req).then((res) => {
+      alert(res.message || res.error);
+    });
+  };
+
+  return profile.name ? (
     <Form
       form={form}
       labelCol={{
@@ -209,11 +266,22 @@ const Profile = () => {
       style={{
         textAlign: "left",
       }}
-      onFinish={onFinish}
+      onFinish={cardToSubmit === 0 ? onProfileFinish : onPasswordFinish}
       scrollToFirstError
     >
-      {generateCard()}
+      <Row gutter={12}>
+        <Col span={12}>
+          <Title level={4}>Profile</Title>
+          {generateProfileCard()}
+        </Col>
+        <Col span={12}>
+          <Title level={4}>Password</Title>
+          {generatePasswordCard()}
+        </Col>
+      </Row>
     </Form>
+  ) : (
+    <Loader />
   );
 };
 
