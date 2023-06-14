@@ -246,7 +246,7 @@ router.get("/role/:token", async (req, res) => {
 
         user = userFound || superuserFound || adminFound;
 
-        return res.status(201).json({ "role:": user.role });
+        return res.status(201).json({ "role": user.role });
     } catch (err) {
         res.status(401).json({ error: "Invalid token" });
     }

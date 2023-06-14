@@ -3,6 +3,7 @@ import {
   REGISTER_API,
   LOGIN_API,
   GET_ALL_THERAPIST_API,
+  USER_TYPE_API,
   RESET_PASSWORD_API,
   FORGOT_PASSWORD_API,
 } from "../constants.js";
@@ -18,6 +19,11 @@ export async function getTherapists() {
 
 export async function login(req) {
   return requestPost(LOGIN_API, { req });
+}
+
+export async function getUserType() {
+  const token = getToken();
+  return requestGet(`${USER_TYPE_API}/${token}`);
 }
 
 export async function resetPassword(req) {

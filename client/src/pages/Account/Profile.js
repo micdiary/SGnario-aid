@@ -247,7 +247,6 @@ const Profile = () => {
       newPassword: values.password,
     };
     // Handle the form submission
-    console.log(req)
     resetPassword(req).then((res) => {
       alert(res.message || res.error);
     });

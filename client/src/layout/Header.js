@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Menu, Row, Breadcrumb, Col } from "antd";
 
 import * as constants from "../constants";
-import { removeToken, removeUserID, getUserID } from "../utils/account";
+import {
+  removeToken,
+  removeUserID,
+  getUserID,
+  getUserType,
+  removeUserType,
+} from "../utils/account";
 import { userStore } from "../utils/store";
 
 const Header = () => {
@@ -11,11 +17,22 @@ const Header = () => {
   const [userID, setUserID] = useState(
     localUserID !== null ? localUserID : storeUserID
   );
+
   useEffect(() => {
     setUserID(localUserID !== null ? localUserID : storeUserID);
   }, [localUserID, storeUserID]);
 
-  const removeID = userStore((state) => state.removeID);
+  const localUserRole = getUserType();
+  const storeUserRole = userStore((state) => state.userType);
+  const [userRole, setUserRole] = useState(
+    localUserRole !== null ? localUserRole : storeUserRole
+  );
+
+  useEffect(() => {
+    setUserRole(localUserRole !== null ? localUserRole : storeUserRole);
+  }, [localUserRole, storeUserRole]);
+
+  const removeUserStore = userStore((state) => state.removeUser);
   const menuItems = [
     {
       label: <a href={constants.HOME_URL}>Home</a>,
@@ -44,7 +61,15 @@ const Header = () => {
     {
       label: <a href={constants.ACCOUNT_URL}>Account</a>,
       key: "account",
-      hidden : userID === null,
+      hidden: userID === null,
+    },
+  ];
+
+  const adminMenuItems = [
+    {
+      label: <a href={constants.ADMIN_URL}>Admin</a>,
+      key: "admin",
+      hidden: userID === "admin",
     },
   ];
 
@@ -64,7 +89,8 @@ const Header = () => {
                 onClick={() => {
                   removeToken();
                   removeUserID();
-                  removeID();
+                  removeUserType();
+                  removeUserStore();
                 }}
               >
                 Logout
@@ -90,7 +116,7 @@ const Header = () => {
           disabledOverflow
           triggerSubMenuAction="hover"
           forceSubMenuRender
-          items={menuItems}
+          items={userRole === "admin" ? adminMenuItems : menuItems}
         />
       </Row>
       <Row justify="start">

@@ -11,12 +11,13 @@ export const FORGET_PASSWORD_URL = "/forget-password";
 export const RESET_PASSWORD_URL = "/reset-password";
 export const SCENARIOS_URL = "/scenarios";
 
-export const ADMIN_LOGIN_URL = "/admin/login";
+export const ADMIN_URL = "/admin";
 
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
 export const GET_ALL_THERAPIST_API = `${URL}/auth/therapists`;
 export const LOGIN_API = `${URL}/auth/login`;
+export const USER_TYPE_API = `${URL}/auth/role`;
 export const FORGOT_PASSWORD_API = `${URL}/auth/forgot-password`;
 export const RESET_PASSWORD_API = `${URL}/auth/reset-password`;
 

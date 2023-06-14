@@ -2,14 +2,19 @@ import { Button, Checkbox, Form, Input, Typography } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { login } from "../api/account";
+import { login,getUserType } from "../api/account";
 import * as constants from "../constants";
-import { setToken, setUserID } from "../utils/account";
+import {
+  setToken,
+  setUserID,
+  setUserType,
+} from "../utils/account";
 import { userStore } from "../utils/store";
 
 const Login = () => {
   let navigate = useNavigate();
   const updateUserID = userStore((state) => state.setID);
+  const updateUserType = userStore((state) => state.setType);
 
   const onFinish = (values) => {
     const req = {
@@ -22,7 +27,19 @@ const Login = () => {
         setToken(res.token);
         setUserID(res.userID);
         updateUserID(res.userID);
-        navigate(constants.HOME_URL);
+
+        getUserType(res.userID).then((res) => {
+          console.log(res)
+          if (res.role !== undefined) {
+            setUserType(res.role);
+            updateUserType(res.role);
+          }
+          if (res.role === "admin") {
+            navigate(constants.ADMIN_URL);
+          } else {
+            navigate(constants.HOME_URL);
+          }
+        });
       } else {
         alert("Invalid email or password!");
       }

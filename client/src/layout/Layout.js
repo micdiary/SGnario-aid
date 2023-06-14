@@ -15,7 +15,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";
 import Records from "../pages/RecordsList";
-import AdminLogin from "../pages/Admin/AdminLogin";
+import Admin from "../pages/Admin/Admin";
 import ForgetPassword from "../pages/ForgetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -58,6 +58,18 @@ const Layout = () => {
               path={constants.TERMS_CONDITIONS_URL}
               element={<TermsConditions />}
             />
+            <Route path={constants.LOGIN_URL} element={<Login />} />
+            <Route path={constants.REGISTER_URL} element={<Register />} />
+            <Route
+              path={constants.FORGET_PASSWORD_URL}
+              element={<ForgetPassword />}
+            />
+            <Route
+              path={constants.RESET_PASSWORD_URL}
+              element={<ResetPassword />}
+            />
+            <Route path="*" element={<NoMatch />} />
+            {/* PROTECTED ROUTES */}
             <Route
               path={constants.ACCOUNT_URL}
               element={
@@ -66,12 +78,14 @@ const Layout = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={constants.LOGIN_URL} element={<Login />} />
-            <Route path={constants.REGISTER_URL} element={<Register />} />
-            <Route path={constants.FORGET_PASSWORD_URL} element={<ForgetPassword />} />
-            <Route path={constants.RESET_PASSWORD_URL} element={<ResetPassword />} />
-            <Route path={constants.ADMIN_LOGIN_URL} element={<AdminLogin />} />
-            <Route path="*" element={<NoMatch />} />
+            <Route
+              path={constants.ADMIN_URL}
+              element={
+                <ProtectedRoute user={userID}>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Content>
         <AntFooter
