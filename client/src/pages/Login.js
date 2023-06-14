@@ -1,4 +1,5 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, Typography } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import { login } from "../api/account";
@@ -28,85 +29,71 @@ const Login = () => {
     });
   };
 
-  const formItem = [
-    {
-      label: "Email",
-      name: "email",
-      rules: [
-        {
-          required: true,
-          message: "Please input your email!",
-        },
-      ],
-      input: <Input />,
-    },
-    {
-      label: "Password",
-      name: "password",
-      rules: [
-        {
-          required: true,
-          message: "Please input your password!",
-        },
-      ],
-      input: <Input.Password />,
-    },
-    {
-      name: "remember",
-      rules: [],
-      input: <Checkbox>Remember me</Checkbox>,
-      valuePropName: "checked",
-      wrapperCol: {
-        offset: 6,
-        span: 14,
-      },
-    },
-  ];
-
-  const generateForm = (formItem) => {
-    return formItem.map((item, index) => {
-      return (
-        <Form.Item
-          wrapperCol={item.wrapperCol}
-          name={item.name}
-          label={item.label}
-          rules={item.rules}
-          key={index}
-          valuePropName={item.valuePropName}
-        >
-          {item.input}
-        </Form.Item>
-      );
-    });
-  };
-
   return (
     <>
-      <h1>Please Login:</h1>
       <Form
-        labelCol={{
-          span: 6,
-        }}
-        wrapperCol={{
-          span: 14,
-        }}
-        layout="horizontal"
-        style={{
-          textAlign: "left",
+        name="normal_login"
+        className="login-form"
+        initialValues={{
+          remember: true,
         }}
         onFinish={onFinish}
-        scrollToFirstError
+        style={{ width: "50%", margin: "auto" }}
       >
-        {generateForm(formItem)}
         <Form.Item
-          wrapperCol={{
-            span: 12,
-            offset: 6,
-          }}
+          name="email"
+          rules={[
+            {
+              required: true,
+              message: "Please input your Email!",
+            },
+          ]}
         >
-          <Button type="primary" htmlType="submit">
+          <Input
+            prefix={<UserOutlined className="site-form-item-icon" />}
+            placeholder="Email"
+          />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: "Please input your Password!",
+            },
+          ]}
+        >
+          <Input
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+            placeholder="Password"
+          />
+        </Form.Item>
+        <Form.Item>
+          <Form.Item name="remember" valuePropName="checked" noStyle>
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <Typography.Link
+            className="login-form-forgot"
+            href={constants.FORGET_PASSWORD_URL}
+            style={{ float: "right" }}
+          >
+            Forgot password
+          </Typography.Link>
+        </Form.Item>
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+            style={{ width: "100%" }}
+          >
             Log in
           </Button>
+          Or{" "}
+          <Typography.Link href={constants.REGISTER_URL}>
+            register now!
+          </Typography.Link>
         </Form.Item>
       </Form>
     </>

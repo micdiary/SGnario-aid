@@ -4,6 +4,7 @@ import {
   LOGIN_API,
   GET_ALL_THERAPIST_API,
   RESET_PASSWORD_API,
+  FORGOT_PASSWORD_API,
 } from "../constants.js";
 import { getToken } from "../utils/account";
 
@@ -20,9 +21,15 @@ export async function login(req) {
 }
 
 export async function resetPassword(req) {
-  const { newPassword } = req;
-  const token = getToken();
+  let { token, newPassword } = req;
+  if (token === undefined || token === null || token === "") {
+    token = getToken();
+  }
   return requestPost(RESET_PASSWORD_API, {
     req: { token: token, newPassword },
   });
+}
+
+export async function forgetPassword(req) {
+  return requestPost(FORGOT_PASSWORD_API, { req });
 }

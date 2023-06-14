@@ -7,6 +7,8 @@ export const ACCOUNT_URL = "/account";
 export const PROFILE_URL = `${ACCOUNT_URL}/profile`;
 export const LOGIN_URL = "/login";
 export const REGISTER_URL = "/register";
+export const FORGET_PASSWORD_URL = "/forget-password";
+export const RESET_PASSWORD_URL = "/reset-password";
 export const SCENARIOS_URL = "/scenarios";
 
 export const ADMIN_LOGIN_URL = "/admin/login";

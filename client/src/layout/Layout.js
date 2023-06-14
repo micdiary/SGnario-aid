@@ -15,11 +15,13 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";
 import Records from "../pages/RecordsList";
+import AdminLogin from "../pages/Admin/AdminLogin";
+import ForgetPassword from "../pages/ForgetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
 import { getUserID } from "../utils/account";
 import { userStore } from "../utils/store";
-import AdminLogin from "../pages/Admin/AdminLogin";
+import ResetPassword from "../pages/ResetPassword";
 
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
@@ -66,6 +68,8 @@ const Layout = () => {
             />
             <Route path={constants.LOGIN_URL} element={<Login />} />
             <Route path={constants.REGISTER_URL} element={<Register />} />
+            <Route path={constants.FORGET_PASSWORD_URL} element={<ForgetPassword />} />
+            <Route path={constants.RESET_PASSWORD_URL} element={<ResetPassword />} />
             <Route path={constants.ADMIN_LOGIN_URL} element={<AdminLogin />} />
             <Route path="*" element={<NoMatch />} />
           </Routes>
