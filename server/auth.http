@@ -3,7 +3,7 @@ POST http://localhost:3001/auth/register
 Content-Type: application/json
 
 {
-    "email": "test@gmail.com",
+    "email": "testuser@gmail.com",
     "password": "password",
     "name": "test",
     "role": "user",
@@ -18,9 +18,9 @@ POST http://localhost:3001/auth/register-superuser
 Content-Type: application/json
 
 {
-    "email": "test@gmail.com",
+    "email": "testsuperuser@gmail.com",
     "password": "password",
-    "name": "therapist",
+    "name": "testsuperuser",
     "role": "therapist",
     "purpose": ["treatment", "education"],
     "organisation": "SIT"
@@ -31,9 +31,9 @@ POST http://localhost:3001/auth/register-admin
 Content-Type: application/json
 
 {
-    "email": "admin3@gmail.com",
+    "email": "testadmin@gmail.com",
     "password": "password",
-    "name": "admin3"
+    "name": "testadmin"
 }
 
 ### Login

@@ -1,0 +1,98 @@
+POST
+
+// admin
+{
+    "name": "admin",
+    "email": "admin@gmail.com",
+    "password": "hashedPassword",
+    "role": "admin"
+}
+
+// superusers
+{
+    "name": "superuser",
+    "email": "superuser@gmail.com",
+    "password": "hashedPassword",
+    "role": "therapist",
+    "purpose": [
+        "treatment",
+         "education"
+    ],
+    "organisation": "SIT"
+}
+
+// users
+{
+    "name": "user",
+    "email": "user@gmail.com",
+    "password": "hashedPassword",
+    "role": "user",
+    "dob": 1998-12-31T16:00:00.000+00:00,
+    "gender": "male",
+    "issue" : [
+        "Stuttering", 
+        "Voice Disorder", 
+        "Stroke Recovery"
+    ],
+    "therapist": "therapist@gmail.com"
+}
+
+// scenarios
+{
+    "category": "Food",
+    "scenario": "Fast Food",
+    "scenarioIndex": 0,
+    "videoName": "Fast Food 1",
+    "videoId": "kJQP7kiw5Fk",
+    "dateAdded": 2022-12-31T16:00:00.000+00:00,
+}
+
+// tasks
+{
+    "therapist": "therapist@gmail.com",
+    "patient": "patient@gmail.com",
+    "dateAssigned": 2022-12-31T16:00:00.000+00:00,
+    "category": "Food",
+    "scenario": "Fast Food",
+    "patientStutter": 5,
+    "patientFluency": 6,
+    "patientRemark": "Feels like I'm getting better. Still struggling at part 2.",
+    "therapistSutter": 5,
+    "therapistFluency": 6,
+    "therapistRemark": "Good job! Perhaps you can try fidgeting less.",
+    "recordingId": [
+        "id1",
+        "id2",
+        "id3",
+        "id4",
+        "id5"
+    ],
+    "status": "Completed"
+}
+
+// tasks
+{
+    "therapist": "therapist@gmail.com",
+    "patient": "patient@gmail.com",
+    "dateAssigned": 2022-12-31T16:00:00.000+00:00,
+    "category": "Food",
+    "scenario": "Fast Food",
+    "patientGrade": [
+        {"video": 0, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 1, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 2, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 999, "stutter": 5, "fluency": 5, "remark": "remark"}
+    ],
+    "therapistGrade": [
+        {"video": 0, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 1, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 2, "stutter": 5, "fluency": 5, "remark": "remark"},
+        {"video": 999, "stutter": 5, "fluency": 5, "remark": "remark"}
+    ],
+    "recordingId": [
+        "id1",
+        "id2",
+        "id3"
+    ],
+    "status": "Completed"
+}
