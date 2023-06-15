@@ -41,8 +41,8 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-    "email": "zemuskoh99@gmail.com",
-    "password": "password1"
+    "email": "testsuperuser@gmail.com",
+    "password": "password"
 }
 
 ### Forgot Password
@@ -63,8 +63,6 @@ Content-Type: application/json
     "newPassword": "password0"
 }
 
-### Get Therapists
-GET http://localhost:3001/auth/therapists
 
 
 ### Get Role

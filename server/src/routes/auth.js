@@ -13,31 +13,47 @@ const router = express.Router();
 
 // Register new user
 router.post("/register", async (req, res) => {
-    const { name, email, password, dob, gender, issue, therapist } = req.body;
+    const {
+        name,
+        email,
+        password,
+        dob,
+        gender,
+        issue,
+        therapistName,
+        therapistEmail,
+    } = req.body;
 
-    // Checking if user exists
-    if (await userExists(email)) {
-        return res.status(409).json({ message: "User already exists!" });
+    try {
+        // Checking if user exists
+        if (await userExists(email)) {
+            return res.status(409).json({ message: "User already exists!" });
+        }
+
+        // Hashing password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create new user
+        const newUser = new UserModel({
+            name: name,
+            email: email,
+            password: hashedPassword,
+            role: "user",
+            dob: dob,
+            gender: gender,
+            issue: issue,
+            therapistName: therapistName,
+            therapistEmail: therapistEmail,
+        });
+
+        await newUser.save();
+
+        return res
+            .status(201)
+            .json({ message: "User registered successfully!" });
+    } catch (err) {
+        return res.status(500).json({ error: "Internal Server Error" });
     }
-
-    // Hashing password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
-    const newUser = new UserModel({
-        name: name,
-        email: email,
-        password: hashedPassword,
-        role: "user",
-        dob: dob,
-        gender: gender,
-        issue: issue,
-        therapist: therapist,
-    });
-
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully!" });
 });
 
 // Register new therapist/educator
@@ -63,7 +79,7 @@ router.post("/register-superuser", async (req, res) => {
     });
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully!" });
+    return res.status(201).json({ message: "User registered successfully!" });
 });
 
 router.post("/register-admin", async (req, res) => {
@@ -87,7 +103,7 @@ router.post("/register-admin", async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: "Admin registered successfully!" });
+    return res.status(201).json({ message: "Admin registered successfully!" });
 });
 
 // Login
@@ -134,7 +150,7 @@ router.post("/login", async (req, res) => {
         process.env.JWT_SECRET
     );
 
-    res.status(200).json({ token: token, userID: id });
+    return res.status(200).json({ token: token, userID: id });
 });
 
 // Forgot password
@@ -221,21 +237,12 @@ router.post("/reset-password", async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        res.status(200).json({ message: "Password successfully resetted" });
+        return res
+            .status(200)
+            .json({ message: "Password successfully resetted" });
     } catch (err) {
-        res.status(401).json({ error: "Invalid or expired token" });
+        return res.status(401).json({ error: "Invalid or expired token" });
     }
-});
-
-// Get therapists
-router.get("/therapists", async (req, res) => {
-    const therapists = await SuperuserModel.find({ role: "therapist" });
-    let therapistsNames = {};
-
-    therapists.forEach((therapist) => {
-        therapistsNames[therapist.email] = therapist.name;
-    });
-    res.status(200).json({ "therapists": therapistsNames });
 });
 
 // Get User's Role
@@ -256,7 +263,7 @@ router.get("/role/:token", async (req, res) => {
 
         return res.status(201).json({ "role:": user.role });
     } catch (err) {
-        res.status(401).json({ error: "Invalid token" });
+        return res.status(401).json({ error: "Invalid token" });
     }
 });
 
