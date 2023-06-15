@@ -178,12 +178,12 @@ router.post("/forgot-password", async (req, res) => {
 
 // Reset Password
 router.post("/reset-password", async (req, res) => {
-    const { token, newPassword } = req.body;
+    const { token, password, newPassword } = req.body;
 
     try {
         // Verify JWT token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);        
-        
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
         // Hashing password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         let user;
@@ -194,17 +194,25 @@ router.post("/reset-password", async (req, res) => {
             const superuserFound = await SuperuserModel.findOne({
                 email: email,
             });
-            const adminFound = await AdminModel.findOne({email: email});
+            const adminFound = await AdminModel.findOne({ email: email });
             user = userFound || superuserFound || adminFound;
         } else {
             // user is logged in
             const { id, role } = decodedToken;
+            let isPasswordValid;
             if (role == "user") {
                 user = await UserModel.findOne({ _id: id });
+                ({ isPasswordValid } = await verifyAccount(user, password));
             } else if (role == "therapist" || role == "educator") {
                 user = await SuperuserModel.findOne({ _id: id });
+                ({ isPasswordValid } = await verifyAccount(user, password));
             } else if (role == "admin") {
                 user = await AdminModel.findOne({ _id: id });
+                ({ isPasswordValid } = await verifyAccount(user, password));
+            }
+
+            if (!isPasswordValid) {
+                return res.status(401).json({ error: "Unauthorised" });
             }
         }
 

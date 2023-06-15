@@ -17,10 +17,13 @@ router.get("/profile/:token", async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
 
-        const userFound = await UserModel.findOne({ _id: id });
-        const superuserFound = await SuperuserModel.findOne({
-            _id: id,
-        });
+        const userFound = await UserModel.findOne({ _id: id }, { password: 0 });
+        const superuserFound = await SuperuserModel.findOne(
+            {
+                _id: id,
+            },
+            { password: 0 }
+        );
 
         const user = userFound || superuserFound;
         return res.status(200).json(user);
