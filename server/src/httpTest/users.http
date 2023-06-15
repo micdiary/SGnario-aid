@@ -31,4 +31,9 @@ Content-Type: application/json
 }
 
 ### Get patient
+POST http://localhost:3001/users/patients
+Content-Type: application/json
 
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY4NDYzOTZ9.9qhxilZ6Z0K6X7UM9xL455Pdg0uoedmsEcjNDQx9yag"
+}

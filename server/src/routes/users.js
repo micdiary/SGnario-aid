@@ -134,22 +134,31 @@ router.post("/therapists", async (req, res) => {
     }
 });
 
-// Get all patients
-router.post("/patient", async (req, res) => {
+// Get all patients by therapist
+router.post("/patients", async (req, res) => {
     const { token } = req.body;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        const { role } = decodedToken;
+        const { id, role } = decodedToken;
 
-        if (role !== "therapist" || role !== "educator") {
+        // Validate authorisation
+        if (role !== "therapist" && role !== "educator") {
             return res.status(401).json({ "error": "Unauthorised" });
         }
 
-        const therapists = await SuperuserModel.find(
-            { role: "therapist" },
+        // Get therapist email
+        const therapist = await SuperuserModel.findOne(
+            { _id: id },
+            { email: 1 }
+        );
+        const { email } = therapist;
+
+        const users = await UserModel.find(
+            { therapist: email },
             { password: 0 }
         );
-        res.status(200).json({ therapists });
+
+        res.status(200).json({ users });
     } catch (err) {
         console.log(err);
     }
