@@ -1,0 +1,13 @@
+
+POST http://localhost:3001/tasks/assign
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY4MjY2MDV9.UI7NQEsEFlp5bWQqHgVeNq8QCnqbMYKtc9TKyNllMTo",
+    "fields": {
+        "email": "testuser@gmail.com",
+        "scenarioId": "One to One",
+        "dateAssigned": "01-01-1999"
+    }
+
+}

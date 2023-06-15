@@ -7,6 +7,7 @@ dotenv.config();
 import { authRouter } from "./routes/auth.js";
 import { recordRouter } from "./routes/records.js";
 import { userRouter } from "./routes/users.js";
+import { taskRouter } from "./routes/tasks.js";
 
 const PORT = 3001;
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use("/auth", authRouter);
 app.use("/records", recordRouter);
 app.use("/users", userRouter);
+app.use("/tasks", taskRouter);
 
 mongoose.connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@sgnario-aid.4zibt9s.mongodb.net/sgnario-aid?retryWrites=true&w=majority`,

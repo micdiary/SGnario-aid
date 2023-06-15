@@ -102,6 +102,59 @@ router.post("/add-api-key", async (req, res) => {
     }
 });
 
+// Get therapists
+router.get("/therapists", async (req, res) => {
+    const therapists = await SuperuserModel.find({ role: "therapist" });
+    let therapistsNames = {};
+
+    therapists.forEach((therapist) => {
+        therapistsNames[therapist.email] = therapist.name;
+    });
+    res.status(200).json({ "therapists": therapistsNames });
+});
+
+// Get all therapists
+router.post("/therapists", async (req, res) => {
+    const { token } = req.body;
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { role } = decodedToken;
+
+        if (role !== "admin") {
+            return res.status(401).json({ "error": "Unauthorised" });
+        }
+
+        const therapists = await SuperuserModel.find(
+            { role: "therapist" },
+            { password: 0 }
+        );
+        res.status(200).json({ therapists });
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+// Get all patients
+router.post("/patient", async (req, res) => {
+    const { token } = req.body;
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { role } = decodedToken;
+
+        if (role !== "therapist" || role !== "educator") {
+            return res.status(401).json({ "error": "Unauthorised" });
+        }
+
+        const therapists = await SuperuserModel.find(
+            { role: "therapist" },
+            { password: 0 }
+        );
+        res.status(200).json({ therapists });
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 router.post("/test", async (req, res) => {
     const test = encrypt("xd", process.env.ENCRYPTION_KEY);
     console.log(decrypt(test, process.env.ENCRYPTION_KEY));

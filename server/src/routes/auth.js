@@ -13,7 +13,16 @@ const router = express.Router();
 
 // Register new user
 router.post("/register", async (req, res) => {
-    const { name, email, password, dob, gender, issue, therapist } = req.body;
+    const {
+        name,
+        email,
+        password,
+        dob,
+        gender,
+        issue,
+        therapistName,
+        therapistEmail,
+    } = req.body;
 
     // Checking if user exists
     if (await userExists(email)) {
@@ -32,7 +41,8 @@ router.post("/register", async (req, res) => {
         dob: dob,
         gender: gender,
         issue: issue,
-        therapist: therapist,
+        therapistName: therapistName,
+        therapistEmail: therapistEmail,
     });
 
     await newUser.save();
@@ -225,17 +235,6 @@ router.post("/reset-password", async (req, res) => {
     } catch (err) {
         res.status(401).json({ error: "Invalid or expired token" });
     }
-});
-
-// Get therapists
-router.get("/therapists", async (req, res) => {
-    const therapists = await SuperuserModel.find({ role: "therapist" });
-    let therapistsNames = {};
-
-    therapists.forEach((therapist) => {
-        therapistsNames[therapist.email] = therapist.name;
-    });
-    res.status(200).json({ "therapists": therapistsNames });
 });
 
 // Get User's Role

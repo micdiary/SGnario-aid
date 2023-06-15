@@ -19,4 +19,16 @@ Content-Type: application/json
         "apiKey": "test"
 }
 
+### Get therapist names and email
+GET http://localhost:3001/users/therapists
+
+### Get all therapists
+POST http://localhost:3001/users/therapists
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjYwYWMwMjhkMTAzNTA3MTIzZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjgyNzg0NH0.L1T2vpBRGP38e_3PHa6x6pH9_-d75Gi5aeU9C6j2VWI"
+}
+
+### Get patient
 
