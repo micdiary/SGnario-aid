@@ -41,8 +41,8 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-    "email": "admin2@gmail.com",
-    "password": "password"
+    "email": "zemuskoh99@gmail.com",
+    "password": "password1"
 }
 
 ### Forgot Password
@@ -58,8 +58,9 @@ POST http://localhost:3001/auth/reset-password
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg2Mzg2NTgzfQ.pyeGpAzpcc4YDXhR6cfnQC066d0bGla_Ilw3Ry_jrww",
-    "newPassword": "password1"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg2ODIyNzkzfQ.vG3IM3rdqbIetHAMuvKz_8qzuYIyjMJjalrblOLvPZs",
+    "password": "password1",
+    "newPassword": "password0"
 }
 
 ### Get Therapists
