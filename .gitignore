@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/server/package.json
+/server/package-lock.json
+/client/package.json
+/client/package-lock.json
