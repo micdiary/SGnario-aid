@@ -29,6 +29,7 @@ router.get("/profile/:token", async (req, res) => {
         return res.status(200).json(user);
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -66,7 +67,7 @@ router.post("/edit-profile", async (req, res) => {
         }
 
         if (!updatedUser) {
-            res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found" });
         }
 
         res.status(200).json({
@@ -75,9 +76,11 @@ router.post("/edit-profile", async (req, res) => {
         });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
+// Set API key
 router.post("/add-api-key", async (req, res) => {
     const { token, apiKey } = req.body;
     try {
@@ -99,18 +102,24 @@ router.post("/add-api-key", async (req, res) => {
         }
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
 // Get therapists
 router.get("/therapists", async (req, res) => {
-    const therapists = await SuperuserModel.find({ role: "therapist" });
-    let therapistsNames = {};
+    try {
+        const therapists = await SuperuserModel.find({ role: "therapist" });
+        let therapistsNames = {};
 
-    therapists.forEach((therapist) => {
-        therapistsNames[therapist.email] = therapist.name;
-    });
-    res.status(200).json({ "therapists": therapistsNames });
+        therapists.forEach((therapist) => {
+            therapistsNames[therapist.email] = therapist.name;
+        });
+        return res.status(200).json({ "therapists": therapistsNames });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // Get all therapists
@@ -120,17 +129,20 @@ router.post("/therapists", async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { role } = decodedToken;
 
+        // Validate authorisation
         if (role !== "admin") {
             return res.status(401).json({ "error": "Unauthorised" });
         }
 
+        // Find all therapists
         const therapists = await SuperuserModel.find(
             { role: "therapist" },
             { password: 0 }
         );
-        res.status(200).json({ therapists });
+        return res.status(200).json({ therapists });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -153,14 +165,16 @@ router.post("/patients", async (req, res) => {
         );
         const { email } = therapist;
 
+        // Find users with matching therapist
         const users = await UserModel.find(
             { therapist: email },
             { password: 0 }
         );
 
-        res.status(200).json({ users });
+        return res.status(200).json({ users });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 

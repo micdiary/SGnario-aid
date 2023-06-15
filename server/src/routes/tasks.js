@@ -37,6 +37,7 @@ router.post("/assign", async (req, res) => {
             .json({ "message": "Task assigned succesfully!" });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
