@@ -31,7 +31,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
                 // Create a file metadata object
                 const fileMetadata = {
                     name: fileData.originalname,
-                    parents: ["1s_cWpmb0--1JndRK6Q6bwrsYym5s9-L0"],
+                    parents: ["1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB"],
                 };
 
 
@@ -80,6 +80,45 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     } catch (error) {
         console.error("Error handling file upload:", error);
         res.status(500).json({ message: "Failed to upload file" });
+    }
+});
+
+router.post("/createFolder", async (req, res) => {
+    try {
+        const { folderName, folderId } = req.body;
+
+        // Authenticate with the Google Drive API using credentials from the credentials.json file
+        const auth = new google.auth.GoogleAuth({
+            keyFile: "./src/routes/credentials.json",
+            scopes: ["https://www.googleapis.com/auth/drive.file"],
+        });
+
+        const client = await auth.getClient();
+        const drive = google.drive({ version: "v3", auth: client });
+
+        // Create a folder metadata object
+        const folderMetadata = {
+            name: folderName,
+            mimeType: "application/vnd.google-apps.folder",
+            parents: [folderId],
+        };
+
+        // Create the folder
+        const folderResponse = await drive.files.create({
+            requestBody: folderMetadata,
+        });
+
+        console.log("Folder created successfully:", folderResponse.data);
+
+        const newFolderId = folderResponse.data.id;
+
+        res.status(200).json({
+            message: "Folder created successfully",
+            folderId: newFolderId,
+        });
+    } catch (error) {
+        console.error("Error creating folder:", error);
+        res.status(500).json({ message: "Failed to create folder" });
     }
 });
 

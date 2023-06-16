@@ -18,6 +18,7 @@ const Home = () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
+      formData.append("folderId", "1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB");
       console.log(formData);
       console.log(selectedFile);
       console.log(formData.get("file"));
@@ -26,6 +27,7 @@ const Home = () => {
         body: formData,
       })
         .then((response) => {
+            console.log("File id is: " + response.id);
           if (response.ok) {
             console.log('File uploaded successfully');
           } else {
@@ -39,6 +41,31 @@ const Home = () => {
       console.error('No file selected');
     }
   };
+
+    const handleFolderCreation = () => {
+      const folderName = document.getElementById("folderName").value;
+      const folderId = "1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB";
+      console.log(folderName);
+      if (folderName !== "") {
+        fetch("http://localhost:3001/upload/createFolder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ folderName, folderId}),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Folder created successfully");
+            } else {
+              console.error("Failed to create folder");
+            }
+          })
+          .catch((error) => {
+            console.error("Error creating folder:", folderName);
+          });
+      } else {
+        console.error("No folder name entered");
+      }
+    };
 
   return (
     <div>
@@ -60,6 +87,9 @@ const Home = () => {
       <div>
         <input type="file" onChange={handleFileChange} />
         <button onClick={handleUpload}>Upload</button>
+        <br></br>
+        <input type="text" id="folderName"/>
+        <button onClick={handleFolderCreation}>Create Folder</button>
       </div>
     </div>
   );
