@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Table, Tag } from "antd";
 import {
   SUBMITTED_TAG,
@@ -7,10 +6,8 @@ import {
   NOT_SUBMITTED_TAG,
   UNGRADED_TAG,
 } from "../../constants";
-import Evaluation from "./Evaluation";
 
 const Dashboard = ({ setView, setEvaluationID }) => {
-  let navigate = useNavigate();
 
   const columns = [
     {

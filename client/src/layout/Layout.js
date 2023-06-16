@@ -37,7 +37,9 @@ const Layout = () => {
 
   return (
     <BrowserRouter>
-      <AntLayout>
+      <AntLayout
+        style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
         <AntHeader className="header">
           <Header />
         </AntHeader>

@@ -29,7 +29,6 @@ const Login = () => {
         updateUserID(res.userID);
 
         getUserType(res.userID).then((res) => {
-          console.log(res)
           if (res.role !== undefined) {
             setUserType(res.role);
             updateUserType(res.role);
