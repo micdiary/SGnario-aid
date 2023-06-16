@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import { authRouter } from "./routes/auth.js";
-import { recordRouter } from "./routes/records.js";
+import { scenariosRouter } from "./routes/scenarios.js";
 import { userRouter } from "./routes/users.js";
 import { uploadRouter } from "./routes/upload.js";
 
@@ -17,7 +17,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // Routes
 app.use("/auth", authRouter);
-app.use("/records", recordRouter);
+app.use("/scenarios", scenariosRouter);
 app.use("/users", userRouter);
 
 app.use("/upload", uploadRouter);

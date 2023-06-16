@@ -10,6 +10,7 @@ export const REGISTER_URL = "/register";
 export const FORGET_PASSWORD_URL = "/forget-password";
 export const RESET_PASSWORD_URL = "/reset-password";
 export const SCENARIOS_URL = "/scenarios";
+export const SCENARIOS_FORM = "/scenarios-form";
 
 export const ADMIN_URL = "/admin";
 
@@ -27,6 +28,10 @@ export const PROFILE_API = `${URL}/users/profile`;
 export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
 export const THERAPISTS_PROFILE_API = `${URL}/users/therapists`;
 export const ADD_API_KEY_API = `${URL}/users/add-api-key`;
+
+export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
+export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
+
 
 export const SUBMITTED_TAG = "Submitted";
 export const NOT_SUBMITTED_TAG = "Not Submitted";

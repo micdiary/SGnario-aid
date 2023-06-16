@@ -16,6 +16,9 @@ import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";
 import Records from "../pages/RecordsList";
 import Admin from "../pages/Admin/Admin";
+import Scenarios from "../pages/Scenarios";
+import ScenarioForm from "../pages/ScenarioForm";
+
 import ForgetPassword from "../pages/ForgetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -52,7 +55,8 @@ const Layout = () => {
         >
           <Routes>
             <Route exact path={constants.HOME_URL} element={<Home />} />
-            <Route path={constants.SCENARIOS_URL} element={<Records />} />
+            <Route path={constants.SCENARIOS_URL} element={<Scenarios />} />
+            <Route path={constants.SCENARIOS_FORM} element={<ScenarioForm />} />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
             <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
             <Route path={constants.CONTACT_URL} element={<Contact />} />

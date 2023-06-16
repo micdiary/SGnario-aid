@@ -43,6 +43,10 @@ const Header = () => {
       key: "scenarios",
     },
     {
+      label: <a href={constants.SCENARIOS_FORM}>Scenarios Form</a>,
+      key: "scenario-form",
+    },
+    {
       label: <a href={constants.ABOUT_US_URL}>About Us</a>,
       key: "about-us",
     },
