@@ -140,3 +140,9 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+.selected {
+
+  background-color: blue;
+  color: white;
+}
