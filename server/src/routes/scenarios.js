@@ -5,75 +5,113 @@ import { ScenariosModel } from "../models/Scenarios.js";
 dotenv.config();
 const router = express.Router();
 
-// Retrieve all records
+// Retrieve all records with filtering, sorting, pagination, and search
 router.get("/all", async (req, res) => {
   try {
-    const { page, search, sort, order } = req.query;
-    const perPage = 6; // Number of records per page
+    const { category, sortBy, sortOrder, page, limit, search } = req.query;
 
-    let query = ScenariosModel.find();
-
-    // Apply search query if provided
-    if (search) {
-      query = query.find({
-        videoName: { $regex: new RegExp(search, "i") },
-      });
+    // Build the filter object
+    const filter = {};
+    if (category) {
+      filter.category = category;
     }
 
-    // Apply sorting
-    if (sort) {
-      query = query.sort({ [sort]: order === "desc" ? -1 : 1 });
+    // Build the sort object
+    const sort = {};
+    if (sortBy) {
+      sort[sortBy] = sortOrder === "desc" ? -1 : 1;
     }
 
-    // Apply pagination
-    if (page) {
-      const pageNumber = parseInt(page);
-      const skip = (pageNumber - 1) * perPage;
-      const totalScenarios = await ScenariosModel.countDocuments(query);
-      const totalPages = Math.ceil(totalScenarios / perPage);
-      query = query.skip(skip).limit(perPage);
+    // Calculate skip and limit for pagination
+    const skip = (page - 1) * limit;
+    const total = await ScenariosModel.countDocuments(filter);
 
-      const scenarios = await query.exec();
+    // Perform the search
+    const searchRegex = new RegExp(search, "i");
 
-      return res.json({
-        data: {
-          scenarios,
-          totalPages,
-        },
-      });
-    }
+    // Query the database with filtering, sorting, pagination, and search
+    const scenarios = await ScenariosModel.find({
+      ...filter,
+      $or: [
+        { scenario: searchRegex },
+        { videoName: searchRegex },
+        { category: searchRegex },
+      ],
+    })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
 
-    const scenarios = await query.exec();
     res.json({
-      data: scenarios,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      scenarios,
     });
   } catch (error) {
-    console.error("Error retrieving scenarios", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Failed to retrieve scenarios" });
   }
 });
 
-// POST route to create a new scenario
+router.get("/:id", async (req, res) => {
+  try {
+    const scenario = await ScenariosModel.findById(req.params.id);
+    if (scenario) {
+      res.json(scenario);
+    } else {
+      res.status(404).json({ error: "Scenario not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve scenario" });
+  }
+});
+
 router.post("/create-scenario", async (req, res) => {
   try {
-    const { category, scenario, videoId, videoName, dateAdded } = req.body;
+    const newScenario = req.body;
 
-    // Create a new instance of the ScenariosModel
-    const newScenario = new ScenariosModel({
-      category,
-      scenario,
-      videoId,
-      videoName,
-      dateAdded,
-    });
+    // Check if videoId already exists
+    const existingScenario = await ScenariosModel.findOne({ videoId: newScenario.videoId });
+    if (existingScenario) {
+      return res.status(400).json({ error: "Duplicate video ID" });
+    }
 
-    // Save the new scenario to the database
-    await newScenario.save();
-
-    res.status(201).json({ success: true, scenario: newScenario });
+    const createdScenario = await ScenariosModel.create(newScenario);
+    res.status(201).json(createdScenario);
   } catch (error) {
-    console.error("Error creating scenario", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Failed to create scenario" });
+  }
+});
+
+
+router.put("/:id", async (req, res) => {
+  try {
+    const updatedScenario = req.body;
+    const scenario = await ScenariosModel.findByIdAndUpdate(
+      req.params.id,
+      updatedScenario,
+      { new: true }
+    );
+    if (scenario) {
+      res.json(scenario);
+    } else {
+      res.status(404).json({ error: "Scenario not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update scenario" });
+  }
+});
+
+router.delete("/scenarios/:id", async (req, res) => {
+  try {
+    const scenario = await ScenariosModel.findByIdAndRemove(req.params.id);
+    if (scenario) {
+      res.json({ message: "Scenario deleted" });
+    } else {
+      res.status(404).json({ error: "Scenario not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete scenario" });
   }
 });
 

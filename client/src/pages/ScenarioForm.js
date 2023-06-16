@@ -1,133 +1,141 @@
-import React from "react";
-import { Form, Input, Button, Select } from "antd";
-import { Formik, Field } from "formik";
-import * as Yup from "yup";
-import { createScenario } from "../api/scenarios";
+import React, { useState } from 'react';
+import { Form, Input, Button, message, Select } from 'antd';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { createScenario, checkDuplicateVideoId } from '../api/scenarios';
 
 const { Option } = Select;
 
-const validationSchema = Yup.object().shape({
-  category: Yup.string().required("Category is required"),
-  scenario: Yup.string().required("Scenario is required"),
-  videoId: Yup.string().required("Video ID is required"),
-  videoName: Yup.string().required("Video Name is required"),
-});
-
-const initialValues = {
-  category: "",
-  scenario: "",
-  videoId: "",
-  videoName: "",
-};
-
-const categories = ["Category 1", "Category 2", "Category 3"];
-const scenarios = ["Scenario 1", "Scenario 2", "Scenario 3"];
-
 const ScenarioForm = () => {
-  const handleSubmit = async (values) => {
-    try {
-      const currentDate = new Date();
+    const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
 
-      const data = {
-        ...values,
-        dateAdded: currentDate,
-      };
+  const validationSchema = Yup.object().shape({
+    category: Yup.string().required('Category is required'),
+    scenario: Yup.string().required('Scenario is required'),
+    videoId: Yup.string().required('Video ID is required'),
+    videoName: Yup.string().required('Video Name is required'),
+  });
 
-      const response = await createScenario(data);
+  const formik = useFormik({
+    initialValues: {
+      category: '',
+      scenario: '',
+      videoId: '',
+      videoName: '',
+    },
+    validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        setIsCheckingDuplicate(true);
+        const isDuplicate = await checkDuplicateVideoId(values.videoId);
+        setIsCheckingDuplicate(false);
 
-      if (response.ok) {
-        // Handle success
-        console.log("Scenario created successfully");
-      } else {
-        // Handle error
-        console.error("Failed to create scenario");
+        if (isDuplicate) {
+          formik.setFieldError('videoId', 'Duplicate video ID');
+          return;
+        }
+        // Add the dateAdded field with the current date (without the time component)
+        const dateAdded = new Date();
+        const scenarioData = {
+          ...values,
+          dateAdded,
+        };
+        // Send scenario data to the backend API
+        await createScenario(scenarioData);
+        message.success('Scenario created successfully');
+        resetForm();
+
+        // Display the success message for 2 seconds before redirecting
+        setTimeout(() => {
+          window.location.href = '/Scenarios'; // Replace '/scenario' with the actual URL of the scenario page
+        }, 2000);
+      } catch (error) {
+        console.error('Error creating scenario:', error);
+        message.error('Failed to create scenario');
       }
-    } catch (error) {
-      console.error("Error creating scenario", error);
-    }
+    },
+  });
+
+  const { values, touched, errors, handleChange, handleBlur, handleSubmit } = formik;
+
+  const handleCategoryChange = (value) => {
+    formik.setFieldValue('category', value);
   };
 
-  const handleChange = (field, value, formik) => {
-    formik.setFieldValue(field, value);
-    formik.setFieldTouched(field, true);
+  const handleScenarioChange = (value) => {
+    formik.setFieldValue('scenario', value);
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {(formik) => (
-        <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <Form.Item
-            label="Category"
-            name="category"
-            validateStatus={formik.touched.category && formik.errors.category ? "error" : ""}
-            help={formik.touched.category && formik.errors.category}
-          >
-            <Field
-              as={Select}
-              onChange={(value) => handleChange("category", value, formik)}
-            >
-              {categories.map((category) => (
-                <Option key={category} value={category}>
-                  {category}
-                </Option>
-              ))}
-            </Field>
-          </Form.Item>
+    <Form layout="vertical" onFinish={handleSubmit}>
+      <Form.Item
+        label="Category"
+        required
+        hasFeedback
+        validateStatus={touched.category && errors.category ? 'error' : touched.category && !values.category ? 'error' : ''}
+        help={touched.category && errors.category ? errors.category : touched.category && !values.category ? 'Category is required' : ''}
+      >
+        <Select
+          name="category"
+          value={values.category}
+          onChange={handleCategoryChange}
+          onBlur={handleBlur}
+          placeholder="Select category"
+          size="large" // Add size prop with value "large"
+        >
+          <Option value="category1">Category 1</Option>
+          <Option value="category2">Category 2</Option>
+          <Option value="category3">Category 3</Option>
+        </Select>
+      </Form.Item>
 
-          <Form.Item
-            label="Scenario"
-            name="scenario"
-            validateStatus={formik.touched.scenario && formik.errors.scenario ? "error" : ""}
-            help={formik.touched.scenario && formik.errors.scenario}
-          >
-            <Field
-              as={Select}
-              onChange={(value) => handleChange("scenario", value, formik)}
-            >
-              {scenarios.map((scenario) => (
-                <Option key={scenario} value={scenario}>
-                  {scenario}
-                </Option>
-              ))}
-            </Field>
-          </Form.Item>
+      <Form.Item
+        label="Scenario"
+        required
+        hasFeedback
+        validateStatus={touched.scenario && errors.scenario ? 'error' : touched.scenario && !values.scenario ? 'error' : ''}
+        help={touched.scenario && errors.scenario ? errors.scenario : touched.scenario && !values.scenario ? 'Scenario is required' : ''}
+      >
+        <Select
+          name="scenario"
+          value={values.scenario}
+          onChange={handleScenarioChange}
+          onBlur={handleBlur}
+          placeholder="Select scenario"
+          size="large" // Add size prop with value "large"
+        >
+          <Option value="scenario1">Scenario 1</Option>
+          <Option value="scenario2">Scenario 2</Option>
+          <Option value="scenario3">Scenario 3</Option>
+        </Select>
+      </Form.Item>
 
-          <Form.Item
-            label="Video ID"
-            name="videoId"
-            validateStatus={formik.touched.videoId && formik.errors.videoId ? "error" : ""}
-            help={formik.touched.videoId && formik.errors.videoId}
-          >
-            <Field
-              as={Input}
-              onChange={(e) => handleChange("videoId", e.target.value, formik)}
-            />
-          </Form.Item>
+      <Form.Item
+        label="Video ID"
+        required
+        hasFeedback
+        validateStatus={touched.videoId && errors.videoId ? 'error' : ''}
+        help={touched.videoId && errors.videoId}
+      >
+        <Input name="videoId" value={values.videoId} onChange={handleChange} onBlur={handleBlur} size="large" /> {/* Add size prop with value "large" */}
+      </Form.Item>
 
-          <Form.Item
-            label="Video Name"
-            name="videoName"
-            validateStatus={formik.touched.videoName && formik.errors.videoName ? "error" : ""}
-            help={formik.touched.videoName && formik.errors.videoName}
-          >
-            <Field
-              as={Input}
-              onChange={(e) => handleChange("videoName", e.target.value, formik)}
-            />
-          </Form.Item>
+      <Form.Item
+        label="Video Name"
+        required
+        hasFeedback
+        validateStatus={touched.videoName && errors.videoName ? 'error' : ''}
+        help={touched.videoName && errors.videoName}
+      >
+        <Input name="videoName" value={values.videoName} onChange={handleChange} onBlur={handleBlur} size="large" /> {/* Add size prop with value "large" */}
+      </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      )}
-    </Formik>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" size="large"> {/* Add size prop with value "large" */}
+          Create Scenario
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
