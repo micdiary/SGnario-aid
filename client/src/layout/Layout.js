@@ -14,7 +14,6 @@ import Account from "../pages/Account/Account";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NoMatch from "../pages/NoMatch";
-import Records from "../pages/RecordsList";
 import Admin from "../pages/Admin/Admin";
 import Scenarios from "../pages/Scenarios";
 import ScenarioForm from "../pages/ScenarioForm";
