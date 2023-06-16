@@ -31,8 +31,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
                 // Create a file metadata object
                 const fileMetadata = {
                     name: fileData.originalname,
-                    parents: ["1s_cWpmb0--1JndRK6Q6bwrsYym5s9-L0"], // Replace with your folder ID
+                    parents: ["1s_cWpmb0--1JndRK6Q6bwrsYym5s9-L0"],
                 };
+
 
                 // Create the media upload object
                 const media = {
@@ -44,6 +45,17 @@ router.post("/upload", upload.single("file"), async (req, res) => {
                 const response = await drive.files.create({
                     requestBody: fileMetadata,
                     media: media,
+                    fields: "kind, id, name, mimeType, webViewLink",
+                });
+
+                // Append permissions to make it readable by everyone and editable by uploader
+                await drive.permissions.create({
+                    fileId: response.data.id,
+                    requestBody: {
+                        role: "reader",
+                        type: "anyone",
+                    },
+                    supportsAllDrives: true,
                 });
 
                 console.log("File uploaded successfully:", response.data);
