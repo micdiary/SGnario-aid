@@ -27,12 +27,12 @@ export async function getUserType() {
 }
 
 export async function resetPassword(req) {
-  let { token, newPassword } = req;
+  let { token, password, newPassword } = req;
   if (token === undefined || token === null || token === "") {
     token = getToken();
   }
   return requestPost(RESET_PASSWORD_API, {
-    req: { token: token, newPassword },
+    req: { token: token, password, newPassword },
   });
 }
 

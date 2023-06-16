@@ -20,8 +20,8 @@ import { resetPassword } from "../../api/account";
 const { Title } = Typography;
 
 const Profile = () => {
-  const [form] = Form.useForm();
-  const [cardToSubmit, setCardToSubmit] = useState(0);
+  const [profileForm] = Form.useForm();
+  const [passwordForm] = Form.useForm();
   const [isProfileDisabled, setIsProfileDisabled] = useState(true);
   const [isPasswordDisabled, setIsPasswordDisabled] = useState(true);
   const [profile, setProfile] = useState({});
@@ -31,7 +31,7 @@ const Profile = () => {
     getProfile(token).then((res) => {
       setProfile(res);
     });
-    form.setFieldsValue({
+    profileForm.setFieldsValue({
       name: profile.name,
       email: profile.email,
       dob: dayjs(profile.dob),
@@ -57,16 +57,6 @@ const Profile = () => {
     {
       label: "Email",
       name: "email",
-      rules: [
-        {
-          type: "email",
-          message: "The input is not valid E-mail!",
-        },
-        {
-          required: true,
-          message: "Please input your email!",
-        },
-      ],
       input: <Input disabled />,
     },
     {
@@ -78,11 +68,7 @@ const Profile = () => {
           message: "Please input your date of birth!",
         },
       ],
-      input: (
-        <DatePicker
-          disabled={isProfileDisabled}
-        />
-      ),
+      input: <DatePicker disabled={isProfileDisabled} />,
     },
     {
       label: "Gender",
@@ -130,14 +116,25 @@ const Profile = () => {
 
   const passwordFormItem = [
     {
+      label: "Old Password",
+      name: "oldPassword",
+      rules: [
+        {
+          required: true,
+          message: "Please input your old password!",
+        },
+      ],
+      input: <Input.Password disabled={isPasswordDisabled} />,
+    },
+    {
       label: "New Password",
       name: "password",
-      // rules: [
-      //   {
-      //     required: true,
-      //     message: "Please input your new password!",
-      //   },
-      // ],
+      rules: [
+        {
+          required: true,
+          message: "Please input your old password!",
+        },
+      ],
       input: <Input.Password disabled={isPasswordDisabled} />,
     },
   ];
@@ -161,71 +158,101 @@ const Profile = () => {
 
   const generateProfileCard = () => {
     return (
-      <Card
-        extra={
-          <>
-            <Button
-              hidden={!isProfileDisabled}
-              onClick={() => {
-                setCardToSubmit(0);
-                setIsProfileDisabled(!isProfileDisabled);
-                setIsPasswordDisabled(true);
-              }}
-            >
-              Edit Profile
-            </Button>
-            <Button
-              hidden={isProfileDisabled}
-              onClick={() => {
-                setIsProfileDisabled(!isProfileDisabled);
-                form.submit();
-              }}
-            >
-              Save
-            </Button>
-          </>
-        }
-        style={{
-          width: 720,
+      <Form
+        form={profileForm}
+        labelCol={{
+          span: 6,
         }}
+        wrapperCol={{
+          span: 14,
+        }}
+        layout="horizontal"
+        style={{
+          textAlign: "left",
+        }}
+        onFinish={onProfileFinish}
+        scrollToFirstError
       >
-        {generateForm(profileFormItem)}
-      </Card>
+        <Card
+          extra={
+            <>
+              <Button
+                hidden={!isProfileDisabled}
+                onClick={() => {
+                  setIsProfileDisabled(!isProfileDisabled);
+                  setIsPasswordDisabled(true);
+                }}
+              >
+                Edit Profile
+              </Button>
+              <Button
+                hidden={isProfileDisabled}
+                onClick={() => {
+                  setIsProfileDisabled(!isProfileDisabled);
+                  profileForm.submit();
+                }}
+              >
+                Save
+              </Button>
+            </>
+          }
+          style={{
+            width: 720,
+          }}
+        >
+          {generateForm(profileFormItem)}
+        </Card>
+      </Form>
     );
   };
 
   const generatePasswordCard = () => {
     return (
-      <Card
-        extra={
-          <>
-            <Button
-              hidden={!isPasswordDisabled}
-              onClick={() => {
-                setCardToSubmit(1);
-                setIsPasswordDisabled(!isPasswordDisabled);
-                setIsProfileDisabled(true);
-              }}
-            >
-              Edit Password
-            </Button>
-            <Button
-              hidden={isPasswordDisabled}
-              onClick={() => {
-                setIsPasswordDisabled(!isPasswordDisabled);
-                form.submit();
-              }}
-            >
-              Save
-            </Button>
-          </>
-        }
-        style={{
-          width: 720,
+      <Form
+        form={passwordForm}
+        labelCol={{
+          span: 6,
         }}
+        wrapperCol={{
+          span: 14,
+        }}
+        layout="horizontal"
+        style={{
+          textAlign: "left",
+        }}
+        onFinish={onPasswordFinish}
+        scrollToFirstError
       >
-        {generateForm(passwordFormItem)}
-      </Card>
+        <Card
+          extra={
+            <>
+              <Button
+                hidden={!isPasswordDisabled}
+                onClick={() => {
+                  setIsPasswordDisabled(!isPasswordDisabled);
+                  setIsProfileDisabled(true);
+                }}
+              >
+                Edit Password
+              </Button>
+              <Button
+                hidden={isPasswordDisabled}
+                onClick={() => {
+                  setIsPasswordDisabled(!isPasswordDisabled);
+                  passwordForm.submit();
+                }}
+              >
+                Save
+              </Button>
+            </>
+          }
+          style={{
+            width: 720,
+          }}
+        >
+          {generateForm(passwordFormItem)}
+        </Card>
+      </Form>
     );
   };
 
@@ -244,8 +271,10 @@ const Profile = () => {
 
   const onPasswordFinish = (values) => {
     const req = {
+      password: values.oldPassword,
       newPassword: values.password,
     };
+    console.log(req)
     // Handle the form submission
     resetPassword(req).then((res) => {
       alert(res.message || res.error);
@@ -253,32 +282,16 @@ const Profile = () => {
   };
 
   return profile.name ? (
-    <Form
-      form={form}
-      labelCol={{
-        span: 6,
-      }}
-      wrapperCol={{
-        span: 14,
-      }}
-      layout="horizontal"
-      style={{
-        textAlign: "left",
-      }}
-      onFinish={cardToSubmit === 0 ? onProfileFinish : onPasswordFinish}
-      scrollToFirstError
-    >
-      <Row gutter={12}>
-        <Col span={12}>
-          <Title level={4}>Profile</Title>
-          {generateProfileCard()}
-        </Col>
-        <Col span={12}>
-          <Title level={4}>Password</Title>
-          {generatePasswordCard()}
-        </Col>
-      </Row>
-    </Form>
+    <Row gutter={12}>
+      <Col span={12}>
+        <Title level={4}>Profile</Title>
+        {generateProfileCard()}
+      </Col>
+      <Col span={12}>
+        <Title level={4}>Password</Title>
+        {generatePasswordCard()}
+      </Col>
+    </Row>
   ) : (
     <Loader />
   );
