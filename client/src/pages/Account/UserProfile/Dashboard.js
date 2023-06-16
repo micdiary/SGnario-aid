@@ -5,7 +5,7 @@ import {
   GRADED_TAG,
   NOT_SUBMITTED_TAG,
   UNGRADED_TAG,
-} from "../../constants";
+} from "../../../constants";
 
 const Dashboard = ({ setView, setEvaluationID }) => {
 

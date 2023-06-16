@@ -14,7 +14,6 @@ export const SCENARIOS_FORM = "/scenarios-form";
 
 export const ADMIN_URL = "/admin";
 
-
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
 export const GET_ALL_THERAPIST_API = `${URL}/auth/therapists`;
@@ -28,10 +27,12 @@ export const PROFILE_API = `${URL}/users/profile`;
 export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
 export const THERAPISTS_PROFILE_API = `${URL}/users/therapists`;
 export const ADD_API_KEY_API = `${URL}/users/add-api-key`;
+export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
 export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
 
+export const ASSIGN_TASK_API = `${URL}/tasks/assign`;
 
 export const SUBMITTED_TAG = "Submitted";
 export const NOT_SUBMITTED_TAG = "Not Submitted";

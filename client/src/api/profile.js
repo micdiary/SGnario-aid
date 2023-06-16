@@ -2,8 +2,9 @@ import { requestGet, requestPost } from "../utils/request";
 import { PROFILE_API, EDIT_PROFILE_API } from "../constants.js";
 import { getToken } from "../utils/account";
 
-export async function getProfile(req) {
-  return requestGet(`${PROFILE_API}/${req}`);
+export async function getProfile() {
+  const token = getToken();
+  return requestGet(`${PROFILE_API}/${token}`);
 }
 
 export async function editProfile(req) {

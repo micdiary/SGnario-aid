@@ -12,35 +12,29 @@ import {
   Col,
   Typography,
 } from "antd";
-import { editProfile, getProfile } from "../../api/profile";
-import { getToken } from "../../utils/account";
-import Loader from "../../components/Loader";
-import { resetPassword } from "../../api/account";
+import Loader from "../../../components/Loader";
+import { editProfile } from "../../../api/profile";
+import { resetPassword } from "../../../api/account";
 
+const { Option } = Select;
 const { Title } = Typography;
 
-const Profile = () => {
+const SuperUserProfile = ({ profile }) => {
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [isProfileDisabled, setIsProfileDisabled] = useState(true);
   const [isPasswordDisabled, setIsPasswordDisabled] = useState(true);
-  const [profile, setProfile] = useState({});
 
   useEffect(() => {
-    let token = getToken();
-    getProfile(token).then((res) => {
-      setProfile(res);
-    });
     profileForm.setFieldsValue({
       name: profile.name,
       email: profile.email,
-      dob: dayjs(profile.dob),
-      gender: profile.gender,
-      therapist: profile.therapist,
-      issue: profile.issue,
+      role: profile.role,
+      purpose: profile.purpose,
+      organisation: profile.organisation,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile.dob]);
+  }, [profile.name]);
 
   const profileFormItem = [
     {
@@ -60,105 +54,51 @@ const Profile = () => {
       input: <Input disabled />,
     },
     {
-      label: "Date Of Birth",
-      name: "dob",
+      label: "Role",
+      name: "role",
       rules: [
         {
           required: true,
-          message: "Please input your date of birth!",
-        },
-      ],
-      input: <DatePicker disabled={isProfileDisabled} />,
-    },
-    {
-      label: "Gender",
-      name: "gender",
-      rules: [
-        {
-          required: true,
-          message: "Please select your gender!",
+          message: "Please select a role!",
         },
       ],
       input: (
-        <Radio.Group disabled={isProfileDisabled}>
-          <Radio value="male">Male</Radio>
-          <Radio value="female">Female</Radio>
-        </Radio.Group>
+        <Select placeholder="Select a role" disabled={isProfileDisabled}>
+          <Option value="therapist">Therapist</Option>
+          <Option value="educator">Educator</Option>
+        </Select>
       ),
     },
     {
-      label: "Therapist",
-      name: "therapist",
-      input: <Select disabled />,
-    },
-    {
-      label: "Issue",
-      name: "issue",
+      label: "Purpose",
+      name: "purpose",
       rules: [
         {
           required: true,
-          message: "Please input your reason of use!",
+          message: "Please select a purpose!",
         },
       ],
       input: (
         <Select
-          mode="tags"
-          options={[
-            { value: "Stuttering", label: "Stuttering" },
-            { value: "Voice Disorder", label: "Voice Disorder" },
-            { value: "Stroke Recovery", label: "Stroke Recovery" },
-          ]}
+          placeholder="Select a purpose"
+          mode="multiple"
           disabled={isProfileDisabled}
-        />
+        >
+          <Option value="treatment">Treatment</Option>
+          <Option value="education">Education</Option>
+        </Select>
       ),
     },
-  ];
-
-  const passwordFormItem = [
     {
-      label: "Old Password",
-      name: "oldPassword",
+      label: "Organisation",
+      name: "organisation",
       rules: [
         {
           required: true,
-          message: "Please input your old password!",
+          message: "Please input your organisation!",
         },
       ],
-      input: <Input.Password disabled={isPasswordDisabled} />,
-    },
-    {
-      label: "New Password",
-      name: "password",
-      rules: [
-        {
-          required: true,
-          message: "Please input your new password!",
-        },
-      ],
-      input: <Input.Password disabled={isPasswordDisabled} />,
-    },
-    {
-      label: "Confirm Password",
-      name: "confirmPassword",
-      rules: [
-        {
-          required: true,
-          message: "Please input your new password!",
-        },
-        ({ getFieldValue }) => ({
-          validator(_, value) {
-            if (!value || getFieldValue("password") === value) {
-              return Promise.resolve();
-            }
-            return Promise.reject(
-              new Error("The new password that you entered do not match!")
-            );
-          },
-        }),
-      ],
-      dependencies: ["password"],
-      input: <Input.Password disabled={isPasswordDisabled} />,
-      hasFeedback: true,
+      input: <Input disabled={isProfileDisabled} />,
     },
   ];
 
@@ -230,6 +170,54 @@ const Profile = () => {
       </Form>
     );
   };
+
+  const passwordFormItem = [
+    {
+      label: "Old Password",
+      name: "oldPassword",
+      rules: [
+        {
+          required: true,
+          message: "Please input your old password!",
+        },
+      ],
+      input: <Input.Password disabled={isPasswordDisabled} />,
+    },
+    {
+      label: "New Password",
+      name: "password",
+      rules: [
+        {
+          required: true,
+          message: "Please input your new password!",
+        },
+      ],
+      input: <Input.Password disabled={isPasswordDisabled} />,
+    },
+    {
+      label: "Confirm Password",
+      name: "confirmPassword",
+      rules: [
+        {
+          required: true,
+          message: "Please input your new password!",
+        },
+        ({ getFieldValue }) => ({
+          validator(_, value) {
+            if (!value || getFieldValue("password") === value) {
+              return Promise.resolve();
+            }
+            return Promise.reject(
+              new Error("The new password that you entered do not match!")
+            );
+          },
+        }),
+      ],
+      dependencies: ["password"],
+      input: <Input.Password disabled={isPasswordDisabled} />,
+      hasFeedback: true,
+    },
+  ];
 
   const generatePasswordCard = () => {
     return (
@@ -322,4 +310,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default SuperUserProfile;

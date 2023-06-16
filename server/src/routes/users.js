@@ -12,7 +12,6 @@ const router = express.Router();
 // Get User Profile
 router.get("/profile/:token", async (req, res) => {
     const token = req.params.token;
-
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;

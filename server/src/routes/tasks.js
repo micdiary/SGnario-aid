@@ -12,7 +12,7 @@ const router = express.Router();
 // Create Task
 router.post("/assign", async (req, res) => {
     const { token, fields } = req.body;
-
+    console.log(fields)
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
@@ -28,7 +28,7 @@ router.post("/assign", async (req, res) => {
             therapist: therapist.email,
             patient: email,
             dateAssigned: dateAssigned,
-            scenarioId: scenarioId,
+            scenario: scenarioId,
         });
 
         await newTask.save();
