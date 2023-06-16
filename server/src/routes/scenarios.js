@@ -102,7 +102,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/scenarios/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const scenario = await ScenariosModel.findByIdAndRemove(req.params.id);
     if (scenario) {
