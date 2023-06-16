@@ -15,7 +15,10 @@ const Register = () => {
     getTherapists().then((res) => {
       let temp = [];
       for (const therapist in res.therapists) {
-        temp.push({ value: therapist, label: `${res.therapists[therapist]} (${therapist})` });
+        temp.push({
+          value: therapist,
+          label: `${res.therapists[therapist]} (${therapist})`,
+        });
       }
       setTherapists(temp);
     });
@@ -58,6 +61,29 @@ const Register = () => {
         },
       ],
       input: <Input.Password />,
+    },
+    {
+      label: "Confirm Password",
+      name: "confirmPassword",
+      rules: [
+        {
+          required: true,
+          message: "Please confirm your password!",
+        },
+        ({ getFieldValue }) => ({
+          validator(_, value) {
+            if (!value || getFieldValue("password") === value) {
+              return Promise.resolve();
+            }
+            return Promise.reject(
+              new Error("The two passwords that you entered do not match!")
+            );
+          },
+        }),
+      ],
+      input: <Input.Password />,
+      hasFeedback: true,
+      dependencies: ["password"],
     },
     {
       label: "Date Of Birth",
@@ -157,6 +183,8 @@ const Register = () => {
           rules={item.rules}
           key={index}
           valuePropName={item.valuePropName}
+          dependencies={item.dependencies}
+          hasFeedback={item.hasFeedback}
         >
           {item.input}
         </Form.Item>

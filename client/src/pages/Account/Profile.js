@@ -132,10 +132,33 @@ const Profile = () => {
       rules: [
         {
           required: true,
-          message: "Please input your old password!",
+          message: "Please input your new password!",
         },
       ],
       input: <Input.Password disabled={isPasswordDisabled} />,
+    },
+    {
+      label: "Confirm Password",
+      name: "confirmPassword",
+      rules: [
+        {
+          required: true,
+          message: "Please input your new password!",
+        },
+        ({ getFieldValue }) => ({
+          validator(_, value) {
+            if (!value || getFieldValue("password") === value) {
+              return Promise.resolve();
+            }
+            return Promise.reject(
+              new Error("The new password that you entered do not match!")
+            );
+          },
+        }),
+      ],
+      dependencies: ["password"],
+      input: <Input.Password disabled={isPasswordDisabled} />,
+      hasFeedback: true,
     },
   ];
 
@@ -149,6 +172,8 @@ const Profile = () => {
           key={index}
           valuePropName={item.valuePropName}
           initialValue={item.initialValue}
+          dependencies={item.dependencies}
+          hasFeedback={item.hasFeedback}
         >
           {item.input}
         </Form.Item>
@@ -274,7 +299,7 @@ const Profile = () => {
       password: values.oldPassword,
       newPassword: values.password,
     };
-    console.log(req)
+    console.log(req);
     // Handle the form submission
     resetPassword(req).then((res) => {
       alert(res.message || res.error);
