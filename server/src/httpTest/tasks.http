@@ -1,13 +1,22 @@
-
-POST http://localhost:3001/tasks/assign
+### Create tasks
+POST http://localhost:3001/tasks/create
 Content-Type: application/json
 
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY4MjY2MDV9.UI7NQEsEFlp5bWQqHgVeNq8QCnqbMYKtc9TKyNllMTo",
     "fields": {
-        "email": "testuser@gmail.com",
-        "scenarioId": "One to One",
+        "email": "zemuskoh9@gmail.com",
+        "scenario": "test3",
         "dateAssigned": "01-01-1999"
     }
 
 }
+
+### Get tasks by patient
+GET http://localhost:3001/tasks/user/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjRiYWMwMjhkMTAzNTA3MTIzOCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg2ODkxNjg5fQ.7RSLPxBfXPqzW5q2B8ze5EhDo9Q-LS_h_uAQ7CrP-xs
+
+
+### Get task by ID
+GET http://localhost:3001/tasks/648bec45235af5ddd984c900
+
+
