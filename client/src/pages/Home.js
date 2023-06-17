@@ -18,7 +18,7 @@ const Home = () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-      formData.append("folderId", "1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB");
+      formData.append("folderId", "1DFxwmy2wYp_HYMdgQO0EwtteWimvn8QZ");
       console.log(formData);
       console.log(selectedFile);
       console.log(formData.get("file"));
@@ -44,7 +44,7 @@ const Home = () => {
 
     const handleFolderCreation = () => {
       const folderName = document.getElementById("folderName").value;
-      const folderId = "1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB";
+      const folderId = "1DFxwmy2wYp_HYMdgQO0EwtteWimvn8QZ";
       console.log(folderName);
       if (folderName !== "") {
         fetch("http://localhost:3001/upload/createFolder", {

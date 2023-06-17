@@ -8,32 +8,41 @@ const router = express.Router();
 // Configure Multer to handle file uploads
 const upload = multer({ dest: "uploads/" });
 
+const getDrive = async () => {
+    const credentials = {
+        client_email: "Client Email Here",
+        private_key: "Private key here",
+    };
+    // Authenticate with the Google Drive API using credentials from the credentials.json file
+    const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ["https://www.googleapis.com/auth/drive.file"],
+    });
+
+    const client = await auth.getClient();
+    return google.drive({ version: "v3", auth: client });
+};
+
 // Route to handle file uploads
 router.post("/upload", upload.single("file"), async (req, res) => {
     try {
+        const { file, body: {folderId} } = req;
+
         // Check if a file was uploaded
-        if (!req.file) {
+        if (!file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
-        // Authenticate with the Google Drive API using credentials from the credentials.json file
-        const auth = new google.auth.GoogleAuth({
-            keyFile: "./src/routes/credentials.json",
-            scopes: ["https://www.googleapis.com/auth/drive.file"],
-        });
-
-        const client = await auth.getClient();
-        const drive = google.drive({ version: "v3", auth: client });
+        const drive = await getDrive();
 
         // Define the uploadToDrive function
-        const uploadToDrive = async (fileData) => {
+        const uploadToDrive = async (fileData, folderId) => {
             try {
                 // Create a file metadata object
                 const fileMetadata = {
                     name: fileData.originalname,
-                    parents: ["1KCgUjPwH1_HOfHUYVb9kiwJzW1rHVxfB"],
+                    parents: [folderId],
                 };
-
 
                 // Create the media upload object
                 const media = {
@@ -67,8 +76,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         };
 
         // Call the uploadToDrive function with the uploaded file
-        const file = req.file;
-        const uploadedFile = await uploadToDrive(file);
+        const uploadedFile = await uploadToDrive(file, folderId);
 
         // Delete the temporary file
         fs.unlinkSync(file.path);
@@ -87,14 +95,7 @@ router.post("/createFolder", async (req, res) => {
     try {
         const { folderName, folderId } = req.body;
 
-        // Authenticate with the Google Drive API using credentials from the credentials.json file
-        const auth = new google.auth.GoogleAuth({
-            keyFile: "./src/routes/credentials.json",
-            scopes: ["https://www.googleapis.com/auth/drive.file"],
-        });
-
-        const client = await auth.getClient();
-        const drive = google.drive({ version: "v3", auth: client });
+        const drive = await getDrive();
 
         // Create a folder metadata object
         const folderMetadata = {
