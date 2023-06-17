@@ -42,13 +42,26 @@ router.post("/create", async (req, res) => {
     }
 });
 
-// Get tasks by patient
-router.get("/user/:token", async (req, res) => {
+// Get tasks by patient with token
+router.get("/user/token/:token", async (req, res) => {
     const token = req.params.token;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
 
+        const { email } = await UserModel.findOne({ _id: id });
+        const tasks = await TaskModel.find({ patient: email });
+        res.status(200).json(tasks);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ "error": "Internal Server Error" });
+    }
+});
+
+// Get tasks by patient with ID
+router.get("/user/id/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
         const { email } = await UserModel.findOne({ _id: id });
         const tasks = await TaskModel.find({ patient: email });
         res.status(200).json(tasks);
@@ -70,50 +83,20 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/create-temp", async (req, res) => {
-    const { category, scenario, videoName, videoId, dateAdded } = req.body;
-    try {
-        const scenarios = await TempModel.find({ scenario: scenario });
-        const videoIds = await TempModel.find({ videoId: videoId });
+// // Get tasks by therapist with token
+// router.get("/superuser/:token", async (req, res) => {
+//     const token = req.params.token;
+//     try {
+//         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+//         const { id, role } = decodedToken;
 
-        if (scenarios.length !== 0) {
-            return res.status(404).json({ "error": "Duplicate scenario name" });
-        }
-
-        if (videoIds.length !== 0) {
-            return res.status(404).json({
-                "error": "Duplicate video ID",
-            });
-        }
-
-        const newScenario = new TempModel({
-            category: category,
-            scenario: scenario,
-            videoName: videoName,
-            videoId: videoId,
-            dateAdded: dateAdded,
-        });
-        newScenario.save();
-        return res.status(201).json({ "message": "Scenario created" });
-    } catch (err) {
-        console.log(err);
-    }
-});
-
-//
-
-router.get("/scenarios", async (req, res) => {
-    try {
-        const scenarios = await TempModel.find();
-
-        let scenarioDetails = {};
-        scenarios.forEach((scenario) => {
-            scenarioDetails[scenario.scenario] = scenario._id;
-        });
-        return res.status(200).json(scenarioDetails);
-    } catch (err) {
-        console.log(err);
-    }
-});
+//         const { email } = await SuperuserModel.findOne({ _id: id });
+//         const tasks = await TaskModel.find({ therapist: email });
+//         res.status(200).json(tasks);
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ "error": "Internal Server Error" });
+//     }
+// });
 
 export { router as taskRouter };
