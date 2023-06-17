@@ -146,8 +146,8 @@ router.post("/therapists", async (req, res) => {
 });
 
 // Get all patients by therapist
-router.post("/patients", async (req, res) => {
-    const { token } = req.body;
+router.get("/patients/:token", async (req, res) => {
+    const token = req.params.token;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
@@ -175,11 +175,6 @@ router.post("/patients", async (req, res) => {
         console.log(err);
         return res.status(500).json({ error: "Internal Server Error" });
     }
-});
-
-router.post("/test", async (req, res) => {
-    const test = encrypt("xd", process.env.ENCRYPTION_KEY);
-    console.log(decrypt(test, process.env.ENCRYPTION_KEY));
 });
 
 export { router as userRouter };
