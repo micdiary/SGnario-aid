@@ -2,13 +2,9 @@ import { Button, Checkbox, Form, Input, Typography } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { login,getUserType } from "../api/account";
+import { login, getUserType } from "../api/account";
 import * as constants from "../constants";
-import {
-  setToken,
-  setUserID,
-  setUserType,
-} from "../utils/account";
+import { setToken, setUserID, setUserType } from "../utils/account";
 import { userStore } from "../utils/store";
 
 const Login = () => {
@@ -23,7 +19,7 @@ const Login = () => {
     };
 
     login(req).then((res) => {
-      if (res.userID !== undefined) {
+      if (res.token !== undefined) {
         setToken(res.token);
         setUserID(res.userID);
         updateUserID(res.userID);
