@@ -67,6 +67,27 @@ const Home = () => {
       }
     };
 
+    const handleFolderDeletion = () => {
+        const folderId = document.getElementById("folderId").value;
+        if (folderId !== "") {
+            fetch("http://localhost:3001/upload/deleteFolder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({folderId}),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    console.log("Folder deleted successfully");
+                } else {
+                    console.error("Failed to delete folder");
+                }
+            })
+            .catch((error) => {
+                console.error("Error deleting folder:", folderId);
+            });
+        }
+    };
+
   return (
     <div>
       <div>Welcome to SGnario-Aid</div>
@@ -90,6 +111,9 @@ const Home = () => {
         <br></br>
         <input type="text" id="folderName"/>
         <button onClick={handleFolderCreation}>Create Folder</button>
+        <br></br>
+        <input type="text" id="folderId"/>
+        <button onClick={handleFolderDeletion}>Delete Folder</button>
       </div>
     </div>
   );
