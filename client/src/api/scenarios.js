@@ -4,7 +4,7 @@ import { SCENARIOS_URL_API, CREATE_SCENARIOS_API } from "../constants.js";
 export async function getScenarios() {
   try {
     const response = await requestGet(SCENARIOS_URL_API);
-    return response.data; // Assuming the response contains the scenarios as an array
+    return response.scenarios; // Assuming the response contains the scenarios as an array
   } catch (error) {
     throw new Error('Failed to fetch scenarios');
   }
