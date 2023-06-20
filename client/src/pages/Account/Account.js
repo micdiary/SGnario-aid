@@ -7,7 +7,7 @@ import SuperUserDashboard from "./SuperUserProfile/Dashboard";
 
 import Profile from "./UserProfile/Profile";
 import Dashboard from "./UserProfile/Dashboard";
-import Evaluation from "./Evaluation";
+import Task from "./Task";
 import { getUserType } from "../../utils/account";
 import { getProfile } from "../../api/profile";
 
@@ -26,7 +26,7 @@ const menuItems = [
 
 const Account = () => {
   const [view, setView] = useState("profile");
-  const [evaluationID, setEvaluationID] = useState(null);
+  const [taskID, setTaskID] = useState(null);
   const [userType, setUserType] = useState(null);
   const [profile, setProfile] = useState({});
 
@@ -68,9 +68,9 @@ const Account = () => {
           (userType === "therapist" || userType === "educator" ? (
             <SuperUserDashboard profile={profile} />
           ) : (
-            <Dashboard setView={setView} setEvaluationID={setEvaluationID} />
+            <Dashboard setView={setView} setTaskID={setTaskID} />
           ))}
-        {view === "evaluation" && <Evaluation evaluationID={evaluationID} />}
+        {view === "task" && <Task taskID={taskID} setView={setView}/>}
       </Col>
     </Row>
   );

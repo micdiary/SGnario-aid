@@ -7,6 +7,7 @@ import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
 import { TempModel } from "../models/Temp.js";
+import { ScenariosModel } from "../models/Scenarios.js";
 
 const router = express.Router();
 
@@ -51,6 +52,14 @@ router.get("/user/token/:token", async (req, res) => {
 
         const { email } = await UserModel.findOne({ _id: id });
         const tasks = await TaskModel.find({ patient: email });
+
+        for (const task of tasks) {
+            const temp = await ScenariosModel.findOne({ videoId: task.scenario });
+            task.scenario = temp.scenario
+            task.category = temp.category
+            task.videoName = temp.videoName
+        }
+
         res.status(200).json(tasks);
     } catch (err) {
         console.log(err);

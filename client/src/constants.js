@@ -32,12 +32,10 @@ export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
 export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
 
-export const ASSIGN_TASK_API = `${URL}/tasks/assign`;
+export const CREATE_TASK_API = `${URL}/tasks/create`;
+export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
+export const GET_TASK_BY_ID_API = `${URL}/tasks`;
 
-export const SUBMITTED_TAG = "Submitted";
-export const NOT_SUBMITTED_TAG = "Not Submitted";
-export const GRADED_TAG = "Graded";
-export const UNGRADED_TAG = "Ungraded";
 export const INCOMPLETE_TAG = "Incomplete";
 export const PENDING_TAG = "Pending";
-export const COMPLETE_TAG = "Approved";
+export const COMPLETE_TAG = "Complete";
