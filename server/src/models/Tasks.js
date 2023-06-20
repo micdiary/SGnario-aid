@@ -1,41 +1,23 @@
-import mongoose from "mongoose";
-
-// const PatientGradeSchema = new mongoose.Schema({
-//     video: { type: Number, required: true },
-//     stutter: { type: Number, required: true },
-//     fluency: { type: Number, required: true },
-//     remark: { type: String },
-// });
-
-// const TherapistGradeSchema = new mongoose.Schema({
-//     video: { type: Number, required: true },
-//     stutter: { type: Number, required: true },
-//     fluency: { type: Number, required: true },
-//     remark: { type: String },
-// });
+import mongoose, { Schema } from "mongoose";
 
 const TaskSchema = new mongoose.Schema({
     therapist: { type: String, required: true },
     patient: { type: String, required: true },
     dateAssigned: { type: Date, required: true },
     scenario: { type: String, required: true },
-    patientGrade: [
+    submission: [
         {
-            video: { type: Number, required: true },
-            stutter: { type: Number, required: true },
-            fluency: { type: Number, required: true },
-            remark: { type: Number, required: true },
+            title: { type: Number, required: true },
+            recordingLink: { type: Number, required: true },
+            dateSubmitted: { type: Date, required: true },
+            patientStutter: { type: Number, required: true },
+            patientFluency: { type: Number, required: true },
+            patientRemark: { type: String, required: true },
+            therapistStutter: { type: Number },
+            therapistFluency: { type: Number },
+            therapistRemark: { type: String },
         },
     ],
-    therapistGrade: [
-        {
-            video: { type: Number, required: true },
-            stutter: { type: Number, required: true },
-            fluency: { type: Number, required: true },
-            remark: { type: Number, required: true },
-        },
-    ],
-    recordings: { type: String },
     status: { type: String, required: true, default: "Incomplete" },
 });
 

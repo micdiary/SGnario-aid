@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     gender: { type: String, required: true },
     issue: { type: [String], default: undefined },
     therapist: { type: String, default: undefined },
+    prevTherapists: { type: [String], default: undefined },
 });
 
 export const UserModel = mongoose.model("users", UserSchema);

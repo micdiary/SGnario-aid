@@ -1,117 +1,103 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Tag } from "antd";
-import {
-  SUBMITTED_TAG,
-  GRADED_TAG,
-  NOT_SUBMITTED_TAG,
-  UNGRADED_TAG,
-} from "../../../constants";
+import { INCOMPLETE_TAG, PENDING_TAG, COMPLETE_TAG } from "../../../constants";
+import { getTasksByToken } from "../../../api/task";
 
-const Dashboard = ({ setView, setEvaluationID }) => {
+const Dashboard = ({ setView, setTaskID }) => {
+	const [tasks, setTasks] = useState([]);
 
-  const columns = [
-    {
-      title: "Scenario",
-      dataIndex: "scenario",
-      key: "scenario",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Date Assigned",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Status",
-      key: "status",
-      dataIndex: "status",
-      render: (tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag === SUBMITTED_TAG ? "green" : "volcano";
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Self Grade",
-      dataIndex: "selfGrade",
-      key: "selfGrade",
-      render: (tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag === GRADED_TAG ? "green" : "yellow";
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Therapist Grade",
-      dataIndex: "therapistGrade",
-      key: "therapistGrade",
-      render: (tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag === GRADED_TAG ? "green" : "yellow";
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (text, record) => (
-        <Button onClick={handleNavigation}>View More {record.lastName}</Button>
-      ),
-    },
-  ];
+	useEffect(() => {
+		if (tasks.length === 0) {
+			getTasksByToken().then((res) => {
+				console.log(res);
+				setTasks(res);
+			});
+		}
+	}, [tasks]);
 
-  const data = [
-    {
-      key: "1",
-      scenario: "Scenario 1",
-      type: "One to One",
-      date: "2021-03-01",
-      status: [SUBMITTED_TAG],
-      selfGrade: [GRADED_TAG],
-      therapistGrade: [GRADED_TAG],
-    },
-    {
-      key: "2",
-      scenario: "Scenario 2",
-      type: "Panel",
-      date: "2021-03-01",
-      status: [NOT_SUBMITTED_TAG],
-      selfGrade: [UNGRADED_TAG],
-      therapistGrade: [UNGRADED_TAG],
-    },
-  ];
+	const columns = [
+		{
+			title: "Scenario",
+			dataIndex: "scenario",
+			key: "scenario",
+		},
+		{
+			title: "Category",
+			dataIndex: "category",
+			key: "category",
+		},
+		{
+			title: "Video Name",
+			dataIndex: "videoName",
+			key: "videoName",
+			width: 150,
+		},
+		{
+			title: "Date Assigned",
+			dataIndex: "dateAssigned",
+			key: "dateAssigned",
+		},
+		{
+			title: "Status",
+			key: "status",
+			dataIndex: "status",
+			render: (tag) => (
+				<>
+					<Tag color={tag === INCOMPLETE_TAG ? "volcano" : "green"} key={tag}>
+						{tag.toUpperCase()}
+					</Tag>
+				</>
+			),
+		},
+		{
+			title: "Patient Grade",
+			dataIndex: "patientGrade",
+			key: "patientGrade",
+			render: (patientGrade) => (
+				<>
+					<Tag
+						color={patientGrade > 0 ? "green" : "volcano"}
+						key={patientGrade}
+					>
+						{patientGrade.length > 0
+							? COMPLETE_TAG.toUpperCase()
+							: INCOMPLETE_TAG.toUpperCase()}
+					</Tag>
+				</>
+			),
+		},
+		{
+			title: "Therapist Grade",
+			dataIndex: "therapistGrade",
+			key: "therapistGrade",
+			render: (therapistGrade) => (
+				<>
+					<Tag
+						color={therapistGrade.length > 0 ? "green" : "yellow"}
+						key={therapistGrade}
+					>
+						{therapistGrade.length > 0
+							? COMPLETE_TAG.toUpperCase()
+							: PENDING_TAG.toUpperCase()}
+					</Tag>
+				</>
+			),
+		},
+		{
+			title: "Action",
+			key: "action",
+			render: (text, record) => (
+				<Button onClick={() => handleNavigation(record._id)}>View Task</Button>
+			),
+		},
+	];
 
-  const handleNavigation = () => {
-    setEvaluationID(1);
-    setView("evaluation");
-  };
+	const handleNavigation = (id) => {
+		setTaskID(id);
+		setView("task");
+	};
 
-  return <Table columns={columns} dataSource={data}></Table>;
+	return <Table columns={columns} dataSource={tasks}></Table>;
 };
 
 export default Dashboard;
