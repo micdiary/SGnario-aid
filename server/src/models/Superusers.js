@@ -7,7 +7,8 @@ const SuperuserSchema = new mongoose.Schema({
     role: { type: String, required: true },
     purpose: { type: [String], default: undefined, required: true },
     organisation: { type: String, required: true },
-    apiKey: { type: String },
+    clientEmail: { type: String },
+    privateKey: { type: String },
 });
 
 export const SuperuserModel = mongoose.model("superusers", SuperuserSchema);
