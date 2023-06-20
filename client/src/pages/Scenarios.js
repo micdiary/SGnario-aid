@@ -2,16 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { List, Card, Input, Select, Button, Pagination } from 'antd';
 import YouTube from 'react-youtube';
 import { getScenarios } from '../api/scenarios';
+import { useLocation } from "react-router-dom";
 
 const { Option } = Select;
 
-const ScenarioList = () => {
+const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const scenarioName = searchParams.get("scenario");
+  const category = searchParams.get("category");
+
   const [scenarios, setScenarios] = useState([]);
   const [filteredScenarios, setFilteredScenarios] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
 
@@ -31,7 +36,7 @@ const ScenarioList = () => {
 
   useEffect(() => {
     filterScenarios();
-  }, [scenarios, searchQuery, categoryFilter]);
+  }, [scenarios, searchQuery, scenarioFilter, categoryFilter]);
 
   const filterScenarios = () => {
     let filtered = scenarios;
@@ -45,10 +50,11 @@ const ScenarioList = () => {
           scenario.scenario.toLowerCase().includes(lowercaseQuery)
       );
     }
-
-    if (categoryFilter) {
-      filtered = filtered.filter((scenario) => scenario.category === categoryFilter);
+    if (scenarioFilter && categoryFilter) {
+      filtered = filtered.filter((scenario) => scenario.scenario === scenarioFilter && scenario.category === categoryFilter);
     }
+
+    
 
     setFilteredScenarios(filtered);
   };
@@ -69,10 +75,6 @@ const ScenarioList = () => {
 
   const handleSearch = (value) => {
     setSearchQuery(value);
-  };
-
-  const handleCategoryFilter = (value) => {
-    setCategoryFilter(value);
   };
 
   const handleSortFieldChange = (value) => {
@@ -118,16 +120,6 @@ const ScenarioList = () => {
           onSearch={handleSearch}
           style={{ width: '200px', marginRight: '16px' }}
         />
-        <Select
-          placeholder="Filter by category"
-          onChange={handleCategoryFilter}
-          style={{ width: '200px', marginRight: '16px' }}
-        >
-          <Option value="">All Categories</Option>
-          <Option value="Category 1">Category 1</Option>
-          <Option value="Category 2">Category 2</Option>
-          <Option value="Category 3">Category 3</Option>
-        </Select>
         <Select
           placeholder="Sort by"
           onChange={handleSortFieldChange}

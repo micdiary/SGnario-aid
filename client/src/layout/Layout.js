@@ -25,25 +25,57 @@ import { getUserID } from "../utils/account";
 import { userStore } from "../utils/store";
 import ResetPassword from "../pages/ResetPassword";
 
+import { getScenarios } from "../api/scenarios";
+
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
 const Layout = () => {
-  const localUserID = getUserID();
-  const storeUserID = userStore((state) => state.userID);
-  const [userID, setUserID] = useState(
-    localUserID !== null ? localUserID : storeUserID
-  );
-  useEffect(() => {
-    setUserID(localUserID !== null ? localUserID : storeUserID);
-  }, [localUserID, storeUserID]);
+    const localUserID = getUserID();
+    const storeUserID = userStore((state) => state.userID);
+    const [userID, setUserID] = useState(
+        localUserID !== null ? localUserID : storeUserID
+    );
 
-  return (
-    <BrowserRouter>
+    const [scenarios, setScenarios] = useState([]);
+    const [scenarioName, setScenarioName] = useState([]);
+    const [category, setCategory] = useState("");
+    useEffect(() => {
+        setUserID(localUserID !== null ? localUserID : storeUserID);
+    }, [localUserID, storeUserID]);
+
+    useEffect(() => {
+        const fetchScenarios = async () => {
+            try {
+                const response = await getScenarios();
+                setScenarios(response);
+            } catch (error) {
+                console.error("Error fetching scenarios:", error);
+                // Handle the error (e.g., show error message to the user)
+            }
+        };
+
+        fetchScenarios();
+    }, []);
+
+    const handleCategoryFilter = (scenarioName, category) => {
+        // Implement the logic to handle the category filter here
+        // For example, you can filter scenarios based on the selected category
+        const filteredScenarios = scenarios.filter(
+            (scenario) => scenario.scenario == scenarioName && scenario.category === category
+        );
+        // Do something with the filtered scenarios (e.g., update state or perform an action)
+        setScenarioName(scenarioName);
+        setCategory(category);
+    };
+
+
+    return (
+        <BrowserRouter>
       <AntLayout
         style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <AntHeader className="header">
-          <Header />
+          <Header handleCategoryFilter={handleCategoryFilter} />
         </AntHeader>
         <Content
           style={{
@@ -54,7 +86,7 @@ const Layout = () => {
         >
           <Routes>
             <Route exact path={constants.HOME_URL} element={<Home />} />
-            <Route path={constants.SCENARIOS_URL} element={<Scenarios />} />
+            <Route path={constants.SCENARIOS_URL} element={<Scenarios scenarioFilter={scenarioName} categoryFilter={category}/>} />
             <Route path={constants.SCENARIOS_FORM} element={<ScenarioForm />} />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
             <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
@@ -102,6 +134,7 @@ const Layout = () => {
         </AntFooter>
       </AntLayout>
     </BrowserRouter>
-  );
+    );
 };
+
 export default Layout;
