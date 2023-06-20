@@ -1,5 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Select } from "antd";
+import React, { useState, useEffect, useRef } from "react";
+import {
+	Table,
+	Button,
+	Modal,
+	Form,
+	Input,
+	Select,
+	Divider,
+	Space,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import {
 	checkDuplicateVideoId,
 	createScenario,
@@ -12,13 +22,23 @@ const Scenarios = () => {
 	const [open, setOpen] = useState(false);
 	const [data, setData] = useState([]);
 	const [confirmLoading, setConfirmLoading] = useState(false);
+	const [categoryOptions, setCategoryOptions] = useState([]);
+	const [scenarioOptions, setScenarioOptions] = useState([]);
 	const [form] = Form.useForm();
 
 	useEffect(() => {
 		getScenarios().then((res) => {
 			setData(res);
+			for (const scenario of res) {
+				if (!categoryOptions.includes(scenario.category)) {
+					setCategoryOptions([...categoryOptions, scenario.category]);
+				}
+				if (!scenarioOptions.includes(scenario.scenario)) {
+					setScenarioOptions([...scenarioOptions, scenario.scenario]);
+				}
+			}
 		});
-	}, []);
+	}, [categoryOptions, scenarioOptions]);
 
 	const showModal = () => {
 		setOpen(true);
@@ -33,6 +53,7 @@ const Scenarios = () => {
 		setOpen(false);
 	};
 
+	// Adding New Scenario
 	const onFormFinish = (values) => {
 		checkDuplicateVideoId(values.videoId).then((isDuplicate) => {
 			if (isDuplicate) {
@@ -54,6 +75,30 @@ const Scenarios = () => {
 		setOpen(false);
 	};
 
+	const [name, setName] = useState("");
+	const inputRef = useRef(null);
+	const onNameChange = (event) => {
+		setName(event.target.value);
+	};
+
+	const addCategoryOption = (e) => {
+		e.preventDefault();
+		setCategoryOptions([...categoryOptions, name || `New item`]);
+		setName("");
+		setTimeout(() => {
+			inputRef.current?.focus();
+		}, 0);
+	};
+
+	const addScenarioOption = (e) => {
+		e.preventDefault();
+		setScenarioOptions([...scenarioOptions, name || `New item`]);
+		setName("");
+		setTimeout(() => {
+			inputRef.current?.focus();
+		}, 0);
+	};
+
 	const formItem = [
 		{
 			label: "Category",
@@ -65,10 +110,45 @@ const Scenarios = () => {
 				},
 			],
 			input: (
-				<Select placeholder="Select a category">
-					<Option value="category1">Category 1</Option>
-					<Option value="category2">Category 2</Option>
-					<Option value="category3">Category 3</Option>
+				<Select
+					placeholder="Select a category"
+					dropdownRender={(menu) => (
+						<>
+							{menu}
+							<Divider
+								style={{
+									margin: "8px 0",
+								}}
+							/>
+							<Space
+								style={{
+									padding: "0 8px 4px",
+								}}
+							>
+								<Input
+									placeholder="Please enter item"
+									ref={inputRef}
+									value={name}
+									onChange={onNameChange}
+								/>
+								<Button
+									type="text"
+									icon={<PlusOutlined />}
+									onClick={addCategoryOption}
+								>
+									Add Category
+								</Button>
+							</Space>
+						</>
+					)}
+				>
+					{categoryOptions.map((item, index) => {
+						return (
+							<Option value={item} key={index}>
+								{item}
+							</Option>
+						);
+					})}
 				</Select>
 			),
 		},
@@ -82,10 +162,45 @@ const Scenarios = () => {
 				},
 			],
 			input: (
-				<Select placeholder="Select a scenario">
-					<Option value="scenario1">Scenario 1</Option>
-					<Option value="scenario2">Scenario 2</Option>
-					<Option value="scenario3">Scenario 3</Option>
+				<Select
+					placeholder="Select a scenario"
+					dropdownRender={(menu) => (
+						<>
+							{menu}
+							<Divider
+								style={{
+									margin: "8px 0",
+								}}
+							/>
+							<Space
+								style={{
+									padding: "0 8px 4px",
+								}}
+							>
+								<Input
+									placeholder="Please enter item"
+									ref={inputRef}
+									value={name}
+									onChange={onNameChange}
+								/>
+								<Button
+									type="text"
+									icon={<PlusOutlined />}
+									onClick={addScenarioOption}
+								>
+									Add Scenario
+								</Button>
+							</Space>
+						</>
+					)}
+				>
+					{scenarioOptions.map((item, index) => {
+						return (
+							<Option value={item} key={index}>
+								{item}
+							</Option>
+						);
+					})}
 				</Select>
 			),
 		},

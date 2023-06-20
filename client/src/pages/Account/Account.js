@@ -25,7 +25,7 @@ const menuItems = [
 ];
 
 const Account = () => {
-  const [view, setView] = useState("dashboard");
+  const [view, setView] = useState("profile");
   const [taskID, setTaskID] = useState(null);
   const [userType, setUserType] = useState(null);
   const [profile, setProfile] = useState({});
