@@ -5,6 +5,7 @@ const TaskSchema = new mongoose.Schema({
     patient: { type: String, required: true },
     dateAssigned: { type: Date, required: true },
     scenario: { type: String, required: true },
+    videoIds: { type: [String], required: true },
     submission: [
         {
             title: { type: Number, required: true },
