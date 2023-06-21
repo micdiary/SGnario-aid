@@ -3,14 +3,14 @@ import mongoose, { Schema } from "mongoose";
 const TaskSchema = new mongoose.Schema({
     therapist: { type: String, required: true },
     patient: { type: String, required: true },
-    dateAssigned: { type: Date, required: true },
+    dateAssigned: { type: Date, required: true, default: Date.now },
     scenario: { type: String, required: true },
     videoIds: { type: [String], required: true },
     submission: [
         {
             title: { type: Number, required: true },
             recordingLink: { type: Number, required: true },
-            dateSubmitted: { type: Date, required: true },
+            dateSubmitted: { type: Date, required: true, default: Date.now },
             patientStutter: { type: Number, required: true },
             patientFluency: { type: Number, required: true },
             patientRemark: { type: String, required: true },
