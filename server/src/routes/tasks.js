@@ -35,18 +35,13 @@ router.post("/create", async (req, res) => {
                 .json({ "message": "Scenario does not exist" });
         }
 
-        // Create array of videoIds
         const { videos } = scenarioFound;
-        let videoIds = [];
-        for (let i = 0; i < videos.length; i++) {
-            videoIds.push(videos[i].videoId);
-        }
 
         const newTask = new TaskModel({
             therapist: therapist.email,
             patient: email,
             scenario: scenario,
-            videoIds: videoIds,
+            videos: videos,
         });
 
         await newTask.save();
