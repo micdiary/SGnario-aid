@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import {
-	checkDuplicateVideoId,
+	checkDuplicateVideo,
 	createScenario,
 	getScenarios,
 } from "../../api/scenarios";
@@ -55,24 +55,35 @@ const Scenarios = () => {
 
 	// Adding New Scenario
 	const onFormFinish = (values) => {
-		checkDuplicateVideoId(values.videoId).then((isDuplicate) => {
-			if (isDuplicate) {
-				alert("Video ID already exists");
-				return;
-			} else {
-				const req = {
-					...values,
-					dateAdded: new Date(),
-				};
-				createScenario(req).then((res) => {
-					setData([...data, res]);
-					alert("Scenario created successfully");
-				});
-			}
-		});
-		form.resetFields();
-		setConfirmLoading(false);
-		setOpen(false);
+	  checkDuplicateVideo(values.videoId, values.videoName)
+	    .then((isDuplicate) => {
+	      if (isDuplicate) {
+	        alert("Video already exists");
+	        return;
+	      } else {
+	        const req = {
+	          ...values,
+	          dateAdded: new Date(),
+	        };
+	        createScenario(req)
+	          .then((res) => {
+	            setData([...data, res]);
+	            alert("Scenario created successfully");
+	          })
+	          .catch((error) => {
+	            console.error(error);
+	            alert("Failed to create scenario");
+	          });
+	      }
+	    })
+	    .catch((error) => {
+	      console.error(error);
+	      alert("Failed to check duplicate video");
+	    });
+
+	  form.resetFields();
+	  setConfirmLoading(false);
+	  setOpen(false);
 	};
 
 	const [name, setName] = useState("");

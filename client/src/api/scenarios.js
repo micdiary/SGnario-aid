@@ -19,16 +19,22 @@ export async function createScenario(req) {
   }
 }
 
-export async function checkDuplicateVideoId(videoId) {
+export async function checkDuplicateVideo(videoId, videoName) {
   try {
-    // Fetch the existing scenarios
     const scenarios = await getScenarios();
 
-    // Check if videoId already exists
-    const duplicateScenario = scenarios.find(scenario => scenario.videoId === videoId);
-    return !!duplicateScenario;
+    // Check if any scenario has a matching videoId or videoName
+    const duplicateVideo = scenarios.some((scenario) =>
+      scenario.videos.some(
+        (video) =>
+          video.videoId === videoId || video.videoName === videoName
+      )
+    );
+
+    return duplicateVideo;
   } catch (error) {
-    throw new Error('Failed to check duplicate video ID');
+    throw new Error("Failed to check duplicate video ID and video Name");
   }
 }
+
 

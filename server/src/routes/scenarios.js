@@ -53,65 +53,102 @@ router.get("/all", async (req, res) => {
     }
 });
 
-router.get("/:id", async (req, res) => {
-    try {
-        const scenario = await ScenariosModel.findById(req.params.id);
-        if (scenario) {
-            res.json(scenario);
-        } else {
-            res.status(404).json({ error: "Scenario not found" });
-        }
-    } catch (error) {
-        res.status(500).json({ error: "Failed to retrieve scenario" });
-    }
-});
+// router.get("/:id", async (req, res) => {
+//     try {
+//         const scenario = await ScenariosModel.findById(req.params.id);
+//         if (scenario) {
+//             res.json(scenario);
+//         } else {
+//             res.status(404).json({ error: "Scenario not found" });
+//         }
+//     } catch (error) {
+//         res.status(500).json({ error: "Failed to retrieve scenario" });
+//     }
+// });
 
 router.post("/create-scenario", async (req, res) => {
-    try {
-        const newScenario = req.body;
+  const { category, scenario, videoId, videoName } = req.body;
 
-        // Check if videoId already exists
-        const existingScenario = await ScenariosModel.findOne({ videoId: newScenario.videoId });
-        if (existingScenario) {
-            return res.status(400).json({ error: "Duplicate video ID" });
-        }
+  try {
+    // Check for duplicate videoId or videoName
+    const existingVideo = await ScenariosModel.findOne({
+      $or: [{ "videos.videoId": videoId }, { "videos.videoName": videoName }],
+    });
 
-        const createdScenario = await ScenariosModel.create(newScenario);
-        res.status(201).json(createdScenario);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to create scenario" });
+    if (existingVideo) {
+      return res.status(400).json({ error: "Video already exists" });
     }
+
+    // Check for duplicate category and scenario
+    const existingScenario = await ScenariosModel.findOneAndUpdate(
+      { category, scenario },
+      { $push: { videos: { videoId, videoName } } },
+      { new: true }
+    );
+
+    if (existingScenario) {
+      return res.json(existingScenario);
+    }
+
+    // No duplicates found, create a new scenario
+    const newScenario = await ScenariosModel.create({
+      category,
+      scenario,
+      videos: [{ videoId, videoName }],
+    });
+
+    res.json(newScenario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
+// router.post("/create-scenario", async (req, res) => {
+//     try {
+//         const newScenario = req.body;
 
-router.put("/:id", async (req, res) => {
-    try {
-        const updatedScenario = req.body;
-        const scenario = await ScenariosModel.findByIdAndUpdate(
-            req.params.id,
-            updatedScenario, { new: true }
-        );
-        if (scenario) {
-            res.json(scenario);
-        } else {
-            res.status(404).json({ error: "Scenario not found" });
-        }
-    } catch (error) {
-        res.status(500).json({ error: "Failed to update scenario" });
-    }
-});
+//         // Check if videoId already exists
+//         const existingScenario = await ScenariosModel.findOne({ videoId: newScenario.videoId });
+//         if (existingScenario) {
+//             return res.status(400).json({ error: "Duplicate video ID" });
+//         }
 
-router.delete("/:id", async (req, res) => {
-    try {
-        const scenario = await ScenariosModel.findByIdAndRemove(req.params.id);
-        if (scenario) {
-            res.json({ message: "Scenario deleted" });
-        } else {
-            res.status(404).json({ error: "Scenario not found" });
-        }
-    } catch (error) {
-        res.status(500).json({ error: "Failed to delete scenario" });
-    }
-});
+//         const createdScenario = await ScenariosModel.create(newScenario);
+//         res.status(201).json(createdScenario);
+//     } catch (error) {
+//         res.status(500).json({ error: "Failed to create scenario" });
+//     }
+// });
+
+// router.put("/:id", async (req, res) => {
+//     try {
+//         const updatedScenario = req.body;
+//         const scenario = await ScenariosModel.findByIdAndUpdate(
+//             req.params.id,
+//             updatedScenario, { new: true }
+//         );
+//         if (scenario) {
+//             res.json(scenario);
+//         } else {
+//             res.status(404).json({ error: "Scenario not found" });
+//         }
+//     } catch (error) {
+//         res.status(500).json({ error: "Failed to update scenario" });
+//     }
+// });
+
+// router.delete("/:id", async (req, res) => {
+//     try {
+//         const scenario = await ScenariosModel.findByIdAndRemove(req.params.id);
+//         if (scenario) {
+//             res.json({ message: "Scenario deleted" });
+//         } else {
+//             res.status(404).json({ error: "Scenario not found" });
+//         }
+//     } catch (error) {
+//         res.status(500).json({ error: "Failed to delete scenario" });
+//     }
+// });
 
 export { router as scenariosRouter };
