@@ -137,7 +137,7 @@ router.post("/therapists", async (req, res) => {
 
         // Validate authorisation
         if (role !== "admin") {
-            return res.status(401).json({ "error": "Unauthorised" });
+            return res.status(401).json({ error: "Unauthorised" });
         }
 
         // Find all therapists
@@ -160,22 +160,24 @@ router.get("/patients/:token", async (req, res) => {
         const { id, role } = decodedToken;
 
         // Validate authorisation
-        if (role !== "therapist" && role !== "educator") {
-            return res.status(401).json({ "error": "Unauthorised" });
+        if (role == "user") {
+            return res.status(401).json({ error: "Unauthorised" });
         }
 
-        // Get therapist email
-        const therapist = await SuperuserModel.findOne(
-            { _id: id },
-            { email: 1 }
-        );
-        const { email } = therapist;
+        let users;
+        if (role === "therapist" || role === "educator") {
+            // Get therapist email
+            const therapist = await SuperuserModel.findOne(
+                { _id: id },
+                { email: 1 }
+            );
+            const { email } = therapist;
 
-        // Find users with matching therapist
-        const users = await UserModel.find(
-            { therapist: email },
-            { password: 0 }
-        );
+            // Find users with matching therapist
+            users = await UserModel.find({ therapist: email }, { password: 0 });
+        } else if (role === "admin") {
+            users = await UserModel.find({}, { password: 0 });
+        }
 
         return res.status(200).json({ users });
     } catch (err) {
