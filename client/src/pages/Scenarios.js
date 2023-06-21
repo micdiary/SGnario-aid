@@ -7,109 +7,122 @@ import { useLocation } from "react-router-dom";
 const { Option } = Select;
 
 const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const scenarioName = searchParams.get("scenario");
-  const category = searchParams.get("category");
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const scenarioName = searchParams.get("scenario");
+    const category = searchParams.get("category");
 
-  const [scenarios, setScenarios] = useState([]);
-  const [filteredScenarios, setFilteredScenarios] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+    const [scenarios, setScenarios] = useState([]);
+    const [filteredScenarios, setFilteredScenarios] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortField, setSortField] = useState("");
+    const [sortOrder, setSortOrder] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(6);
 
-  useEffect(() => {
-    const fetchScenarios = async () => {
-      try {
-        const response = await getScenarios();
-        setScenarios(response);
-      } catch (error) {
-        console.error('Error fetching scenarios:', error);
-        // Handle the error (e.g., show error message to the user)
-      }
+    const [selectedScenario, setSelectedScenario] = useState(null);
+
+    const handleScenarioSelect = (scenario) => {
+        setSelectedScenario(scenario);
     };
 
-    fetchScenarios();
-  }, []);
+    useEffect(() => {
+        const fetchScenarios = async () => {
+            try {
+                const response = await getScenarios();
+                setScenarios(response);
+            } catch (error) {
+                console.error('Error fetching scenarios:', error);
+                // Handle the error (e.g., show error message to the user)
+            }
+        };
 
-  useEffect(() => {
-    filterScenarios();
-  }, [scenarios, searchQuery, scenarioFilter, categoryFilter]);
+        fetchScenarios();
+    }, []);
 
-  const filterScenarios = () => {
-    let filtered = scenarios;
+    useEffect(() => {
+        filterScenarios();
+    }, [scenarios, searchQuery, scenarioFilter, categoryFilter]);
 
-    if (searchQuery) {
-          const lowercaseQuery = searchQuery.toLowerCase();
-          filtered = filtered.filter(
-            (scenario) =>
-              scenario.videos.some((video) => video.videoName.toLowerCase().includes(lowercaseQuery)) ||
-              scenario.category.toLowerCase().includes(lowercaseQuery) ||
-              scenario.scenario.toLowerCase().includes(lowercaseQuery)
-          );
+    const filterScenarios = () => {
+        let filtered = scenarios;
+
+        if (searchQuery) {
+            const lowercaseQuery = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (scenario) =>
+                scenario.videos.some((video) => video.videoName.toLowerCase().includes(lowercaseQuery)) ||
+                scenario.category.toLowerCase().includes(lowercaseQuery) ||
+                scenario.scenario.toLowerCase().includes(lowercaseQuery)
+            );
         }
-    if (scenarioFilter && categoryFilter) {
-      filtered = filtered.filter((scenario) => scenario.scenario === scenarioFilter && scenario.category === categoryFilter);
-    }
+        if (scenarioFilter && categoryFilter) {
+            filtered = filtered.filter((scenario) => scenario.scenario === scenarioFilter && scenario.category === categoryFilter);
+        }
 
-    
 
-    setFilteredScenarios(filtered);
-  };
 
-  const sortScenarios = (field, order) => {
-    let sorted = [...filteredScenarios];
+        setFilteredScenarios(filtered);
+    };
 
-    if (field && order) {
-      sorted.sort((a, b) => {
-        const aValue = a[field]?.toLowerCase() ?? '';
-        const bValue = b[field]?.toLowerCase() ?? '';
-        return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' }) * (order === 'asc' ? 1 : -1);
-      });
-    }
+    const sortScenarios = (field, order) => {
+        let sorted = [...filteredScenarios];
 
-    setFilteredScenarios(sorted);
-  };
+        if (field && order) {
+            sorted.sort((a, b) => {
+                const aValue = a[field] ?.toLowerCase() ?? '';
+                const bValue = b[field] ?.toLowerCase() ?? '';
+                return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' }) * (order === 'asc' ? 1 : -1);
+            });
+        }
 
-  const handleSearch = (value) => {
-    setSearchQuery(value);
-  };
+        setFilteredScenarios(sorted);
+    };
 
-  const handleSortFieldChange = (value) => {
-    setSortField(value);
-    sortScenarios(value, sortOrder);
-  };
+    const handleSearch = (value) => {
+        setSearchQuery(value);
+    };
 
-  const handleSortOrderChange = (value) => {
-    setSortOrder(value);
-    sortScenarios(sortField, value);
-  };
+    const handleSortFieldChange = (value) => {
+        setSortField(value);
+        sortScenarios(value, sortOrder);
+    };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+    const handleSortOrderChange = (value) => {
+        setSortOrder(value);
+        sortScenarios(sortField, value);
+    };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredScenarios.slice(indexOfFirstItem, indexOfLastItem);
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
-  const opts = {
-  width: '100%',
-  height: '400px',
-};
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredScenarios.slice(indexOfFirstItem, indexOfLastItem);
 
-  return (
-    <div>
+    const opts = {
+        width: '100%',
+        height: '400px',
+    };
+
+    return (
+        <div>
+        {/* Category and Scenario */}
+      {filteredScenarios.length > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                    <h1>Category: {filteredScenarios[0].category} </h1>
+                    <h1>Scenario: {filteredScenarios[0].scenario}</h1>
+                </div>
+            )}
       <div style={{ marginBottom: '16px' }}>
         <Input.Search
           placeholder="Search"
@@ -141,12 +154,10 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
             renderItem={({ scenario, video }) => (
               <List.Item key={`${scenario.id}-${video.videoId}`}>
                 <Card title={video.videoName}>
+                  <YouTube videoId={video.videoId} opts={opts}/>
                   <div>
-                    <p>Category: {scenario.category}</p>
-                    <p>Scenario: {scenario.scenario}</p>
                     <p>Created on: {formatDate(scenario.dateAdded)}</p>
                   </div>
-                  <YouTube videoId={video.videoId} opts={opts}/>
                 </Card>
               </List.Item>
             )}
@@ -160,7 +171,7 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
         style={{ marginTop: '16px', textAlign: 'center' }}
       />
     </div>
-  );
+    );
 };
 
 export default ScenarioList;
