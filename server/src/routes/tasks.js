@@ -6,7 +6,6 @@ dotenv.config();
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
-import { TempModel } from "../models/Temp.js";
 import { ScenariosModel } from "../models/Scenarios.js";
 
 const router = express.Router();
