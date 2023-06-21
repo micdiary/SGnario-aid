@@ -54,34 +54,70 @@ const Header = ({ handleCategoryFilter }) => {
 
     const removeUserStore = userStore((state) => state.removeUser);
 
+    // const submenuItems = scenarios.reduce((acc, scenario, index) => {
+    //     const { scenario: scenarioName, category } = scenario;
+
+    //     const existingScenarioIndex = acc.findIndex(
+    //         (item) => item.label === scenarioName
+    //     );
+
+    //     if (existingScenarioIndex !== -1) {
+    //         const existingScenario = acc[existingScenarioIndex];
+    //         const existingCategoryIndex = existingScenario.children.findIndex(
+    //             (item) => item.label === category
+    //         );
+    //         if (existingCategoryIndex === -1) {
+
+    //             existingScenario.children.push({
+    //                 label: category,
+    //                 key: `${category}-${index}`,
+    //                 onClick: () => handleCategoryFilter(scenarioName, category),
+    //             });
+    //         }
+    //     } else {
+
+    //         acc.push({
+    //             label: scenarioName,
+    //             key: `${scenarioName}-${category}-${index}`,
+    //             children: [{
+    //                 label: category,
+    //                 key: `${category}-${index}`,
+    //                 onClick: () => handleCategoryFilter(scenarioName, category),
+    //             }, ],
+    //         });
+    //     }
+
+    //     return acc;
+    // }, []);
+
     const submenuItems = scenarios.reduce((acc, scenario, index) => {
         const { scenario: scenarioName, category } = scenario;
 
         const existingScenarioIndex = acc.findIndex(
-            (item) => item.label === scenarioName
+            (item) => item.label === category
         );
 
         if (existingScenarioIndex !== -1) {
             const existingScenario = acc[existingScenarioIndex];
             const existingCategoryIndex = existingScenario.children.findIndex(
-                (item) => item.label === category
+                (item) => item.label === scenarioName
             );
             if (existingCategoryIndex === -1) {
 
                 existingScenario.children.push({
-                    label: category,
-                    key: `${category}-${index}`,
+                    label: scenarioName,
+                    key: `${scenarioName}-${index}`,
                     onClick: () => handleCategoryFilter(scenarioName, category),
                 });
             }
         } else {
 
             acc.push({
-                label: scenarioName,
-                key: `${scenarioName}-${category}-${index}`,
+                label: category,
+                key: `${category}-${scenarioName}-${index}`,
                 children: [{
-                    label: category,
-                    key: `${category}-${index}`,
+                    label: scenarioName,
+                    key: `${scenarioName}-${index}`,
                     onClick: () => handleCategoryFilter(scenarioName, category),
                 }, ],
             });
