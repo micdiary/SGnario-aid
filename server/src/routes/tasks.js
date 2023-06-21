@@ -14,7 +14,6 @@ const router = express.Router();
 // Create Task
 router.post("/create", async (req, res) => {
     const { token, fields } = req.body;
-    console.log(fields);
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
@@ -26,11 +25,30 @@ router.post("/create", async (req, res) => {
         const { email, scenario, dateAssigned } = fields;
         const therapist = await SuperuserModel.findOne({ _id: id });
 
+        const scenarioFound = await ScenariosModel.findOne({
+            scenario: scenario,
+        });
+
+        // Scenario does not exist
+        if (!scenarioFound) {
+            return res
+                .status(400)
+                .json({ "message": "Scenario does not exist" });
+        }
+
+        // Create array of videoIds
+        const { videos } = scenarioFound;
+        let videoIds = [];
+        for (let i = 0; i < videos.length; i++) {
+            videoIds.push(videos[i].videoId);
+        }
+
         const newTask = new TaskModel({
             therapist: therapist.email,
             patient: email,
             dateAssigned: dateAssigned,
             scenario: scenario,
+            videoIds: videoIds,
         });
 
         await newTask.save();
@@ -52,13 +70,6 @@ router.get("/user/token/:token", async (req, res) => {
 
         const { email } = await UserModel.findOne({ _id: id });
         const tasks = await TaskModel.find({ patient: email });
-
-        for (const task of tasks) {
-            const temp = await ScenariosModel.findOne({ videoId: task.scenario });
-            task.scenario = temp.scenario
-            task.category = temp.category
-            task.videoName = temp.videoName
-        }
 
         res.status(200).json(tasks);
     } catch (err) {
