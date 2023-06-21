@@ -186,4 +186,60 @@ router.get("/patients/:token", async (req, res) => {
     }
 });
 
+// User can add himself back
+// Remove patient from therapist
+router.post("/remove-user", async (req, res) => {
+    const { token, userId } = req.body;
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id, role } = decodedToken;
+
+        if (role !== "therapist" || role == "educator") {
+            return res.status(401).json({ error: "Unauthorised" });
+        }
+
+        const therapist = await SuperuserModel.findOne({ _id: id });
+        const user = await UserModel.findOne({ _id: userId });
+
+        if (user.therapist !== therapist.email) {
+            return res
+                .status(401)
+                .json({ error: "Unauthorised. Patient not under therapist" });
+        }
+
+        user.therapist = "";
+        await user.save();
+
+        return res.status(200).json({ message: "User successfully removed" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/", async (req, res) => {
+    const { token, userId } = req.body;
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id, role } = decodedToken;
+
+        if (role !== "admin") {
+            return res.status(401).json({ error: "Unauthorised" });
+        }
+
+        const deleted = await UserModel.findByIdAndDelete(userId);
+        if (!deleted) {
+            res.status(404).json({ error: "User does not exist" });
+        }
+
+        res.status(200).json({ message: "User successfully deleted" });
+    } catch (err) {
+        console.log(err);
+        if (err instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ error: "Invalid token" });
+        } else {
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+});
 export { router as userRouter };
