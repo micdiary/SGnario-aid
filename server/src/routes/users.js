@@ -227,12 +227,18 @@ router.delete("/", async (req, res) => {
             return res.status(401).json({ error: "Unauthorised" });
         }
 
-        const deleted = await UserModel.findByIdAndDelete(userId);
+        let deleted;
+
+        const deletedUser = await UserModel.findByIdAndDelete(userId);
+        const deletedSuperuser = await SuperuserModel.findByIdAndDelete(userId);
+
+        deleted = deletedUser || deletedSuperuser;
+
         if (!deleted) {
-            res.status(404).json({ error: "User does not exist" });
+            return res.status(404).json({ error: "User does not exist" });
         }
 
-        res.status(200).json({ message: "User successfully deleted" });
+        return res.status(200).json({ message: "User successfully deleted" });
     } catch (err) {
         console.log(err);
         if (err instanceof jwt.JsonWebTokenError) {
