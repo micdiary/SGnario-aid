@@ -49,6 +49,7 @@ router.post("/edit-profile", async (req, res) => {
                     dob: dob,
                     gender: gender,
                     issue: issue,
+                    therapist: therapist,
                 },
                 { new: true }
             );
@@ -79,18 +80,24 @@ router.post("/edit-profile", async (req, res) => {
     }
 });
 
-// Set API key
-router.post("/add-api-key", async (req, res) => {
-    const { token, apiKey } = req.body;
+// Set Drive Credentials
+router.post("/set-drive-credentials", async (req, res) => {
+    const { token, clientEmail, privateKey } = req.body;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
 
         if (role == "therapist") {
-            const encryptedApiKey = encrypt(apiKey, process.env.ENCRYPTION_KEY);
+            const encryptedKey = encrypt(
+                privateKey,
+                process.env.ENCRYPTION_KEY
+            );
             const updatedUser = await SuperuserModel.findByIdAndUpdate(
                 id,
-                { apiKey: encryptedApiKey },
+                {
+                    clientEmail: clientEmail,
+                    privateKey: encryptedKey,
+                },
                 { new: true }
             );
 
