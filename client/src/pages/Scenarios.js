@@ -91,19 +91,6 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
     setCurrentPage(page);
   };
 
-  const renderVideo = (videos) => {
-    const opts = {
-        width: '100%',
-        height: '400px',
-    };
-
-    return videos.map((video) => (
-        <div key={video.videoId}>
-          <YouTube videoId={video.videoId} opts={opts} />
-        </div>
-    ));
-};
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -115,6 +102,11 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredScenarios.slice(indexOfFirstItem, indexOfLastItem);
+
+  const opts = {
+  width: '100%',
+  height: '400px',
+};
 
   return (
     <div>
@@ -144,19 +136,21 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
         </Select>
       </div>
       <List
-        grid={{ gutter: 16, column: 2 }}
-        dataSource={currentItems}
-        renderItem={(scenario) => (
-          <List.Item key={scenario.id}>
-            <Card title={scenario.videoName}>
-              <p>Category: {scenario.category}</p>
-              <p>Scenario: {scenario.scenario}</p>
-              {renderVideo(scenario.videos)}
-              <p>Created on: {formatDate(scenario.dateAdded)}</p>
-            </Card>
-          </List.Item>
-        )}
-      />
+            grid={{ gutter: 16, column: 2 }}
+            dataSource={currentItems.flatMap((scenario) => scenario.videos.map((video) => ({ scenario, video })))}
+            renderItem={({ scenario, video }) => (
+              <List.Item key={`${scenario.id}-${video.videoId}`}>
+                <Card title={video.videoName}>
+                  <div>
+                    <p>Category: {scenario.category}</p>
+                    <p>Scenario: {scenario.scenario}</p>
+                    <p>Created on: {formatDate(scenario.dateAdded)}</p>
+                  </div>
+                  <YouTube videoId={video.videoId} opts={opts}/>
+                </Card>
+              </List.Item>
+            )}
+          />
 
       <Pagination
         current={currentPage}
