@@ -42,14 +42,14 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
     let filtered = scenarios;
 
     if (searchQuery) {
-      const lowercaseQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (scenario) =>
-          scenario.videoName.toLowerCase().includes(lowercaseQuery) ||
-          scenario.category.toLowerCase().includes(lowercaseQuery) ||
-          scenario.scenario.toLowerCase().includes(lowercaseQuery)
-      );
-    }
+          const lowercaseQuery = searchQuery.toLowerCase();
+          filtered = filtered.filter(
+            (scenario) =>
+              scenario.videos.some((video) => video.videoName.toLowerCase().includes(lowercaseQuery)) ||
+              scenario.category.toLowerCase().includes(lowercaseQuery) ||
+              scenario.scenario.toLowerCase().includes(lowercaseQuery)
+          );
+        }
     if (scenarioFilter && categoryFilter) {
       filtered = filtered.filter((scenario) => scenario.scenario === scenarioFilter && scenario.category === categoryFilter);
     }
@@ -91,14 +91,18 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
     setCurrentPage(page);
   };
 
-  const renderVideo = (videoId) => {
+  const renderVideo = (videos) => {
     const opts = {
-      width: '100%',
-      height: '400px',
+        width: '100%',
+        height: '400px',
     };
 
-    return <YouTube videoId={videoId} opts={opts} />;
-  };
+    return videos.map((video) => (
+        <div key={video.videoId}>
+          <YouTube videoId={video.videoId} opts={opts} />
+        </div>
+    ));
+};
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -147,12 +151,13 @@ const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
             <Card title={scenario.videoName}>
               <p>Category: {scenario.category}</p>
               <p>Scenario: {scenario.scenario}</p>
-              {renderVideo(scenario.videoId)}
+              {renderVideo(scenario.videos)}
               <p>Created on: {formatDate(scenario.dateAdded)}</p>
             </Card>
           </List.Item>
         )}
       />
+
       <Pagination
         current={currentPage}
         pageSize={itemsPerPage}
