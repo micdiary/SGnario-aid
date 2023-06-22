@@ -3,17 +3,15 @@ import { Button, Table, Tag } from "antd";
 import { INCOMPLETE_TAG, PENDING_TAG, COMPLETE_TAG } from "../../../constants";
 import { getTasksByToken } from "../../../api/task";
 
-const Dashboard = ({ setView, setTaskID }) => {
+const Dashboard = ({ setView, setTask }) => {
 	const [tasks, setTasks] = useState([]);
 
 	useEffect(() => {
-		if (tasks.length === 0) {
-			getTasksByToken().then((res) => {
-				console.log(res);
-				setTasks(res);
-			});
-		}
-	}, [tasks]);
+		getTasksByToken().then((res) => {
+			console.log(res);
+			setTasks(res);
+		});
+	}, []);
 
 	const columns = [
 		{
@@ -22,20 +20,14 @@ const Dashboard = ({ setView, setTaskID }) => {
 			key: "scenario",
 		},
 		{
-			title: "Category",
-			dataIndex: "category",
-			key: "category",
-		},
-		{
-			title: "Video Name",
-			dataIndex: "videoName",
-			key: "videoName",
-			width: 150,
-		},
-		{
 			title: "Date Assigned",
 			dataIndex: "dateAssigned",
 			key: "dateAssigned",
+		},
+		{
+			title: "Assigned By",
+			dataIndex: "therapist",
+			key: "therapist",
 		},
 		{
 			title: "Status",
@@ -50,50 +42,16 @@ const Dashboard = ({ setView, setTaskID }) => {
 			),
 		},
 		{
-			title: "Patient Grade",
-			dataIndex: "patientGrade",
-			key: "patientGrade",
-			render: (patientGrade) => (
-				<>
-					<Tag
-						color={patientGrade > 0 ? "green" : "volcano"}
-						key={patientGrade}
-					>
-						{patientGrade.length > 0
-							? COMPLETE_TAG.toUpperCase()
-							: INCOMPLETE_TAG.toUpperCase()}
-					</Tag>
-				</>
-			),
-		},
-		{
-			title: "Therapist Grade",
-			dataIndex: "therapistGrade",
-			key: "therapistGrade",
-			render: (therapistGrade) => (
-				<>
-					<Tag
-						color={therapistGrade.length > 0 ? "green" : "yellow"}
-						key={therapistGrade}
-					>
-						{therapistGrade.length > 0
-							? COMPLETE_TAG.toUpperCase()
-							: PENDING_TAG.toUpperCase()}
-					</Tag>
-				</>
-			),
-		},
-		{
 			title: "Action",
 			key: "action",
 			render: (text, record) => (
-				<Button onClick={() => handleNavigation(record._id)}>View Task</Button>
+				<Button onClick={() => handleNavigation(record)}>View Task</Button>
 			),
 		},
 	];
 
-	const handleNavigation = (id) => {
-		setTaskID(id);
+	const handleNavigation = (record) => {
+		setTask(record);
 		setView("task");
 	};
 

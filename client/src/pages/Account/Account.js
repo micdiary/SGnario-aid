@@ -26,7 +26,7 @@ const menuItems = [
 
 const Account = () => {
   const [view, setView] = useState("profile");
-  const [taskID, setTaskID] = useState(null);
+  const [task, setTask] = useState(null);
   const [userType, setUserType] = useState(null);
   const [profile, setProfile] = useState({});
 
@@ -68,9 +68,9 @@ const Account = () => {
           (userType === "therapist" || userType === "educator" ? (
             <SuperUserDashboard profile={profile} />
           ) : (
-            <Dashboard setView={setView} setTaskID={setTaskID} />
+            <Dashboard setView={setView} setTask={setTask} />
           ))}
-        {view === "task" && <Task taskID={taskID} setView={setView}/>}
+        {view === "task" && <Task task={task} setView={setView}/>}
       </Col>
     </Row>
   );

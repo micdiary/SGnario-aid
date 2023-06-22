@@ -24,6 +24,7 @@ const SuperUserDashboard = ({ profile }) => {
 			});
 
 			getScenarios().then((res) => {
+				console.log(res)
 				setScenarioOptions(res || []);
 			});
 		}
@@ -100,8 +101,8 @@ const SuperUserDashboard = ({ profile }) => {
 					{scenarioOptions.length > 0 &&
 						scenarioOptions.map((scenario) => {
 							return (
-								<Option id={scenario.videoId} value={scenario.videoId}>
-									{scenario.videoName}
+								<Option id={scenario.scenario} value={scenario.scenario}>
+									({scenario.category}) {scenario.scenario}
 								</Option>
 							);
 						})}
