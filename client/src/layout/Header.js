@@ -54,42 +54,6 @@ const Header = ({ handleCategoryFilter }) => {
 
     const removeUserStore = userStore((state) => state.removeUser);
 
-    // const submenuItems = scenarios.reduce((acc, scenario, index) => {
-    //     const { scenario: scenarioName, category } = scenario;
-
-    //     const existingScenarioIndex = acc.findIndex(
-    //         (item) => item.label === scenarioName
-    //     );
-
-    //     if (existingScenarioIndex !== -1) {
-    //         const existingScenario = acc[existingScenarioIndex];
-    //         const existingCategoryIndex = existingScenario.children.findIndex(
-    //             (item) => item.label === category
-    //         );
-    //         if (existingCategoryIndex === -1) {
-
-    //             existingScenario.children.push({
-    //                 label: category,
-    //                 key: `${category}-${index}`,
-    //                 onClick: () => handleCategoryFilter(scenarioName, category),
-    //             });
-    //         }
-    //     } else {
-
-    //         acc.push({
-    //             label: scenarioName,
-    //             key: `${scenarioName}-${category}-${index}`,
-    //             children: [{
-    //                 label: category,
-    //                 key: `${category}-${index}`,
-    //                 onClick: () => handleCategoryFilter(scenarioName, category),
-    //             }, ],
-    //         });
-    //     }
-
-    //     return acc;
-    // }, []);
-
     const submenuItems = scenarios.reduce((acc, scenario, index) => {
         const { scenario: scenarioName, category } = scenario;
 
@@ -134,6 +98,9 @@ const Header = ({ handleCategoryFilter }) => {
             label: "Scenarios",
             key: "scenarios",
             children: submenuItems,
+            onClick: () => {
+                navigate("/scenarios");
+            },
         },
         {
             label: <a href={constants.ABOUT_US_URL}>About Us</a>,
@@ -191,11 +158,6 @@ const Header = ({ handleCategoryFilter }) => {
             },
         ];
 
-    const handleMenuClick = (event) => {
-        navigate("/scenarios");
-    };
-
-
     return ( <
         >
         <Row>
@@ -206,7 +168,6 @@ const Header = ({ handleCategoryFilter }) => {
           triggerSubMenuAction="hover"
           forceSubMenuRender
           items={userRole === "admin" ? adminMenuItems : menuItems}
-          onClick={handleMenuClick}
         />
       </Row> <
         Row justify = "start" >
