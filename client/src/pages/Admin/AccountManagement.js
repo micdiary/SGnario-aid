@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
 	Space,
 	Table,
-	Tag,
 	Typography,
 	Button,
 	Modal,
 	Form,
 	Input,
 	Select,
+	Popconfirm,
 } from "antd";
-import { getTherapists, registerSuperuser } from "../../api/admin";
+import { deleteUser, getPatients, getTherapists, registerSuperuser } from "../../api/admin";
 
 const { Option } = Select;
 
@@ -19,9 +19,15 @@ const AccountManagement = () => {
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [form] = Form.useForm();
+
 	useEffect(() => {
-		getTherapists().then((res) => {
-			setData(res.therapists);
+		getPatients().then((res) => {
+			let tempData = [];
+			tempData.push(res.users);
+			getTherapists().then((res) => {
+				tempData.push(res.therapists);
+				setData(tempData[0].concat(tempData[1]));
+			});
 		});
 	}, []);
 
@@ -46,6 +52,20 @@ const AccountManagement = () => {
 		form.resetFields();
 		setConfirmLoading(false);
 		setOpen(false);
+	};
+
+	const deleteBtn = (value) => {
+		console.log(value);
+		deleteUser(value._id).then((res) => {
+			alert(res.message);
+			const newData = data.filter((item) => item._id !== value._id);
+			setData(newData);
+		});
+
+		// const newData = [...data];
+		// const index = newData.findIndex((item) => id === item._id);
+		// newData.splice(index, 1);
+		// setData(newData);
 	};
 
 	const formItem = [
@@ -162,30 +182,33 @@ const AccountManagement = () => {
 			title: "Role",
 			dataIndex: "role",
 			key: "role",
-		},
-		{
-			title: "Purpose",
-			key: "purpose",
-			dataIndex: "purpose",
-			render: (_, { purpose }) => (
-				<>
-					{purpose.map((tag) => {
-						return (
-							<Tag color={"green"} key={tag}>
-								{tag}
-							</Tag>
-						);
-					})}
-				</>
-			),
+			filters: [
+				{
+					text: "Therapist",
+					value: "therapist",
+				},
+				{
+					text: "Educator",
+					value: "educator",
+				},
+				{
+					text: "User",
+					value: "user",
+				},
+			],
+			onFilter: (value, record) => record.role.indexOf(value) === 0,
 		},
 		{
 			title: "Action",
 			key: "action",
-			render: (_) => (
+			render: (value) => (
 				<Space size="middle">
-					<Typography.Link>Edit </Typography.Link>
-					<Typography.Link>Delete</Typography.Link>
+					<Popconfirm
+						title="Sure to delete?"
+						onConfirm={() => deleteBtn(value)}
+					>
+						<Typography.Link>Delete</Typography.Link>
+					</Popconfirm>
 				</Space>
 			),
 		},
@@ -196,7 +219,7 @@ const AccountManagement = () => {
 			<Button type="primary" style={{ marginBottom: 16 }} onClick={showModal}>
 				Add Therapist
 			</Button>
-			<Table columns={columns} dataSource={data} />
+			<Table columns={columns} dataSource={data} rowKey="_id" />
 			<Modal
 				title="Add Therapist"
 				open={open}

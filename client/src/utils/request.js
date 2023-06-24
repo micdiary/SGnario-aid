@@ -1,9 +1,9 @@
 async function requestHandler(api, body = {}, method = "GET") {
   let requestOptions = {};
 
-  if (method === "POST") {
+  if (method !== "GET") {
     requestOptions = {
-      method: "POST",
+      method: method,
       credentials: "include",
       mode: "cors",
       headers: {
@@ -22,4 +22,8 @@ export async function requestGet(api) {
 
 export async function requestPost(api, body) {
   return requestHandler(api, body, "POST");
+}
+
+export async function requestDelete(api, body) {
+  return requestHandler(api, body, "DELETE");
 }

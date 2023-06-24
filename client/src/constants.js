@@ -23,9 +23,11 @@ export const FORGOT_PASSWORD_API = `${URL}/auth/forgot-password`;
 export const RESET_PASSWORD_API = `${URL}/auth/reset-password`;
 export const REGISTER_SUPERUSER_API = `${URL}/auth/register-superuser`;
 
+export const ALL_USERS_API = `${URL}/users`;
 export const PROFILE_API = `${URL}/users/profile`;
 export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
 export const THERAPISTS_PROFILE_API = `${URL}/users/therapists`;
+export const GET_PATIENTS_API = `${URL}/users/patients`;
 export const ADD_API_KEY_API = `${URL}/users/add-api-key`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 
