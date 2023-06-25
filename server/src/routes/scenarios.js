@@ -67,22 +67,25 @@ router.get("/all", async (req, res) => {
 // });
 
 router.post("/create-scenario", async (req, res) => {
-  const { category, scenario, videoId, videoName } = req.body;
+  const { category, scenario, videos } = req.body;
 
   try {
-    // Check for duplicate videoId or videoName
-    const existingVideo = await ScenariosModel.findOne({
-      $or: [{ "videos.videoId": videoId }, { "videos.videoName": videoName }],
+    // Check for duplicate videoId or videoName within the array
+    const duplicateVideos = videos.filter((video, index, self) => {
+      const foundIndex = self.findIndex(
+        (v) => v.videoId === video.videoId || v.videoName === video.videoName
+      );
+      return foundIndex !== index;
     });
 
-    if (existingVideo) {
-      return res.status(400).json({ error: "Video already exists" });
+    if (duplicateVideos.length > 0) {
+      return res.status(400).json({ error: "Duplicate videos found" });
     }
 
     // Check for duplicate category and scenario
     const existingScenario = await ScenariosModel.findOneAndUpdate(
       { category, scenario },
-      { $push: { videos: { videoId, videoName } } },
+      { $push: { videos: { $each: videos } } },
       { new: true }
     );
 
@@ -94,7 +97,7 @@ router.post("/create-scenario", async (req, res) => {
     const newScenario = await ScenariosModel.create({
       category,
       scenario,
-      videos: [{ videoId, videoName }],
+      videos,
     });
 
     res.json(newScenario);
