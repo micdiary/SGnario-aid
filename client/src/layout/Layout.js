@@ -36,8 +36,8 @@ const Layout = () => {
     );
 
     const [scenarios, setScenarios] = useState([]);
-    const [scenarioName, setScenarioName] = useState([]);
-    const [category, setCategory] = useState("");
+    const [filteredScenarios, setFilteredScenarios] = useState([]);
+
     useEffect(() => {
         setUserID(localUserID !== null ? localUserID : storeUserID);
     }, [localUserID, storeUserID]);
@@ -57,16 +57,11 @@ const Layout = () => {
     }, []);
 
     const handleCategoryFilter = (scenarioName, category) => {
-        // Implement the logic to handle the category filter here
-        // For example, you can filter scenarios based on the selected category
         const filteredScenarios = scenarios.filter(
-            (scenario) => scenario.scenario == scenarioName && scenario.category === category
+            (scenario) => scenario.scenario === scenarioName && scenario.category === category
         );
-        // Do something with the filtered scenarios (e.g., update state or perform an action)
-        setScenarioName(scenarioName);
-        setCategory(category);
+        setFilteredScenarios(filteredScenarios);
     };
-
 
     return (
         <BrowserRouter>
@@ -85,7 +80,7 @@ const Layout = () => {
         >
           <Routes>
             <Route exact path={constants.HOME_URL} element={<Home />} />
-            <Route path={constants.SCENARIOS_URL} element={<Scenarios scenarioFilter={scenarioName} categoryFilter={category}/>} />
+            <Route path={constants.SCENARIOS_URL} element={<Scenarios filteredScenarios={filteredScenarios}/>} />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
             <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
             <Route path={constants.CONTACT_URL} element={<Contact />} />
