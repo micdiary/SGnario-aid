@@ -1,177 +1,120 @@
-import React, { useEffect, useState } from 'react';
-import { List, Card, Input, Select, Button, Pagination } from 'antd';
-import YouTube from 'react-youtube';
-import { getScenarios } from '../api/scenarios';
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import NoMatch from "./NoMatch";
+import YouTube from "react-youtube";
+import { Card, List, Pagination, Input, Select } from "antd";
 
+const { Search } = Input;
 const { Option } = Select;
 
-const ScenarioList = ({ scenarioFilter, categoryFilter }) => {
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const scenarioName = searchParams.get("scenario");
-    const category = searchParams.get("category");
+const opts = {
+  width: '100%',
+  height: '400px',
+};
 
-    const [scenarios, setScenarios] = useState([]);
-    const [filteredScenarios, setFilteredScenarios] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [sortField, setSortField] = useState("");
-    const [sortOrder, setSortOrder] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(6);
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+  return formattedDate;
+};
 
-    const [selectedScenario, setSelectedScenario] = useState(null);
+const Scenarios = ({ filteredScenarios }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("nameAsc"); // Set default sort option
+  const itemsPerPage = 4;
 
-    const handleScenarioSelect = (scenario) => {
-        setSelectedScenario(scenario);
-    };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-    useEffect(() => {
-        const fetchScenarios = async () => {
-            try {
-                const response = await getScenarios();
-                setScenarios(response);
-            } catch (error) {
-                console.error('Error fetching scenarios:', error);
-                // Handle the error (e.g., show error message to the user)
-            }
-        };
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+  };
 
-        fetchScenarios();
-    }, []);
+  const handleSortChange = (value) => {
+    setSortOption(value);
+    setSearchQuery(""); // Clear the search query on sort change
+  };
 
-    useEffect(() => {
-        filterScenarios();
-    }, [scenarios, searchQuery, scenarioFilter, categoryFilter]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortOption]);
 
-    const filterScenarios = () => {
-        let filtered = scenarios;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-        if (searchQuery) {
-            const lowercaseQuery = searchQuery.toLowerCase();
-            filtered = filtered.filter(
-                (scenario) =>
-                scenario.videos.some((video) => video.videoName.toLowerCase().includes(lowercaseQuery)) ||
-                scenario.category.toLowerCase().includes(lowercaseQuery) ||
-                scenario.scenario.toLowerCase().includes(lowercaseQuery)
-            );
-        }
-        if (scenarioFilter && categoryFilter) {
-            filtered = filtered.filter((scenario) => scenario.scenario === scenarioFilter && scenario.category === categoryFilter);
-        }
+  const filteredItems = filteredScenarios
+    .flatMap((scenario) => scenario.videos.map((video) => ({ scenario, video })))
+    .filter((item) =>
+      item.video.videoName.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOption === "nameAsc") {
+        return a.video.videoName.localeCompare(b.video.videoName);
+      } else if (sortOption === "nameDesc") {
+        return b.video.videoName.localeCompare(a.video.videoName);
+      } else if (sortOption === "dateAsc") {
+        return new Date(a.scenario.dateAdded) - new Date(b.scenario.dateAdded);
+      } else if (sortOption === "dateDesc") {
+        return new Date(b.scenario.dateAdded) - new Date(a.scenario.dateAdded);
+      }
+      return 0;
+    });
 
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
-
-        setFilteredScenarios(filtered);
-    };
-
-    const sortScenarios = (field, order) => {
-        let sorted = [...filteredScenarios];
-
-        if (field && order) {
-            sorted.sort((a, b) => {
-                const aValue = a[field] ?.toLowerCase() ?? '';
-                const bValue = b[field] ?.toLowerCase() ?? '';
-                return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' }) * (order === 'asc' ? 1 : -1);
-            });
-        }
-
-        setFilteredScenarios(sorted);
-    };
-
-    const handleSearch = (value) => {
-        setSearchQuery(value);
-    };
-
-    const handleSortFieldChange = (value) => {
-        setSortField(value);
-        sortScenarios(value, sortOrder);
-    };
-
-    const handleSortOrderChange = (value) => {
-        setSortOrder(value);
-        sortScenarios(sortField, value);
-    };
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredScenarios.slice(indexOfFirstItem, indexOfLastItem);
-
-    const opts = {
-        width: '100%',
-        height: '400px',
-    };
-
-    return (
+  return (
+    <div>
+      {filteredScenarios.length === 0 ? (
+        null
+      ) : (
         <div>
-        {/* Category and Scenario */}
-      {filteredScenarios.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                    <h1>Category: {filteredScenarios[0].category} </h1>
-                    <h1>Scenario: {filteredScenarios[0].scenario}</h1>
-                </div>
-            )}
-      <div style={{ marginBottom: '16px' }}>
-        <Input.Search
-          placeholder="Search"
-          onSearch={handleSearch}
-          style={{ width: '200px', marginRight: '16px' }}
-        />
-        <Select
-          placeholder="Sort by"
-          onChange={handleSortFieldChange}
-          style={{ width: '200px', marginRight: '16px' }}
-        >
-          <Option value="">None</Option>
-          <Option value="videoName">Video Name</Option>
-          <Option value="category">Category</Option>
-          <Option value="scenario">Scenario</Option>
-        </Select>
-        <Select
-          placeholder="Sort order"
-          onChange={handleSortOrderChange}
-          style={{ width: '200px', marginRight: '16px' }}
-        >
-          <Option value="asc">Ascending</Option>
-          <Option value="desc">Descending</Option>
-        </Select>
-      </div>
-      <List
-            grid={{ gutter: 16, column: 2 }}
-            dataSource={currentItems.flatMap((scenario) => scenario.videos.map((video) => ({ scenario, video })))}
+          <h1>{filteredScenarios[0].category}</h1>
+          <p>{filteredScenarios[0].scenario}</p>
+          <div style={{ display: "flex", marginBottom: "16px" }}>
+            <Search
+              placeholder="Search video name"
+              allowClear
+              enterButton="Search"
+              onSearch={handleSearch}
+              style={{ marginRight: "16px" }}
+            />
+            <Select
+              defaultValue="none"
+              style={{ width: 200 }}
+              onChange={handleSortChange}
+            >
+              <Option value="none">Sort by</Option>
+              <Option value="nameAsc">Name (A-Z)</Option>
+              <Option value="nameDesc">Name (Z-A)</Option>
+              <Option value="dateAsc">Date Added (Oldest)</Option>
+              <Option value="dateDesc">Date Added (Newest)</Option>
+            </Select>
+          </div>
+          <List
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 2 }}
+            dataSource={currentItems}
             renderItem={({ scenario, video }) => (
               <List.Item key={`${scenario.id}-${video.videoId}`}>
                 <Card title={video.videoName}>
-                  <YouTube videoId={video.videoId} opts={opts}/>
-                  <div>
-                    <p>Created on: {formatDate(scenario.dateAdded)}</p>
-                  </div>
+                  <YouTube videoId={video.videoId} opts={opts} />
+                  <p>Created on: {formatDate(scenario.dateAdded)}</p>
                 </Card>
               </List.Item>
             )}
           />
-
-      <Pagination
-        current={currentPage}
-        pageSize={itemsPerPage}
-        total={filteredScenarios.length}
-        onChange={handlePageChange}
-        style={{ marginTop: '16px', textAlign: 'center' }}
-      />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+            <Pagination
+              current={currentPage}
+              total={filteredItems.length}
+              pageSize={itemsPerPage}
+              onChange={handlePageChange}
+            />
+          </div>
+        </div>
+      )}
     </div>
-    );
+  );
 };
 
-export default ScenarioList;
+export default Scenarios;

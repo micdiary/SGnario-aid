@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, Row, Breadcrumb, Col } from "antd";
 
 import * as constants from "../constants";
@@ -16,6 +16,7 @@ import { getScenarios } from "../api/scenarios";
 
 const Header = ({ handleCategoryFilter }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const localUserID = getUserID();
     const storeUserID = userStore((state) => state.userID);
     const [userID, setUserID] = useState(
@@ -67,23 +68,27 @@ const Header = ({ handleCategoryFilter }) => {
                 (item) => item.label === scenarioName
             );
             if (existingCategoryIndex === -1) {
-
                 existingScenario.children.push({
                     label: scenarioName,
                     key: `${scenarioName}-${index}`,
-                    onClick: () => handleCategoryFilter(scenarioName, category),
+                    onClick: () => {
+                        handleCategoryFilter(scenarioName, category);
+                        navigate(`${constants.SCENARIOS_URL}?category=${encodeURIComponent(category)}&scenario=${encodeURIComponent(scenarioName)}`);
+                    }
                 });
             }
         } else {
-
             acc.push({
                 label: category,
                 key: `${category}-${scenarioName}-${index}`,
                 children: [{
                     label: scenarioName,
                     key: `${scenarioName}-${index}`,
-                    onClick: () => handleCategoryFilter(scenarioName, category),
-                }, ],
+                    onClick: () => {
+                        handleCategoryFilter(scenarioName, category);
+                        navigate(`${constants.SCENARIOS_URL}?category=${encodeURIComponent(category)}&scenario=${encodeURIComponent(scenarioName)}`);
+                    }
+                }],
             });
         }
 
@@ -98,9 +103,6 @@ const Header = ({ handleCategoryFilter }) => {
             label: "Scenarios",
             key: "scenarios",
             children: submenuItems,
-            onClick: () => {
-                navigate("/scenarios");
-            },
         },
         {
             label: <a href={constants.ABOUT_US_URL}>About Us</a>,
@@ -158,27 +160,38 @@ const Header = ({ handleCategoryFilter }) => {
             },
         ];
 
-    return ( <
-        >
-        <Row>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          disabledOverflow
-          triggerSubMenuAction="hover"
-          forceSubMenuRender
-          items={userRole === "admin" ? adminMenuItems : menuItems}
-        />
-      </Row> <
-        Row justify = "start" >
-        <Col span={8}>
-          <Breadcrumb items={pathBreadcrumbItems} />
-        </Col> <
-        Col span = { 8 } offset = { 8 } push = { 6 } >
-        <Breadcrumb items={loginBreadcrumbItems} /> <
-        /Col> < /
-        Row > <
-        />
+    // Retrieve category and scenario from the URL query parameters
+    const urlParams = new URLSearchParams(location.search);
+    const category = urlParams.get("category");
+    const scenario = urlParams.get("scenario");
+
+    useEffect(() => {
+        if (category && scenario) {
+            handleCategoryFilter(scenario, category);
+        }
+    }, [category, scenario, handleCategoryFilter]);
+
+    return (
+        <>
+            <Row>
+                <Menu
+                    theme="dark"
+                    mode="horizontal"
+                    disabledOverflow
+                    triggerSubMenuAction="hover"
+                    forceSubMenuRender
+                    items={userRole === "admin" ? adminMenuItems : menuItems}
+                />
+            </Row>
+            <Row justify="start">
+                <Col span={8}>
+                    <Breadcrumb items={pathBreadcrumbItems} />
+                </Col>
+                <Col span={8} offset={8} push={6}>
+                    <Breadcrumb items={loginBreadcrumbItems} />
+                </Col>
+            </Row>
+        </>
     );
 };
 
