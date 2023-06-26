@@ -8,8 +8,10 @@ import {
 	Select,
 	Divider,
 	Space,
+	Popconfirm,
+	Typography,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import {
 	checkDuplicateVideo,
 	createScenario,
@@ -23,6 +25,7 @@ const Scenarios = () => {
 	const [data, setData] = useState([]);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [categoryOptions, setCategoryOptions] = useState([]);
+	const [categorySelected, setCategorySelected] = useState(null);
 	const [scenarioOptions, setScenarioOptions] = useState([]);
 	const [form] = Form.useForm();
 
@@ -33,12 +36,21 @@ const Scenarios = () => {
 				if (!categoryOptions.includes(scenario.category)) {
 					setCategoryOptions([...categoryOptions, scenario.category]);
 				}
-				if (!scenarioOptions.includes(scenario.scenario)) {
-					setScenarioOptions([...scenarioOptions, scenario.scenario]);
-				}
 			}
 		});
-	}, [categoryOptions, scenarioOptions]);
+	}, [categoryOptions]);
+
+	useEffect(() => {
+		let temp = [];
+		for (const scenario of data) {
+			if (scenario.category === categorySelected) {
+				temp.push(scenario.scenario);
+			}
+		}
+		setScenarioOptions(temp);
+		form.setFieldValue("scenario", "");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data, categorySelected]);
 
 	const showModal = () => {
 		setOpen(true);
@@ -55,35 +67,36 @@ const Scenarios = () => {
 
 	// Adding New Scenario
 	const onFormFinish = (values) => {
-	  checkDuplicateVideo(values.videoId, values.videoName)
-	    .then((isDuplicate) => {
-	      if (isDuplicate) {
-	        alert("Video already exists");
-	        return;
-	      } else {
-	        const req = {
-	          ...values,
-	          dateAdded: new Date(),
-	        };
-	        createScenario(req)
-	          .then((res) => {
-	            setData([...data, res]);
-	            alert("Scenario created successfully");
-	          })
-	          .catch((error) => {
-	            console.error(error);
-	            alert("Failed to create scenario");
-	          });
-	      }
-	    })
-	    .catch((error) => {
-	      console.error(error);
-	      alert("Failed to check duplicate video");
-	    });
-
-	  form.resetFields();
-	  setConfirmLoading(false);
-	  setOpen(false);
+		for (let i = 0; i < values.videos.length; i++) {
+			checkDuplicateVideo(values.videos[i].videoId, values.videos[i].videoName)
+				.then((isDuplicate) => {
+					if (isDuplicate) {
+						alert("Video already exists");
+						return;
+					} else if (i === values.videos.length - 1) {
+						const req = {
+							...values,
+							dateAdded: new Date(),
+						};
+						createScenario(req)
+							.then((res) => {
+								setCategoryOptions([]);
+								alert("Scenario created successfully");
+							})
+							.catch((error) => {
+								console.error(error);
+								alert("Failed to create scenario");
+							});
+					}
+				})
+				.catch((error) => {
+					console.error(error);
+					alert("Failed to check duplicate video");
+				});
+		}
+		form.resetFields();
+		setConfirmLoading(false);
+		setOpen(false);
 	};
 
 	const [name, setName] = useState("");
@@ -110,6 +123,24 @@ const Scenarios = () => {
 		}, 0);
 	};
 
+	const expandedRowRender = (record) => {
+		const columns = [
+			{
+				title: "Video ID",
+				dataIndex: "videoId",
+				key: "videoId",
+			},
+			{
+				title: "Video Name",
+				dataIndex: "videoName",
+				key: "videoName",
+			},
+		];
+		return (
+			<Table columns={columns} dataSource={record.videos} pagination={false} />
+		);
+	};
+
 	const formItem = [
 		{
 			label: "Category",
@@ -122,6 +153,9 @@ const Scenarios = () => {
 			],
 			input: (
 				<Select
+					onChange={(value) => {
+						setCategorySelected(value);
+					}}
 					placeholder="Select a category"
 					dropdownRender={(menu) => (
 						<>
@@ -174,6 +208,7 @@ const Scenarios = () => {
 			],
 			input: (
 				<Select
+					disabled={!categorySelected}
 					placeholder="Select a scenario"
 					dropdownRender={(menu) => (
 						<>
@@ -215,28 +250,6 @@ const Scenarios = () => {
 				</Select>
 			),
 		},
-		{
-			label: "Video ID",
-			name: "videoId",
-			rules: [
-				{
-					required: true,
-					message: "Please input your video ID!",
-				},
-			],
-			input: <Input />,
-		},
-		{
-			label: "Video Name",
-			name: "videoName",
-			rules: [
-				{
-					required: true,
-					message: "Please input your video name!",
-				},
-			],
-			input: <Input />,
-		},
 	];
 
 	const modalForm = (formItem) => {
@@ -267,19 +280,20 @@ const Scenarios = () => {
 			key: "scenario",
 		},
 		{
-			title: "Video ID",
-			dataIndex: "videoId",
-			key: "videoId",
-		},
-		{
-			title: "Video Name",
-			dataIndex: "videoName",
-			key: "videoName",
-		},
-		{
 			title: "Date Added",
 			dataIndex: "dateAdded",
 			key: "dateAdded",
+		},
+		{
+			title: "Action",
+			key: "action",
+			render: (value) => (
+				<Space size="middle">
+					<Popconfirm title="Sure to delete?">
+						<Typography.Link>Delete</Typography.Link>
+					</Popconfirm>
+				</Space>
+			),
 		},
 	];
 
@@ -288,7 +302,14 @@ const Scenarios = () => {
 			<Button type="primary" style={{ marginBottom: 16 }} onClick={showModal}>
 				Add Scenario
 			</Button>
-			<Table columns={columns} dataSource={data} />
+			<Table
+				columns={columns}
+				dataSource={data}
+				rowKey="_id"
+				expandable={{
+					expandedRowRender,
+				}}
+			/>
 			<Modal
 				title="Add Scenario"
 				open={open}
@@ -298,6 +319,51 @@ const Scenarios = () => {
 			>
 				<Form form={form} onFinish={onFormFinish}>
 					{modalForm(formItem)}
+					<Form.List name="videos">
+						{(fields, { add, remove }) => (
+							<>
+								{fields.map((field) => (
+									<Space
+										key={field.key}
+										style={{ display: "flex", marginBottom: 8 }}
+										align="baseline"
+									>
+										<Form.Item
+											{...field}
+											key={`videoId${field.key}`}
+											name={[field.name, "videoId"]}
+											rules={[{ required: true, message: "Missing video ID" }]}
+										>
+											<Input placeholder="Video ID" />
+										</Form.Item>
+										<Form.Item
+											{...field}
+											key={`videoName${field.key}`}
+											name={[field.name, "videoName"]}
+											rules={[
+												{ required: true, message: "Missing video name" },
+											]}
+										>
+											<Input placeholder="Video Name" />
+										</Form.Item>
+										<MinusCircleOutlined onClick={() => remove(field.name)} />
+									</Space>
+								))}
+								<Form.Item>
+									<Button
+										type="dashed"
+										onClick={() => add()}
+										style={{
+											width: "100%",
+										}}
+										icon={<PlusOutlined />}
+									>
+										Add Video
+									</Button>
+								</Form.Item>
+							</>
+						)}
+					</Form.List>
 				</Form>
 			</Modal>
 		</>

@@ -10,7 +10,12 @@ import {
 	Select,
 	Popconfirm,
 } from "antd";
-import { deleteUser, getPatients, getTherapists, registerSuperuser } from "../../api/admin";
+import {
+	deleteUser,
+	getPatients,
+	getTherapists,
+	registerSuperuser,
+} from "../../api/admin";
 
 const { Option } = Select;
 
@@ -55,17 +60,11 @@ const AccountManagement = () => {
 	};
 
 	const deleteBtn = (value) => {
-		console.log(value);
 		deleteUser(value._id).then((res) => {
 			alert(res.message);
 			const newData = data.filter((item) => item._id !== value._id);
 			setData(newData);
 		});
-
-		// const newData = [...data];
-		// const index = newData.findIndex((item) => id === item._id);
-		// newData.splice(index, 1);
-		// setData(newData);
 	};
 
 	const formItem = [
