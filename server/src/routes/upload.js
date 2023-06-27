@@ -2,6 +2,7 @@ import express from "express";
 import { google } from "googleapis";
 import fs from "fs";
 import multer from "multer";
+import { getVideoDurationInSeconds } from 'get-video-duration';
 
 const router = express.Router();
 
@@ -21,6 +22,15 @@ const getDrive = async () => {
 
     const client = await auth.getClient();
     return google.drive({ version: "v3", auth: client });
+};
+
+const getDuration = async (filePath) => {
+  try {
+    const duration = await getVideoDurationInSeconds(filePath);
+    return Math.round(duration);
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Route to handle file uploads
@@ -66,6 +76,10 @@ router.post("/upload", upload.single("file"), async (req, res) => {
                     },
                     supportsAllDrives: true,
                 });
+
+                //Get video duration
+                const duration = await getDuration(fileData.path);
+                console.log(duration); //Add to DB
 
                 console.log("File uploaded successfully:", response.data);
                 return response.data;
