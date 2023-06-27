@@ -2,7 +2,7 @@ import express from "express";
 import { google } from "googleapis";
 import fs from "fs";
 import multer from "multer";
-import { getVideoDurationInSeconds } from 'get-video-duration';
+import { getVideoDurationInSeconds } from "get-video-duration";
 
 const router = express.Router();
 
@@ -25,18 +25,21 @@ const getDrive = async () => {
 };
 
 const getDuration = async (filePath) => {
-  try {
-    const duration = await getVideoDurationInSeconds(filePath);
-    return Math.round(duration);
-  } catch (error) {
-    throw error;
-  }
+    try {
+        const duration = await getVideoDurationInSeconds(filePath);
+        return Math.round(duration);
+    } catch (error) {
+        throw error;
+    }
 };
 
 // Route to handle file uploads
 router.post("/upload", upload.single("file"), async (req, res) => {
     try {
-        const { file, body: {folderId} } = req;
+        const {
+            file,
+            body: { folderId },
+        } = req;
 
         // Check if a file was uploaded
         if (!file) {
@@ -103,57 +106,6 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         console.error("Error handling file upload:", error);
         res.status(500).json({ message: "Failed to upload file" });
     }
-});
-
-router.post("/createFolder", async (req, res) => {
-    try {
-        const { folderName, folderId } = req.body;
-
-        const drive = await getDrive();
-
-        // Create a folder metadata object
-        const folderMetadata = {
-            name: folderName,
-            mimeType: "application/vnd.google-apps.folder",
-            parents: [folderId],
-        };
-
-        // Create the folder
-        const folderResponse = await drive.files.create({
-            requestBody: folderMetadata,
-        });
-
-        console.log("Folder created successfully:", folderResponse.data);
-
-        const newFolderId = folderResponse.data.id;
-
-        res.status(200).json({
-            message: "Folder created successfully",
-            folderId: newFolderId,
-        });
-    } catch (error) {
-        console.error("Error creating folder:", error);
-        res.status(500).json({ message: "Failed to create folder" });
-    }
-});
-
-router.post("/deleteFolder", async (req, res) => {
-    try {
-        const { folderId } = req.body;
-
-        const drive = await getDrive();
-      // Delete the folder
-      await drive.files.delete({
-          fileId: folderId
-      });
-      console.log("Folder deleted successfully");
-      res.status(200).json({
-            message: "Folder deleted successfully",
-        });
-  } catch (error) {
-    console.error("Error deleting folder:", error);
-    res.status(500).json({ message: "Failed to delete folder" });
-  }
 });
 
 export { router as uploadRouter };

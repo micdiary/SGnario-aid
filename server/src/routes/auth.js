@@ -1,5 +1,7 @@
 import express from "express";
 import jwt, { verify } from "jsonwebtoken";
+import { getDrive, createFolder } from "../utils/driveHelper.js";
+import { decrypt } from "../utils/cryptography.js";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import * as dotenv from "dotenv";
@@ -47,6 +49,38 @@ router.post("/register", async (req, res) => {
         });
 
         await newUser.save();
+
+        // Find therapist
+        if (therapistEmail) {
+            const therapist = await SuperuserModel.findOne({
+                email: therapistEmail,
+            });
+
+            // check if patient has folder created
+            const hasMatch = therapist.patientFolders.some(
+                (patientFolder) => patientFolder.patient === email
+            );
+
+            if (!hasMatch) {
+                const { clientEmail, rootFolder } = therapist;
+                const privateKey = decrypt(
+                    therapist.privateKey,
+                    process.env.ENCRYPTION_KEY
+                );
+                const data = await createFolder(
+                    email,
+                    rootFolder,
+                    await getDrive(clientEmail, privateKey)
+                );
+
+                therapist.patientFolders.push({
+                    "patient": email,
+                    "folderId": data.id,
+                });
+
+                await therapist.save();
+            }
+        }
 
         return res
             .status(201)

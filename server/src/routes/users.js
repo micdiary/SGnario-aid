@@ -1,6 +1,7 @@
 import express from "express";
 import jwt, { verify } from "jsonwebtoken";
 import { encrypt, decrypt } from "../utils/cryptography.js";
+import { getDrive, createFolder } from "../utils/driveHelper.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -48,8 +49,6 @@ router.post("/edit-profile", async (req, res) => {
 
             // if therapist changed and not in prev therapist array
             // push current therapist into array
-            console.log(!updatedUser.prevTherapists.includes(therapistEmail));
-            console.log(updatedUser.therapistEmail !== therapistEmail);
             if (
                 !updatedUser.prevTherapists.includes(
                     updatedUser.therapistEmail
@@ -67,6 +66,39 @@ router.post("/edit-profile", async (req, res) => {
             updatedUser.therapistEmail = therapistEmail;
 
             await updatedUser.save();
+
+            // Find therapist
+            if (therapistEmail) {
+                const therapist = await SuperuserModel.findOne({
+                    email: therapistEmail,
+                });
+
+                // check if patient has folder created
+                const hasMatch = therapist.patientFolders.some(
+                    (patientFolder) =>
+                        patientFolder.patient === updatedUser.email
+                );
+
+                if (!hasMatch) {
+                    const { clientEmail, rootFolder } = therapist;
+                    const privateKey = decrypt(
+                        therapist.privateKey,
+                        process.env.ENCRYPTION_KEY
+                    );
+                    const data = await createFolder(
+                        updatedUser.email,
+                        rootFolder,
+                        await getDrive(clientEmail, privateKey)
+                    );
+
+                    therapist.patientFolders.push({
+                        "patient": updatedUser.email,
+                        "folderId": data.id,
+                    });
+
+                    await therapist.save();
+                }
+            }
         } else if (role === "therapist" || role === "educator") {
             const { name, purpose, organisation } = fields;
             updatedUser = await SuperuserModel.findByIdAndUpdate(
