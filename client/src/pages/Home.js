@@ -77,15 +77,12 @@ const Home = () => {
         body: formData,
       })
         .then((response) => {
+          console.log("File id is: " + response.id);
           if (response.ok) {
-            return response.json();
+            console.log('File uploaded successfully');
           } else {
             console.error('Failed to upload file');
           }
-        })
-        .then((data) => {
-            console.log("File id is: " + data.fileId);
-            console.log('File uploaded successfully');
         })
         .catch((error) => {
           console.error('Error uploading file:', error);
@@ -121,22 +118,22 @@ const Home = () => {
   };
 
   const handleFolderDeletion = () => {
-    const fileId = document.getElementById("folderId").value;
-    if (fileId !== "") {
-      fetch("http://localhost:3001/upload/delete", {
+    const folderId = document.getElementById("folderId").value;
+    if (folderId !== "") {
+      fetch("http://localhost:3001/upload/deleteFolder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId }),
+        body: JSON.stringify({ folderId }),
       })
         .then((response) => {
           if (response.ok) {
-            console.log("file deleted successfully");
+            console.log("Folder deleted successfully");
           } else {
-            console.error("Failed to delete file");
+            console.error("Failed to delete folder");
           }
         })
         .catch((error) => {
-          console.error("Error deleting file:", fileId);
+          console.error("Error deleting folder:", folderId);
         });
     }
   };
