@@ -21,6 +21,7 @@ const TaskSchema = new mongoose.Schema({
         {
             title: { type: String, required: true },
             recordingLink: { type: String },
+            videoDuration: { type: Number },
             dateSubmitted: { type: Date },
             patientStutter: { type: Number },
             patientFluency: { type: Number },
