@@ -96,10 +96,12 @@ router.post("/edit-profile", async (req, res) => {
 
 // Set Drive Credentials
 router.post("/set-drive-credentials", async (req, res) => {
-    const { token, clientEmail, privateKey } = req.body;
+    const { token, fields } = req.body;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
+
+        const { clientEmail, privateKey, rootFolderId } = fields;
 
         if (role == "therapist") {
             const encryptedKey = encrypt(
@@ -111,6 +113,7 @@ router.post("/set-drive-credentials", async (req, res) => {
                 {
                     clientEmail: clientEmail,
                     privateKey: encryptedKey,
+                    rootFolderId: rootFolderId,
                 },
                 { new: true }
             );
