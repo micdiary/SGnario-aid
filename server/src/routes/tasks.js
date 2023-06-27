@@ -157,7 +157,6 @@ router.post("/user/submission", async (req, res) => {
             });
         } else {
             // Existing submission
-            console.log("here2");
             updatedTask = await TaskModel.findOneAndUpdate(
                 { _id: taskId, "submissions._id": submissionId },
                 {
