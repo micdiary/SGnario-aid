@@ -41,18 +41,32 @@ router.post("/edit-profile", async (req, res) => {
 
         let updatedUser;
         if (role === "user") {
-            const { name, dob, gender, issue } = fields;
-            updatedUser = await UserModel.findByIdAndUpdate(
-                id,
-                {
-                    name: name,
-                    dob: dob,
-                    gender: gender,
-                    issue: issue,
-                    therapist: therapist,
-                },
-                { new: true }
-            );
+            const { name, dob, gender, issue, therapistName, therapistEmail } =
+                fields;
+
+            updatedUser = await UserModel.findOne({ _id: id });
+
+            // if therapist changed and not in prev therapist array
+            // push current therapist into array
+            console.log(!updatedUser.prevTherapists.includes(therapistEmail));
+            console.log(updatedUser.therapistEmail !== therapistEmail);
+            if (
+                !updatedUser.prevTherapists.includes(
+                    updatedUser.therapistEmail
+                ) &&
+                updatedUser.therapistEmail !== therapistEmail
+            ) {
+                updatedUser.prevTherapists.push(updatedUser.therapistEmail);
+            }
+
+            updatedUser.name = name;
+            updatedUser.dob = dob;
+            updatedUser.gender = gender;
+            updatedUser.issue = issue;
+            updatedUser.therapistName = therapistName;
+            updatedUser.therapistEmail = therapistEmail;
+
+            await updatedUser.save();
         } else if (role === "therapist" || role === "educator") {
             const { name, purpose, organisation } = fields;
             updatedUser = await SuperuserModel.findByIdAndUpdate(
@@ -174,7 +188,10 @@ router.get("/patients/:token", async (req, res) => {
             const { email } = therapist;
 
             // Find users with matching therapist
-            users = await UserModel.find({ therapist: email }, { password: 0 });
+            users = await UserModel.find(
+                { therapistEmail: email },
+                { password: 0 }
+            );
         } else if (role === "admin") {
             users = await UserModel.find({}, { password: 0 });
         }
@@ -201,13 +218,14 @@ router.post("/remove-user", async (req, res) => {
         const therapist = await SuperuserModel.findOne({ _id: id });
         const user = await UserModel.findOne({ _id: userId });
 
-        if (user.therapist !== therapist.email) {
+        if (user.therapistEmail !== therapist.email) {
             return res
                 .status(401)
                 .json({ error: "Unauthorised. Patient not under therapist" });
         }
 
-        user.therapist = "";
+        user.therapistEmail = "";
+        user.therapistName = "";
         await user.save();
 
         return res.status(200).json({ message: "User successfully removed" });
@@ -248,4 +266,6 @@ router.delete("/", async (req, res) => {
         }
     }
 });
+
+// create and delete folder APIs
 export { router as userRouter };
