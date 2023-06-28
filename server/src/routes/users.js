@@ -80,14 +80,14 @@ router.post("/edit-profile", async (req, res) => {
                 );
 
                 if (!hasMatch) {
-                    const { clientEmail, rootFolder } = therapist;
+                    const { clientEmail, rootFolderId } = therapist;
                     const privateKey = decrypt(
                         therapist.privateKey,
                         process.env.ENCRYPTION_KEY
                     );
                     const data = await createFolder(
                         updatedUser.email,
-                        rootFolder,
+                        rootFolderId,
                         await getDrive(clientEmail, privateKey)
                     );
 

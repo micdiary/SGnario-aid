@@ -62,14 +62,14 @@ router.post("/register", async (req, res) => {
             );
 
             if (!hasMatch) {
-                const { clientEmail, rootFolder } = therapist;
+                const { clientEmail, rootFolderId } = therapist;
                 const privateKey = decrypt(
                     therapist.privateKey,
                     process.env.ENCRYPTION_KEY
                 );
                 const data = await createFolder(
                     email,
-                    rootFolder,
+                    rootFolderId,
                     await getDrive(clientEmail, privateKey)
                 );
 
