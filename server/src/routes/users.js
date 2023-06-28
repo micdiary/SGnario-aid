@@ -73,6 +73,13 @@ router.post("/edit-profile", async (req, res) => {
                     email: therapistEmail,
                 });
 
+                // check if therapist configured drive
+                if (!therapist.privateKey) {
+                    return res.status(404).json({
+                        error: "Therapist has not configured drive yet. Please contact your therapist.",
+                    });
+                }
+
                 // check if patient has folder created
                 const hasMatch = therapist.patientFolders.some(
                     (patientFolder) =>
@@ -80,14 +87,15 @@ router.post("/edit-profile", async (req, res) => {
                 );
 
                 if (!hasMatch) {
-                    const { clientEmail, rootFolder } = therapist;
+                    const { clientEmail, rootFolderId } = therapist;
+                    console.log(therapist.privateKey);
                     const privateKey = decrypt(
                         therapist.privateKey,
                         process.env.ENCRYPTION_KEY
                     );
                     const data = await createFolder(
                         updatedUser.email,
-                        rootFolder,
+                        rootFolderId,
                         await getDrive(clientEmail, privateKey)
                     );
 
