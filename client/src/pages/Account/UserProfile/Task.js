@@ -1,116 +1,40 @@
 import React, { useEffect, useState } from "react";
 import {
-	Input,
 	Button,
 	Table,
 	Typography,
-	Popconfirm,
 	Form,
 	Tag,
 	Upload,
+	Modal,
+	Input,
+	InputNumber,
+	Select,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import UserTaskModal from "./TaskModal";
+import { updateTask } from "../../../api/task";
+import { populateTaskData } from "../../../utils/task";
 
 const { Column, ColumnGroup } = Table;
 const Task = ({ task, setView }) => {
-	const [count, setCount] = useState(0);
 	const [populateData, setPopulateData] = useState([]);
-	const [expandableData, setExpandableData] = useState([]);
+	const [form] = Form.useForm();
+	const [addRecordingForm] = Form.useForm();
+	const [recordingModalVisible, setRecordingModalVisible] = useState(false);
+	const [modalVisible, setModalVisible] = useState(false);
+	const [modalData, setModalData] = useState({});
 	const [editingKey, setEditingKey] = useState("");
-	const isEditing = (record) => record.key === editingKey;
 
 	useEffect(() => {
-		let tempData = [];
-		for (let i = 0; i < task.videos.length; i++) {
-			const video = task.videos[i];
-			let temp = {
-				key: i,
-				videoName: video.videoName,
-				videoId: video.videoId,
-				patientStutter: video.patientStuttering || "test",
-				patientFluency: video.patientFluency || "test",
-				patientRemark: video.patientRemark || "No Patient Remark",
-				therapistStutter: video.therapistStuttering || "",
-				therapistFluency: video.therapistFluency || "",
-				therapistRemark: video.therapistRemark || "No Therapist Remark",
-				recording: video.recording || "",
-			};
-			tempData.push(temp);
-		}
-		setPopulateData(tempData);
-	}, [task.videos]);
-
-	const EditableCell = ({
-		editing,
-		dataIndex,
-		title,
-		inputType,
-		record,
-		index,
-		children,
-		...restProps
-	}) => {
-		return (
-			<td {...restProps}>
-				{editing ? (
-					<Form.Item
-						name={dataIndex}
-						style={{
-							margin: 0,
-						}}
-						rules={[
-							{
-								required: true,
-								message: `Please Input ${title}!`,
-							},
-						]}
-					>
-						<Input />
-					</Form.Item>
-				) : (
-					children
-				)}
-			</td>
-		);
-	};
-
-	const [form] = Form.useForm();
+		console.log(task);
+		setPopulateData(populateTaskData(task));
+	}, [task]);
 
 	const edit = (record) => {
-		form.setFieldsValue({
-			patientFluency: "",
-			patientStutter: "",
-			patientRemark: "",
-			...record,
-		});
 		setEditingKey(record.key);
-	};
-
-	const cancel = () => {
-		setEditingKey("");
-	};
-
-	const save = async (key) => {
-		try {
-			const row = await form.validateFields();
-			const newData = [...populateData];
-			const index = newData.findIndex((item) => key === item.key);
-			if (index > -1) {
-				const item = newData[index];
-				newData.splice(index, 1, {
-					...item,
-					...row,
-				});
-				setPopulateData(newData);
-				setEditingKey("");
-			} else {
-				newData.push(row);
-				setPopulateData(newData);
-				setEditingKey("");
-			}
-		} catch (errInfo) {
-			console.log("Validate Failed:", errInfo);
-		}
+		setModalVisible(true);
+		setModalData(record);
 	};
 
 	const onFileUpload = ({ file, fileList }) => {
@@ -118,17 +42,109 @@ const Task = ({ task, setView }) => {
 		console.log(fileList);
 	};
 
-	const handleAdd = () => {
-		const newData = {
-			key: count,
-			video: count,
-			selfEvaluation: `Self Evaluation ${count}`,
-			selfScore: `Self Score ${count}`,
-			therapistFeedback: `Therapist Feedback ${count}`,
-			therapistScore: `Therapist Score ${count}`,
+	const onFinish = (values) => {
+		const req = {
+			taskId: task._id,
+			videoName: values.videoName,
+			stutter: values.patientStutter,
+			fluency: values.patientFluency,
+			remark: values.patientRemark,
 		};
-		setExpandableData([...expandableData, newData]);
-		setCount(count + 1);
+
+		updateTask(req).then((res) => {
+			alert(res.message || res.errror);
+			setPopulateData(populateTaskData(res.task));
+		});
+	};
+
+	const onModalOk = () => {
+		addRecordingForm.submit();
+		setRecordingModalVisible(false);
+	};
+
+	const generateModal = () => {
+		const formItem = [
+			{
+				label: "Video Name",
+				name: "videoName",
+				rules: [
+					{
+						required: true,
+						message: "Please input your video name!",
+					},
+				],
+				input: (
+					<Select
+						options={task.videos.map((video, index) => {
+							return { label: video.videoName, value: video.videoName };
+						})}
+					/>
+				),
+			},
+			{
+				label: "Stutter",
+				name: "patientStutter",
+				rules: [
+					{
+						required: true,
+						message: "Please input your score!",
+					},
+				],
+				input: <InputNumber />,
+			},
+			{
+				label: "Fluency",
+				name: "patientFluency",
+				rules: [
+					{
+						required: true,
+						message: "Please input your score!",
+					},
+				],
+				input: <InputNumber />,
+			},
+			{
+				label: "Remark",
+				name: "patientRemark",
+				rules: [
+					{
+						required: true,
+						message: "Please input your remark!",
+					},
+				],
+				input: <Input />,
+			},
+			{
+				label: "Recording",
+				name: "recordingLink",
+				// rules: [
+				// 	{
+				// 		required: true,
+				// 		message: "Please input your recording link!",
+				// 	},
+				// ],
+				input: (
+					<Upload onChange={onFileUpload}>
+						<Button icon={<UploadOutlined />}>Upload</Button>
+					</Upload>
+				),
+			},
+		];
+		const modalForm = (formItem) => {
+			return formItem.map((item, index) => {
+				return (
+					<Form.Item
+						name={item.name}
+						label={item.label}
+						rules={item.rules}
+						key={index}
+					>
+						{item.input}
+					</Form.Item>
+				);
+			});
+		};
+		return modalForm(formItem);
 	};
 
 	return (
@@ -145,7 +161,9 @@ const Task = ({ task, setView }) => {
 				Back
 			</Button>
 			<Button
-				onClick={handleAdd}
+				onClick={() => {
+					setRecordingModalVisible(true);
+				}}
 				type="primary"
 				style={{
 					marginBottom: 16,
@@ -158,7 +176,6 @@ const Task = ({ task, setView }) => {
 				<Table
 					expandable={{
 						expandedRowRender: (record) => {
-							console.log(record);
 							const data = [
 								{
 									key: record.key,
@@ -167,26 +184,11 @@ const Task = ({ task, setView }) => {
 								},
 							];
 							return (
-								<Table
-									dataSource={data}
-									pagination={false}
-									components={{
-										body: {
-											cell: EditableCell,
-										},
-									}}
-								>
+								<Table dataSource={data} pagination={false} rowKey="_id">
 									<Column
 										title="Patient Remark"
 										dataIndex="patientRemark"
 										key="patientRemark"
-										onCell={(record) => ({
-											record,
-											inputType: "text",
-											dataIndex: "patientRemark",
-											title: "Patient Remark",
-											editing: isEditing(record),
-										})}
 									></Column>
 									<Column
 										title="Therapist Remark"
@@ -199,12 +201,13 @@ const Task = ({ task, setView }) => {
 					}}
 					dataSource={populateData}
 					pagination={false}
-					components={{
-						body: {
-							cell: EditableCell,
-						},
-					}}
+					rowKey="key"
 				>
+					<Column
+						title="Date Added"
+						dataIndex="dateAdded"
+						key="dateAdded"
+					></Column>
 					<Column
 						title="Video Name"
 						dataIndex="videoName"
@@ -216,26 +219,11 @@ const Task = ({ task, setView }) => {
 							title="Stutter"
 							dataIndex="patientStutter"
 							key="patientStutter"
-							onCell={(record) => ({
-								record,
-								inputType: "text",
-								dataIndex: "patientStutter",
-								title: "Stutter",
-								editing: isEditing(record),
-							})}
 						/>
 						<Column
 							title="Fluency"
 							dataIndex="patientFluency"
 							key="patientFluency"
-							editable={true}
-							onCell={(record) => ({
-								record,
-								inputType: "text",
-								dataIndex: "patientFluency",
-								title: "Fluency",
-								editing: isEditing(record),
-							})}
 						/>
 					</ColumnGroup>
 					<ColumnGroup title="Therapist Evaluation">
@@ -246,6 +234,8 @@ const Task = ({ task, setView }) => {
 							render={(text, record) => {
 								if (record.therapistStutter === "") {
 									return <Tag color="yellow">Pending</Tag>;
+								} else {
+									return <Tag color="green">{text}</Tag>;
 								}
 							}}
 						/>
@@ -256,61 +246,48 @@ const Task = ({ task, setView }) => {
 							render={(text, record) => {
 								if (record.therapistStutter === "") {
 									return <Tag color="yellow">Pending</Tag>;
+								} else {
+									return <Tag color="green">{text}</Tag>;
 								}
 							}}
 						/>
 					</ColumnGroup>
 					<Column
 						title="Recording"
-						dataIndex="recording"
-						key="recording"
+						dataIndex="recordingLink"
+						key="recordingLink"
 						render={(text, record) => {
-							return (
-								<Upload
-									onChange={onFileUpload}
-									disabled={editingKey !== record.key}
-								>
-									<Button icon={<UploadOutlined />}>Upload</Button>
-								</Upload>
-							);
+							return <Typography.Link>{text}</Typography.Link>;
 						}}
 					></Column>
-					<Column
-						title="Date Added"
-						dataIndex="dateAdded"
-						key="dateAdded"
-					></Column>
+
 					<Column
 						title="Action"
 						key="action"
-						render={(_, record) => {
-							const editable = isEditing(record);
-							return editable ? (
-								<span>
-									<Typography.Link
-										onClick={() => save(record.key)}
-										style={{
-											marginRight: 8,
-										}}
-									>
-										Save
-									</Typography.Link>
-									<Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-										<Typography.Link>Cancel</Typography.Link>
-									</Popconfirm>
-								</span>
-							) : (
-								<Typography.Link
-									disabled={editingKey !== ""}
-									onClick={() => edit(record)}
-								>
-									Edit
-								</Typography.Link>
-							);
-						}}
+						render={(_, record) => (
+							<Typography.Link onClick={() => edit(record)}>
+								Edit
+							</Typography.Link>
+						)}
 					></Column>
 				</Table>
 			</Form>
+			<Modal
+				title="Add a new recording"
+				open={recordingModalVisible}
+				onOk={onModalOk}
+				onCancel={() => setRecordingModalVisible(false)}
+			>
+				<Form form={addRecordingForm} onFinish={onFinish}>
+					{generateModal()}
+				</Form>
+			</Modal>
+			<UserTaskModal
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+				modalData={modalData}
+				setPopulateData={setPopulateData}
+			/>
 		</>
 	);
 };

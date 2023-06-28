@@ -40,7 +40,7 @@ export const CREATE_TASK_API = `${URL}/tasks/create`;
 export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
 export const GET_PATIENTS_TASKS_API = `${URL}/tasks/user/id`;
 export const GET_TASK_BY_ID_API = `${URL}/tasks`;
-
+export const USER_TASK_SUBMISSION_API = `${URL}/tasks/user/submission`;
 export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`;
 
 export const INCOMPLETE_TAG = "Incomplete";

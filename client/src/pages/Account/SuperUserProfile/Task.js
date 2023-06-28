@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Table, Typography, Popconfirm, Form, Tag, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import SuperTaskTaskModal from "./TaskModal";
+import { populateTaskData } from "../../../utils/task";
 
 const { Column, ColumnGroup } = Table;
 const SuperUserTask = ({ task, setView }) => {
@@ -11,26 +12,7 @@ const SuperUserTask = ({ task, setView }) => {
 	const [modalData, setModalData] = useState({});
 
 	useEffect(() => {
-		let tempData = [];
-		for (let i = 0; i < task.videos.length; i++) {
-			const video = task.videos[i];
-			let temp = {
-				key: i,
-				taskId: task._id,
-				submissionId: task.submissions[i]._id,
-				videoName: video.videoName,
-				videoId: video.videoId,
-				patientStutter: video.patientStutter || "",
-				patientFluency: video.patientFluency || "",
-				patientRemark: video.patientRemark || "No Patient Remark",
-				therapistStutter: task.submissions[i].therapistStutter || "",
-				therapistFluency: task.submissions[i].therapistFluency || "",
-				therapistRemark: task.submissions[i].therapistRemark || "No Therapist Remark",
-				recording: video.recording || "",
-			};
-			tempData.push(temp);
-		}
-		setPopulateData(tempData);
+		setPopulateData(populateTaskData(task));
 	}, [task]);
 
 	const [form] = Form.useForm();
@@ -39,11 +21,6 @@ const SuperUserTask = ({ task, setView }) => {
 		setEditingKey(record.key);
 		setModalVisible(true);
 		setModalData(record);
-	};
-
-	const onFileUpload = ({ file, fileList }) => {
-		console.log(file);
-		console.log(fileList);
 	};
 
 	return (
@@ -91,6 +68,11 @@ const SuperUserTask = ({ task, setView }) => {
 					pagination={false}
 				>
 					<Column
+						title="Date Added"
+						dataIndex="dateAdded"
+						key="dateAdded"
+					></Column>
+					<Column
 						title="Video Name"
 						dataIndex="videoName"
 						key="videoName"
@@ -136,24 +118,13 @@ const SuperUserTask = ({ task, setView }) => {
 					</ColumnGroup>
 					<Column
 						title="Recording"
-						dataIndex="recording"
-						key="recording"
+						dataIndex="recordingLink"
+						key="recordingLink"
 						render={(text, record) => {
-							return (
-								<Upload
-									onChange={onFileUpload}
-									disabled={editingKey !== record.key}
-								>
-									<Button icon={<UploadOutlined />}>Upload</Button>
-								</Upload>
-							);
+							return <Typography.Link>{text}</Typography.Link>;
 						}}
 					></Column>
-					<Column
-						title="Date Added"
-						dataIndex="dateAdded"
-						key="dateAdded"
-					></Column>
+
 					<Column
 						title="Action"
 						key="action"

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, InputNumber, Input } from "antd";
-import { updatePatientTasks } from "../../../api/therapist";
+import { Form, Modal, InputNumber, Input, Upload, Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
 
-const SuperUserTaskModal = ({
+const UserTaskModal = ({
 	modalVisible,
 	setModalVisible,
 	modalData,
@@ -17,9 +18,9 @@ const SuperUserTaskModal = ({
 	useEffect(() => {
 		if (values !== undefined) {
 			if (
-				values.therapistStutter !== "" &&
-				values.therapistFluency !== "" &&
-				values.therapistRemark !== ""
+				values.patientStutter !== "" &&
+				values.patientFluency !== "" &&
+				values.patientRemark !== ""
 			) {
 				setIsFormValid(true);
 			} else {
@@ -32,9 +33,9 @@ const SuperUserTaskModal = ({
 
 	useEffect(() => {
 		form.setFieldsValue({
-			therapistStutter: modalData.therapistStutter,
-			therapistFluency: modalData.therapistFluency,
-			therapistRemark: modalData.therapistRemark,
+			patientStutter: modalData.patientStutter,
+			patientFluency: modalData.patientFluency,
+			patientRemark: modalData.patientRemark,
 		});
 	}, [modalData, form]);
 
@@ -43,17 +44,16 @@ const SuperUserTaskModal = ({
 			taskId: modalData.taskId,
 			submissionId: modalData.submissionId,
 			videoName: modalData.videoName,
-			stutter: values.therapistStutter,
-			fluency: values.therapistFluency,
-			remark: values.therapistRemark,
+			stutter: values.patientStutter,
+			fluency: values.patientFluency,
+			remark: values.patientRemark,
 		};
-		console.log(req);
+
 		setConfirmLoading(true);
-		updatePatientTasks(req).then((res) => {
+		updateTask(req).then((res) => {
 			alert(res.message || res.errror);
 			setPopulateData(populateTaskData(res.task));
 			setConfirmLoading(false);
-			setModalVisible(false);
 		});
 	};
 
@@ -66,10 +66,15 @@ const SuperUserTaskModal = ({
 		setModalVisible(false);
 	};
 
+	const onFileUpload = ({ file, fileList }) => {
+		console.log(file);
+		console.log(fileList);
+	};
+
 	const formItem = [
 		{
 			label: "Stutter",
-			name: "therapistStutter",
+			name: "patientStutter",
 			rules: [
 				{
 					required: true,
@@ -80,7 +85,7 @@ const SuperUserTaskModal = ({
 		},
 		{
 			label: "Fluency",
-			name: "therapistFluency",
+			name: "patientFluency",
 			rules: [
 				{
 					required: true,
@@ -91,7 +96,7 @@ const SuperUserTaskModal = ({
 		},
 		{
 			label: "Remark",
-			name: "therapistRemark",
+			name: "patientRemark",
 			rules: [
 				{
 					required: true,
@@ -99,6 +104,21 @@ const SuperUserTaskModal = ({
 				},
 			],
 			input: <Input />,
+		},
+		{
+			label: "Recording Link",
+			name: "recordingLink",
+			// rules: [
+			// 	{
+			// 		required: true,
+			// 		message: "Please input your recording link!",
+			// 	},
+			// ],
+			input: (
+				<Upload onChange={onFileUpload}>
+					<Button icon={<UploadOutlined />}>Upload</Button>
+				</Upload>
+			),
 		},
 	];
 
@@ -110,7 +130,6 @@ const SuperUserTaskModal = ({
 					label={item.label}
 					rules={item.rules}
 					key={index}
-					valuePropName={item.valuePropName}
 				>
 					{item.input}
 				</Form.Item>
@@ -134,4 +153,4 @@ const SuperUserTaskModal = ({
 	);
 };
 
-export default SuperUserTaskModal;
+export default UserTaskModal;
