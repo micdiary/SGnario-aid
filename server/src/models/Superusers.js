@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+
+const PatientFolderSchema = new mongoose.Schema({
+  patient: { type: String },
+  folderId: { type: String }
+});
+
 const SuperuserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -9,6 +15,8 @@ const SuperuserSchema = new mongoose.Schema({
     organisation: { type: String, required: true },
     clientEmail: { type: String },
     privateKey: { type: String },
+    rootFolderId: { type: String },
+    patientFolders: [PatientFolderSchema]
 });
 
 export const SuperuserModel = mongoose.model("superusers", SuperuserSchema);
