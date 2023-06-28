@@ -7,11 +7,9 @@ import {
 	Popconfirm,
 	Form,
 	Tag,
-	Space,
 	Upload,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { getTaskById } from "../../api/task";
 
 const { Column, ColumnGroup } = Table;
 const Task = ({ task, setView }) => {
@@ -118,97 +116,6 @@ const Task = ({ task, setView }) => {
 	const onFileUpload = ({ file, fileList }) => {
 		console.log(file);
 		console.log(fileList);
-	};
-
-	const expandedRowRender = () => {
-		const columns = [
-			{
-				title: "video",
-				dataIndex: "video",
-				key: "video",
-			},
-			{
-				title: "Self Evaluation",
-				dataIndex: "selfEvaluation",
-				key: "selfEvaluation",
-				editable: true,
-			},
-			{
-				title: "Self Score",
-				dataIndex: "selfScore",
-				key: "selfScore",
-				editable: true,
-			},
-			{
-				title: "Therapist Feedback",
-				dataIndex: "therapistFeedback",
-				key: "therapistFeedback",
-			},
-			{
-				title: "Therapist Score",
-				dataIndex: "therapistScore",
-				key: "therapistScore",
-			},
-			{
-				title: "Action",
-				dataIndex: "action",
-				key: "action",
-				render: (_, record) => {
-					const editable = isEditing(record);
-					return editable ? (
-						<span>
-							<Typography.Link
-								onClick={() => save(record.key)}
-								style={{
-									marginRight: 8,
-								}}
-							>
-								Save
-							</Typography.Link>
-							<Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-								<Typography.Link>Cancel</Typography.Link>
-							</Popconfirm>
-						</span>
-					) : (
-						<Typography.Link
-							disabled={editingKey !== ""}
-							onClick={() => edit(record)}
-						>
-							Edit
-						</Typography.Link>
-					);
-				},
-			},
-		];
-
-		const mergedColumns = columns.map((col) => {
-			if (!col.editable) {
-				return col;
-			}
-			return {
-				...col,
-				onCell: (record) => ({
-					record,
-					inputType: col.dataIndex === "age" ? "number" : "text",
-					dataIndex: col.dataIndex,
-					title: col.title,
-					editing: isEditing(record),
-				}),
-			};
-		});
-
-		return (
-			<Table
-				columns={mergedColumns}
-				dataSource={expandableData}
-				pagination={false}
-				components={{
-					body: {
-						cell: EditableCell,
-					},
-				}}
-			/>
-		);
 	};
 
 	const handleAdd = () => {
