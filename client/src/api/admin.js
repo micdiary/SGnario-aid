@@ -1,6 +1,6 @@
 import { requestDelete, requestGet, requestPost } from "../utils/request";
 import {
-	THERAPISTS_PROFILE_API,
+	THERAPISTS_API,
 	REGISTER_SUPERUSER_API,
 	GET_PATIENTS_API,
 	ALL_USERS_API,
@@ -14,7 +14,7 @@ export async function getPatients() {
 
 export async function getTherapists() {
 	const token = getToken();
-	return requestPost(THERAPISTS_PROFILE_API, { req: { token: token } });
+	return requestPost(THERAPISTS_API, { req: { token: token } });
 }
 
 export async function registerSuperuser(req) {

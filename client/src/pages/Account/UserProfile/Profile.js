@@ -30,7 +30,7 @@ const Profile = ({ profile }) => {
       email: profile.email,
       dob: dayjs(profile.dob),
       gender: profile.gender,
-      therapist: profile.therapist,
+      therapist: `${profile.therapistName} [${profile.therapistEmail}]`,
       issue: profile.issue,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -281,6 +281,8 @@ const Profile = ({ profile }) => {
       dob: values.dob,
       gender: values.gender,
       issue: values.issue,
+      therapistName: profile.therapistName,
+      therapistEmail: profile.therapistEmail,
     };
     // Handle the form submission
     editProfile(req).then((res) => {

@@ -16,7 +16,6 @@ export const ADMIN_URL = "/admin";
 
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;
-export const GET_ALL_THERAPIST_API = `${URL}/auth/therapists`;
 export const LOGIN_API = `${URL}/auth/login`;
 export const USER_TYPE_API = `${URL}/auth/role`;
 export const FORGOT_PASSWORD_API = `${URL}/auth/forgot-password`;
@@ -26,7 +25,7 @@ export const REGISTER_SUPERUSER_API = `${URL}/auth/register-superuser`;
 export const ALL_USERS_API = `${URL}/users`;
 export const PROFILE_API = `${URL}/users/profile`;
 export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
-export const THERAPISTS_PROFILE_API = `${URL}/users/therapists`;
+export const THERAPISTS_API = `${URL}/users/therapists`;
 export const GET_PATIENTS_API = `${URL}/users/patients`;
 export const ADD_API_KEY_API = `${URL}/users/add-api-key`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
@@ -36,6 +35,7 @@ export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
 
 export const CREATE_TASK_API = `${URL}/tasks/create`;
 export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
+export const GET_PATIENTS_TASKS_API = `${URL}/tasks/user/id`;
 export const GET_TASK_BY_ID_API = `${URL}/tasks`;
 
 export const INCOMPLETE_TAG = "Incomplete";
