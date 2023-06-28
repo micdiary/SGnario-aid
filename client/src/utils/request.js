@@ -25,7 +25,7 @@ export async function requestPost(api, body) {
 }
 
 export async function requestPut(api, body) {
-  return requestHandler(api, body, "PUT");
+  return requestHandler(api, { req: body }, "PUT");
 }
 
 export async function requestDelete(api, body) {

@@ -17,6 +17,8 @@ import {
 	createScenario,
 	getScenarios,
 	deleteScenario,
+	updateScenario,
+	updateScenarioVideoName
 } from "../../api/scenarios";
 
 const { Option } = Select;
@@ -28,6 +30,23 @@ const Scenarios = () => {
 	const [categoryOptions, setCategoryOptions] = useState([]);
 	const [categorySelected, setCategorySelected] = useState(null);
 	const [scenarioOptions, setScenarioOptions] = useState([]);
+	const [editScenario, setEditScenario] = useState({});
+	const [editOpen, setEditOpen] = useState(false);
+
+	const showEditModal = (scenario) => {
+	  setEditScenario(scenario);
+	  setEditOpen(true);
+	};
+
+	const handleEditOk = () => {
+	  setConfirmLoading(true);
+	  form.submit();
+	};
+
+	const handleEditCancel = () => {
+	  setEditOpen(false);
+	};
+
 	const [form] = Form.useForm();
 
 	useEffect(() => {
@@ -98,6 +117,32 @@ const Scenarios = () => {
 		form.resetFields();
 		setConfirmLoading(false);
 		setOpen(false);
+	};
+
+	const onEditFormFinish = async (values) => {
+	  const { scenario, videos } = values;
+
+	  // Update the scenario name
+	  editScenario.scenario = scenario;
+
+	  // Update video names
+	  videos.forEach(async (video) => {
+	    const existingVideo = editScenario.videos.find(
+	      (v) => v.videoId === video.videoId
+	    );
+	    if (existingVideo) {
+	      existingVideo.videoName = video.videoName;
+	      // Perform API call to update the video name
+	      await updateScenarioVideoName(editScenario._id, video.videoId, video.videoName);
+	    }
+	  });
+
+	  // Perform API call to update the scenario
+	  await updateScenario(editScenario._id, editScenario);
+
+	  form.resetFields();
+	  setConfirmLoading(false);
+	  setEditOpen(false);
 	};
 
 	const [name, setName] = useState("");
@@ -254,20 +299,21 @@ const Scenarios = () => {
 			];
 
 const modalForm = (formItem) => {
-	return formItem.map((item, index) => {
-		return (
-			<Form.Item
-			name={item.name}
-			label={item.label}
-			rules={item.rules}
-			key={index}
-			valuePropName={item.valuePropName}
-			>
-			{item.input}
-			</Form.Item>
-			);
-		});
-	};
+  return formItem.map((item, index) => {
+    return (
+      <Form.Item
+        name={item.name}
+        label={item.label}
+        rules={item.rules}
+        key={index}
+        valuePropName={item.valuePropName}
+      >
+        {item.input}
+      </Form.Item>
+    );
+  });
+};
+
 
 	const handleDelete = (scenarioId) => {
 		deleteScenario(scenarioId)
@@ -305,6 +351,9 @@ const modalForm = (formItem) => {
 		key: "action",
 		render: (value, record) => (
 		<Space size="middle">
+		<Typography.Link onClick={() => showEditModal(record)}>
+		        Edit
+		      </Typography.Link>
 		<Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
 		<Typography.Link>Delete</Typography.Link>
 		</Popconfirm>
@@ -381,6 +430,62 @@ const modalForm = (formItem) => {
 	)}
 	</Form.List>
 	</Form>
+	</Modal>
+	<Modal
+	  title="Edit Scenario"
+	  open={editOpen}
+	  onOk={handleEditOk}
+	  confirmLoading={confirmLoading}
+	  onCancel={handleEditCancel}
+	>
+	  <Form form={form} onFinish={onEditFormFinish} initialValues={editScenario}>
+	    {modalForm(formItem)}
+	    <Form.List name="videos">
+	      {(fields, { add, remove }) => (
+	        <>
+	          {fields.map((field) => (
+	            <Space
+	              key={field.key}
+	              style={{ display: "flex", marginBottom: 8 }}
+	              align="baseline"
+	            >
+	              <Form.Item
+	                {...field}
+	                key={`videoId${field.key}`}
+	                name={[field.name, "videoId"]}
+	                rules={[{ required: true, message: "Missing video ID" }]}
+	              >
+	                <Input placeholder="Video ID" disabled />
+	              </Form.Item>
+	              <Form.Item
+	                {...field}
+	                key={`videoName${field.key}`}
+	                name={[field.name, "videoName"]}
+	                rules={[
+	                  { required: true, message: "Missing video name" },
+	                ]}
+	              >
+	                <Input placeholder="Video Name" />
+	              </Form.Item>
+	              <MinusCircleOutlined onClick={() => remove(field.name)} />
+	            </Space>
+	          ))}
+	          <Form.Item>
+	            <Button
+	              type="dashed"
+	              onClick={() => add()}
+	              style={{
+	                width: "100%",
+	              }}
+	              icon={<PlusOutlined />}
+	            >
+	              Add Video
+	            </Button>
+	          </Form.Item>
+	        </>
+	      )}
+	    </Form.List>
+	  </Form>
 	</Modal>
 	</>
 	);
