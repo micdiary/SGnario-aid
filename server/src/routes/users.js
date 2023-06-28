@@ -88,7 +88,7 @@ router.post("/edit-profile", async (req, res) => {
 
                 if (!hasMatch) {
                     const { clientEmail, rootFolderId } = therapist;
-                    console.log(therapist.privateKey);
+
                     const privateKey = decrypt(
                         therapist.privateKey,
                         process.env.ENCRYPTION_KEY

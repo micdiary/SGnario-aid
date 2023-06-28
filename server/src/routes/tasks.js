@@ -1,14 +1,19 @@
 import express from "express";
 import jwt, { verify } from "jsonwebtoken";
+import multer from "multer";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { getDrive } from "../utils/driveHelper.js";
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
 import { ScenariosModel } from "../models/Scenarios.js";
 
 const router = express.Router();
+
+// Configure Multer to handle file uploads
+const upload = multer({ dest: "uploads/" });
 
 // Create Task
 router.post("/create", async (req, res) => {
@@ -104,7 +109,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Add/Edit submission patient
-router.post("/user/submission", async (req, res) => {
+router.post("/user/submission", upload.single('file'), async (req, res) => {
     const { token, fields } = req.body;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -125,6 +130,31 @@ router.post("/user/submission", async (req, res) => {
             return res.status(401).json({ error: "Unauthorised" });
         }
 
+        //Perform file upload to google Drive
+        const superuser = await SuperuserModel.findOne({
+                "patientFolders.patient": user.email
+            },
+            {
+                clientEmail: 1,
+                privateKey: 1,
+                "patientFolders.$.folderId": 1
+            }
+        );
+        if (!superuser) {
+            console.log("Patient folder not found.");
+            return res.status(400).json({error: "Patient folder not found."});
+        }
+        const clientEmail = superuser.clientEmail;
+        const privateKey = superuser.privateKey;
+        const patientFolderId = superuser.patientFolders[0].folderId;
+
+        const uploadDetails = await doUpload(req.file, patientFolderId, clientEmail, privateKey);
+        if (!uploadDetails) {
+            console.log("Fail to upload file");
+            return res.status(400).json({error: "Fail to upload file"});
+        }
+        const recordingWebLink = uploadDetails.webViewLink;
+
         let updatedTask;
         // New submission
         if (!submissionId) {
@@ -132,7 +162,7 @@ router.post("/user/submission", async (req, res) => {
 
             const newSubmission = {
                 "title": videoName,
-                "recordingLink": "temp",
+                "recordingLink": recordingWebLink,
                 "dateSubmitted": new Date(),
                 "patientStutter": stutter,
                 "patientFluency": fluency,
@@ -161,7 +191,7 @@ router.post("/user/submission", async (req, res) => {
                 { _id: taskId, "submissions._id": submissionId },
                 {
                     $set: {
-                        "submissions.$.recordingLink": "temp",
+                        "submissions.$.recordingLink": recordingWebLink,
                         "submissions.$.patientStutter": stutter,
                         "submissions.$.patientFluency": fluency,
                         "submissions.$.patientRemark": remark,
@@ -244,5 +274,112 @@ router.post("/therapist/evaluation", async (req, res) => {
 //         console.log(err);
 //     }
 // });
+
+
+const getDrive = async () => {
+    const credentials = {
+        client_email: "", //Get from DB
+        private_key: "", //Get from DB
+    };
+    const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ["https://www.googleapis.com/auth/drive.file"],
+    });
+
+    const client = await auth.getClient();
+    return google.drive({ version: "v3", auth: client });
+};
+
+//Get the duration of the uploading video in seconds
+const getDuration = async (filePath) => {
+    try {
+        const duration = await getVideoDurationInSeconds(filePath);
+        return Math.round(duration);
+    } catch (error) {
+        throw error;
+    }
+};
+
+//Perform file uploading to google drive in the given folderId
+const doUpload = async (file, folderId, clientEmail, privateKey) => {
+    try {
+        // Check if a file was uploaded
+        if (!file) {
+            return null;
+        }
+
+        const drive = await getDrive(clientEmail, privateKey);
+
+        // Define the uploadToDrive function
+        const uploadToDrive = async (fileData, folderId) => {
+            try {
+                // Create a file metadata object
+                const fileMetadata = {
+                    name: fileData.originalname,
+                    parents: [folderId],
+                };
+
+                // Create the media upload object
+                const media = {
+                    mimeType: fileData.mimetype,
+                    body: fs.createReadStream(fileData.path),
+                };
+
+                // Upload the file
+                const response = await drive.files.create({
+                    requestBody: fileMetadata,
+                    media: media,
+                    fields: "kind, id, name, mimeType, webViewLink",
+                });
+
+                // Append permissions to make it readable by everyone and editable by uploader
+                await drive.permissions.create({
+                    fileId: response.data.id,
+                    requestBody: {
+                        role: "reader",
+                        type: "anyone",
+                    },
+                    supportsAllDrives: true,
+                });
+
+                //Get video duration
+                const duration = await getDuration(fileData.path);
+                console.log(duration); //Add to DB
+
+                console.log("File uploaded successfully:", response.data);
+                return response.data;
+            } catch (error) {
+                console.error("Error uploading file to Google Drive:", error);
+                throw error;
+            }
+        };
+
+        // Call the uploadToDrive function with the uploaded file
+        const uploadedFile = await uploadToDrive(file, folderId);
+
+        // Delete the temporary file
+        fs.unlinkSync(file.path);
+
+        return uploadedFile;
+    } catch (error) {
+        console.error("Error handling file upload:", error);
+        return null;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export { router as taskRouter };

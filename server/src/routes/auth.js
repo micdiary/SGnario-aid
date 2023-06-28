@@ -48,7 +48,7 @@ router.post("/register", async (req, res) => {
             therapistEmail: therapistEmail,
         });
 
-        // await newUser.save();
+        await newUser.save();
 
         // Find therapist
         if (therapistEmail) {
@@ -64,7 +64,6 @@ router.post("/register", async (req, res) => {
             if (!hasMatch) {
                 const { clientEmail, rootFolderId } = therapist;
 
-                console.log(rootFolderId);
                 const privateKey = decrypt(
                     therapist.privateKey,
                     process.env.ENCRYPTION_KEY

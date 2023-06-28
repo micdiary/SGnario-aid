@@ -1,17 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Form, Input, Select, Table } from "antd";
-import { getPatientsByTherapist } from "../../../api/therapist";
+import {
+	getPatientsByTherapist,
+	getPatientsTasks,
+} from "../../../api/therapist";
 import { createTasks } from "../../../api/task";
 import { getScenarios } from "../../../api/scenarios";
 
 const { Option } = Select;
 
-const SuperUserDashboard = ({ profile }) => {
+const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const [form] = Form.useForm();
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [patientOptions, setPatientOptions] = useState([]);
 	const [scenarioOptions, setScenarioOptions] = useState([]);
+	const [tasks, setTasks] = useState([]);
+
+	const fetchPatientTasks = async () => {
+		try {
+			const patients = await getPatientsByTherapist();
+			setPatientOptions(patients.users || []);
+
+			let tempTasks = [];
+
+			for (let i = 0; i < patients.users.length; i++) {
+				const patientTasks = await getPatientsTasks(patients.users[i]._id);
+				for (let j = 0; j < patientTasks.length; j++) {
+					tempTasks.push(patientTasks[j]);
+				}
+			}
+
+			setTasks(tempTasks);
+		} catch (error) {
+			// Handle error
+			console.error(error);
+		}
+	};
 
 	useEffect(() => {
 		if (profile.email) {
@@ -19,12 +44,9 @@ const SuperUserDashboard = ({ profile }) => {
 				name: profile.email,
 			});
 
-			getPatientsByTherapist().then((res) => {
-				setPatientOptions(res.users || []);
-			});
+			fetchPatientTasks();
 
 			getScenarios().then((res) => {
-				console.log(res)
 				setScenarioOptions(res || []);
 			});
 		}
@@ -52,7 +74,6 @@ const SuperUserDashboard = ({ profile }) => {
 			dateAssigned: new Date(),
 		};
 		createTasks(req).then((res) => {
-			console.log(res);
 			alert(res.message || res.error);
 		});
 		setConfirmLoading(false);
@@ -79,7 +100,7 @@ const SuperUserDashboard = ({ profile }) => {
 					{patientOptions.length > 0 &&
 						patientOptions.map((patient) => {
 							return (
-								<Option value={patient.email}>
+								<Option value={patient.email} key={patient.email}>
 									{patient.name} [{patient.email}]
 								</Option>
 							);
@@ -101,7 +122,7 @@ const SuperUserDashboard = ({ profile }) => {
 					{scenarioOptions.length > 0 &&
 						scenarioOptions.map((scenario) => {
 							return (
-								<Option id={scenario.scenario} value={scenario.scenario}>
+								<Option key={scenario.scenario} value={scenario.scenario}>
 									({scenario.category}) {scenario.scenario}
 								</Option>
 							);
@@ -129,12 +150,12 @@ const SuperUserDashboard = ({ profile }) => {
 
 	const columns = [
 		{
-			title: "Patient Name",
+			title: "Patient",
 			dataIndex: "patient",
 			key: "patient",
 		},
 		{
-			title: "Scenario Name",
+			title: "Scenario",
 			dataIndex: "scenario",
 			key: "scenario",
 		},
@@ -149,19 +170,20 @@ const SuperUserDashboard = ({ profile }) => {
 			key: "status",
 		},
 		{
-			title: "Patient Grade",
-			dataIndex: "patientGrade",
-			key: "patientGrade",
-		},
-		{
-			title: "Therapist Grade",
-			dataIndex: "therapistGrade",
-			key: "therapistGrade",
-		},
-		{
 			title: "Action",
 			dataIndex: "action",
 			key: "action",
+			render: (text, record) => (
+				<Button
+					type="primary"
+					onClick={() => {
+						setView("task");
+						setTask(record);
+					}}
+				>
+					Grade Task
+				</Button>
+			),
 		},
 	];
 
@@ -170,7 +192,7 @@ const SuperUserDashboard = ({ profile }) => {
 			<Button type="primary" onClick={showModal}>
 				Assign Task
 			</Button>
-			<Table columns={columns} />
+			<Table columns={columns} dataSource={tasks} rowKey="_id" />
 			<Modal
 				title="Assign Task"
 				open={isModalVisible}

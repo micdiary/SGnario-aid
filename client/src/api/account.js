@@ -2,7 +2,7 @@ import { requestGet, requestPost } from "../utils/request";
 import {
   REGISTER_API,
   LOGIN_API,
-  GET_ALL_THERAPIST_API,
+  THERAPISTS_API,
   USER_TYPE_API,
   RESET_PASSWORD_API,
   FORGOT_PASSWORD_API,
@@ -14,7 +14,7 @@ export async function register(req) {
 }
 
 export async function getTherapists() {
-  return requestGet(GET_ALL_THERAPIST_API);
+  return requestGet(THERAPISTS_API);
 }
 
 export async function login(req) {

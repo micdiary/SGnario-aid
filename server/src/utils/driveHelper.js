@@ -24,7 +24,6 @@ const getDrive = async (clientEmail, privateKey) => {
 const createFolder = async (folderName, folderId, _drive) => {
     try {
         const drive = _drive;
-
         // Create a folder metadata object
         const folderMetadata = {
             name: folderName,
@@ -36,9 +35,14 @@ const createFolder = async (folderName, folderId, _drive) => {
         const folderResponse = await drive.files.create({
             requestBody: folderMetadata,
         });
-
-        console.log("Folder created successfully:", folderResponse.data);
-        return folderResponse.data;
+        if (folderResponse) {
+            console.log("Folder created successfully:", folderResponse.data);
+            return folderResponse.data;
+        }
+        else {
+            console.log("Failed to create folder:", folderResponse.data);
+            return folderResponse.data;
+        }
     } catch (err) {
         console.log(err);
         return false;
