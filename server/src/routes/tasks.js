@@ -4,6 +4,7 @@ import multer from "multer";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { getDrive } from "../utils/driveHelper.js";
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
@@ -130,17 +131,28 @@ router.post("/user/submission", upload.single('file'), async (req, res) => {
         }
 
         //Perform file upload to google Drive
-        const superuser = await SuperuserModel.findOne(
-            { "patientFolders.patient": patientEmail },
-            { "patientFolders.$": 1 }
+        const superuser = await SuperuserModel.findOne({
+                "patientFolders.patient": user.email
+            },
+            {
+                clientEmail: 1,
+                privateKey: 1,
+                "patientFolders.$.folderId": 1
+            }
         );
-        const patientFolderId = "";
-        if (superuser && superuser.patientFolders.length > 0) {
-            patientFolderId = superuser.patientFolders[0].folderId;
-        } else {
+        if (!superuser) {
             console.log("Patient folder not found.");
+            return res.status(400).json({error: "Patient folder not found."});
         }
-        const uploadDetails = await doUpload(req.file, patientFolderId);
+        const clientEmail = superuser.clientEmail;
+        const privateKey = superuser.privateKey;
+        const patientFolderId = superuser.patientFolders[0].folderId;
+
+        const uploadDetails = await doUpload(req.file, patientFolderId, clientEmail, privateKey);
+        if (!uploadDetails) {
+            console.log("Fail to upload file");
+            return res.status(400).json({error: "Fail to upload file"});
+        }
         const recordingWebLink = uploadDetails.webViewLink;
 
         let updatedTask;
@@ -289,14 +301,14 @@ const getDuration = async (filePath) => {
 };
 
 //Perform file uploading to google drive in the given folderId
-const doUpload = async (file, folderId) => {
+const doUpload = async (file, folderId, clientEmail, privateKey) => {
     try {
         // Check if a file was uploaded
         if (!file) {
             return null;
         }
 
-        const drive = await getDrive();
+        const drive = await getDrive(clientEmail, privateKey);
 
         // Define the uploadToDrive function
         const uploadToDrive = async (fileData, folderId) => {
