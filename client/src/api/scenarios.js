@@ -1,5 +1,5 @@
 import { requestGet, requestPost } from "../utils/request";
-import { SCENARIOS_URL_API, CREATE_SCENARIOS_API } from "../constants.js";
+import { SCENARIOS_URL_API, CREATE_SCENARIOS_API, UPDATE_SCENARIO_VIDEONAME_API, UPDATE_SCENARIO_API, DELETE_SCENARIO_API } from "../constants.js";
 
 export async function getScenarios() {
   try {
@@ -19,6 +19,39 @@ export async function createScenario(req) {
   }
 }
 
+export async function updateScenarioVideoName(id, videoId, videoName) {
+  try {
+    const url = UPDATE_SCENARIO_VIDEONAME_API.replace(":id", id).replace(
+      ":videoId",
+      videoId
+    );
+    const response = await requestPut(url, { videoName });
+    return response; // Assuming the response contains the updated scenario data
+  } catch (error) {
+    throw new Error("Failed to update scenario video name");
+  }
+}
+
+export async function updateScenario(id, updatedData) {
+  try {
+    const url = UPDATE_SCENARIO_API.replace(":id", id);
+    const response = await requestPut(url, updatedData);
+    return response; // Assuming the response contains the updated scenario data
+  } catch (error) {
+    throw new Error("Failed to update scenario");
+  }
+}
+
+export async function deleteScenario(id) {
+  try {
+    const url = DELETE_SCENARIO_API.replace(":id", id);
+    const response = await requestDelete(url);
+    return response; // Assuming the response contains the success message or status
+  } catch (error) {
+    throw new Error("Failed to delete scenario");
+  }
+}
+
 export async function checkDuplicateVideo(videoId, videoName) {
   try {
     const scenarios = await getScenarios();
@@ -27,9 +60,9 @@ export async function checkDuplicateVideo(videoId, videoName) {
     const duplicateVideo = scenarios.some((scenario) =>
       scenario.videos.some(
         (video) =>
-          video.videoId === videoId || video.videoName === videoName
-      )
-    );
+        video.videoId === videoId || video.videoName === videoName
+        )
+      );
 
     return duplicateVideo;
   } catch (error) {

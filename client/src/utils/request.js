@@ -24,6 +24,11 @@ export async function requestPost(api, body) {
   return requestHandler(api, body, "POST");
 }
 
+export async function requestPut(api, body) {
+  return requestHandler(api, body, "PUT");
+}
+
+
 export async function requestDelete(api, body) {
   return requestHandler(api, body, "DELETE");
 }

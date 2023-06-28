@@ -53,19 +53,6 @@ router.get("/all", async (req, res) => {
     }
 });
 
-// router.get("/:id", async (req, res) => {
-//     try {
-//         const scenario = await ScenariosModel.findById(req.params.id);
-//         if (scenario) {
-//             res.json(scenario);
-//         } else {
-//             res.status(404).json({ error: "Scenario not found" });
-//         }
-//     } catch (error) {
-//         res.status(500).json({ error: "Failed to retrieve scenario" });
-//     }
-// });
-
 router.post("/create-scenario", async (req, res) => {
   const { category, scenario, videos } = req.body;
 
@@ -107,51 +94,71 @@ router.post("/create-scenario", async (req, res) => {
   }
 });
 
-// router.post("/create-scenario", async (req, res) => {
-//     try {
-//         const newScenario = req.body;
+// PUT /:id/video/:videoId
+router.put("/:id/video/:videoId", async (req, res) => {
+  const { id, videoId } = req.params;
+  const { videoName } = req.body;
 
-//         // Check if videoId already exists
-//         const existingScenario = await ScenariosModel.findOne({ videoId: newScenario.videoId });
-//         if (existingScenario) {
-//             return res.status(400).json({ error: "Duplicate video ID" });
-//         }
+  try {
+    // Find the scenario by ID and video ID
+    const scenario = await ScenariosModel.findOneAndUpdate(
+      { _id: id, "videos.videoId": videoId },
+      { $set: { "videos.$.videoName": videoName } },
+      { new: true }
+    );
 
-//         const createdScenario = await ScenariosModel.create(newScenario);
-//         res.status(201).json(createdScenario);
-//     } catch (error) {
-//         res.status(500).json({ error: "Failed to create scenario" });
-//     }
-// });
+    if (!scenario) {
+      return res.status(404).json({ error: "Scenario or video not found" });
+    }
 
-// router.put("/:id", async (req, res) => {
-//     try {
-//         const updatedScenario = req.body;
-//         const scenario = await ScenariosModel.findByIdAndUpdate(
-//             req.params.id,
-//             updatedScenario, { new: true }
-//         );
-//         if (scenario) {
-//             res.json(scenario);
-//         } else {
-//             res.status(404).json({ error: "Scenario not found" });
-//         }
-//     } catch (error) {
-//         res.status(500).json({ error: "Failed to update scenario" });
-//     }
-// });
+    return res.json(scenario);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-// router.delete("/:id", async (req, res) => {
-//     try {
-//         const scenario = await ScenariosModel.findByIdAndRemove(req.params.id);
-//         if (scenario) {
-//             res.json({ message: "Scenario deleted" });
-//         } else {
-//             res.status(404).json({ error: "Scenario not found" });
-//         }
-//     } catch (error) {
-//         res.status(500).json({ error: "Failed to delete scenario" });
-//     }
-// });
+// PUT /:id
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { scenario } = req.body;
+
+  try {
+    // Find the scenario by ID and update the scenario field
+    const updatedScenario = await ScenariosModel.findByIdAndUpdate(
+      id,
+      { scenario },
+      { new: true }
+    );
+
+    if (!updatedScenario) {
+      return res.status(404).json({ error: "Scenario not found" });
+    }
+
+    return res.json(updatedScenario);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE /:id
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the scenario by ID and delete it
+    const deletedScenario = await ScenariosModel.findByIdAndDelete(id);
+
+    if (!deletedScenario) {
+      return res.status(404).json({ error: "Scenario not found" });
+    }
+
+    return res.json({ message: "Scenario deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 export { router as scenariosRouter };

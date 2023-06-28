@@ -32,6 +32,9 @@ export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
 export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
+export const UPDATE_SCENARIO_VIDEONAME_API = `${URL}/scenarios/:id/video/:videoId`;
+export const UPDATE_SCENARIO_API = `${URL}/scenarios/:id`;
+export const DELETE_SCENARIO_API = `${URL}/scenarios/:id`;
 
 export const CREATE_TASK_API = `${URL}/tasks/create`;
 export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
