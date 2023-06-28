@@ -1,9 +1,12 @@
 import express from "express";
 import jwt, { verify } from "jsonwebtoken";
 import multer from "multer";
+import fs from "fs";
+import { getVideoDurationInSeconds } from "get-video-duration";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { encrypt, decrypt } from "../utils/cryptography.js";
 import { getDrive } from "../utils/driveHelper.js";
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
@@ -109,14 +112,16 @@ router.get("/:id", async (req, res) => {
 });
 
 // Add/Edit submission patient
-router.post("/user/submission", upload.single('file'), async (req, res) => {
+router.post("/user/submission", upload.single("file"), async (req, res) => {
     const { token, fields } = req.body;
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
 
+        // fields is a string even though headers is set to application/json in postman
+        // not sure why
         const { taskId, submissionId, videoName, stutter, fluency, remark } =
-            fields;
+            JSON.parse(fields);
 
         // Check if task belongs to user
         const task = await TaskModel.findOne({ _id: taskId });
@@ -130,39 +135,51 @@ router.post("/user/submission", upload.single('file'), async (req, res) => {
             return res.status(401).json({ error: "Unauthorised" });
         }
 
-        //Perform file upload to google Drive
-        const superuser = await SuperuserModel.findOne({
-                "patientFolders.patient": user.email
-            },
-            {
-                clientEmail: 1,
-                privateKey: 1,
-                "patientFolders.$.folderId": 1
-            }
-        );
-        if (!superuser) {
-            console.log("Patient folder not found.");
-            return res.status(400).json({error: "Patient folder not found."});
-        }
-        const clientEmail = superuser.clientEmail;
-        const privateKey = superuser.privateKey;
-        const patientFolderId = superuser.patientFolders[0].folderId;
+        // Find folder to upload
+        const therapist = await SuperuserModel.findOne({
+            email: task.therapist,
+        });
 
-        const uploadDetails = await doUpload(req.file, patientFolderId, clientEmail, privateKey);
-        if (!uploadDetails) {
-            console.log("Fail to upload file");
-            return res.status(400).json({error: "Fail to upload file"});
+        const patientFolderId = therapist.patientFolders.find((folder) => {
+            return folder.patient === user.email;
+        }).folderId;
+
+        // Folder does not exist
+        if (!patientFolderId) {
+            return res.status(404).json({ error: "Folder does not exist!" });
         }
-        const recordingWebLink = uploadDetails.webViewLink;
+
+        // Upload file
+        const clientEmail = therapist.clientEmail;
+        const privateKey = decrypt(
+            therapist.privateKey,
+            process.env.ENCRYPTION_KEY
+        );
+
+        const uploadDetails = await doUpload(
+            req.file,
+            patientFolderId,
+            clientEmail,
+            privateKey
+        );
+
+        // Uesr uploaded file that is not a video
+        if (!uploadDetails) {
+            return res
+                .status(400)
+                .json({ error: "Only video files are accepted" });
+        }
+
+        const recordingWebLink = uploadDetails.responseData.webViewLink;
+        const videoDuration = uploadDetails.duration;
 
         let updatedTask;
         // New submission
         if (!submissionId) {
-            console.log("here1");
-
             const newSubmission = {
                 "title": videoName,
                 "recordingLink": recordingWebLink,
+                "videoDuration": videoDuration,
                 "dateSubmitted": new Date(),
                 "patientStutter": stutter,
                 "patientFluency": fluency,
@@ -192,6 +209,7 @@ router.post("/user/submission", upload.single('file'), async (req, res) => {
                 {
                     $set: {
                         "submissions.$.recordingLink": recordingWebLink,
+                        "submissions.$.videoDuration": videoDuration,
                         "submissions.$.patientStutter": stutter,
                         "submissions.$.patientFluency": fluency,
                         "submissions.$.patientRemark": remark,
@@ -239,68 +257,22 @@ router.post("/therapist/evaluation", async (req, res) => {
         });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// // User edit ratings
-// router.put("/user/evaluation", async (req, res) => {
-//     const { token, fields } = req.body;
-//     try {
-//         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-//         const { id, role } = decodedToken;
-
-//         if (role !== "user") {
-//             return res.status(401).json({ error: "Unauthorised" });
-//         }
-
-//         const { taskId, submissionId, stutter, fluency, remark } = fields;
-//         updatedTask = await Task.findOneAndUpdate(
-//             { _id, taskId, "submissions._id": submissionId },
-//             {
-//                 $set: {
-//                     "submissions.$.patientStutter": stutter,
-//                     "submissions.$.patientFluency": fluency,
-//                     "submissions.$.patientRemark": remark,
-//                 },
-//             },
-//             { new: true }
-//         );
-
-//         return res.status(200).json({
-//             "message": "Task succesfully updated",
-//             "task": updatedTask,
-//         });
-//     } catch (err) {
-//         console.log(err);
-//     }
-// });
-
-
-const getDrive = async () => {
-    const credentials = {
-        client_email: "", //Get from DB
-        private_key: "", //Get from DB
-    };
-    const auth = new google.auth.GoogleAuth({
-        credentials,
-        scopes: ["https://www.googleapis.com/auth/drive.file"],
-    });
-
-    const client = await auth.getClient();
-    return google.drive({ version: "v3", auth: client });
-};
-
-//Get the duration of the uploading video in seconds
+// Get the duration of the uploading video in seconds
 const getDuration = async (filePath) => {
     try {
         const duration = await getVideoDurationInSeconds(filePath);
         return Math.round(duration);
     } catch (error) {
-        throw error;
+        console.log(error);
+        throw "Not a video";
     }
 };
 
-//Perform file uploading to google drive in the given folderId
+// Perform file uploading to google drive in the given folderId
 const doUpload = async (file, folderId, clientEmail, privateKey) => {
     try {
         // Check if a file was uploaded
@@ -313,6 +285,9 @@ const doUpload = async (file, folderId, clientEmail, privateKey) => {
         // Define the uploadToDrive function
         const uploadToDrive = async (fileData, folderId) => {
             try {
+                //Get video duration
+                const duration = await getDuration(fileData.path);
+
                 // Create a file metadata object
                 const fileMetadata = {
                     name: fileData.originalname,
@@ -342,14 +317,15 @@ const doUpload = async (file, folderId, clientEmail, privateKey) => {
                     supportsAllDrives: true,
                 });
 
-                //Get video duration
-                const duration = await getDuration(fileData.path);
-                console.log(duration); //Add to DB
+                const finalResponse = {
+                    "responseData": response.data,
+                    "duration": duration,
+                };
 
-                console.log("File uploaded successfully:", response.data);
-                return response.data;
+                console.log("File uploaded successfully:", finalResponse);
+                return finalResponse;
             } catch (error) {
-                console.error("Error uploading file to Google Drive:", error);
+                console.log("Error uploading file to Google Drive:", error);
                 throw error;
             }
         };
@@ -366,20 +342,5 @@ const doUpload = async (file, folderId, clientEmail, privateKey) => {
         return null;
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export { router as taskRouter };
