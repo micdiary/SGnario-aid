@@ -20,7 +20,8 @@ const UserTaskModal = ({
 			if (
 				values.patientStutter !== "" &&
 				values.patientFluency !== "" &&
-				values.patientRemark !== ""
+				values.patientRemark !== "" &&
+				values.recordingLink !== "temp"
 			) {
 				setIsFormValid(true);
 			} else {
@@ -36,6 +37,7 @@ const UserTaskModal = ({
 			patientStutter: modalData.patientStutter,
 			patientFluency: modalData.patientFluency,
 			patientRemark: modalData.patientRemark,
+			recordingLink: modalData.recordingLink,
 		});
 	}, [modalData, form]);
 
@@ -47,6 +49,7 @@ const UserTaskModal = ({
 			stutter: values.patientStutter,
 			fluency: values.patientFluency,
 			remark: values.patientRemark,
+			file: values.recordingLink.file,
 		};
 
 		setConfirmLoading(true);
@@ -57,6 +60,12 @@ const UserTaskModal = ({
 		});
 	};
 
+	const customRequest = ({ file, onSuccess }) => {
+		setTimeout(() => {
+			onSuccess("ok");
+		}, 0);
+	};
+
 	const handleOk = () => {
 		form.submit();
 		setModalVisible(false);
@@ -64,11 +73,6 @@ const UserTaskModal = ({
 
 	const handleCancel = () => {
 		setModalVisible(false);
-	};
-
-	const onFileUpload = ({ file, fileList }) => {
-		console.log(file);
-		console.log(fileList);
 	};
 
 	const formItem = [
@@ -115,8 +119,8 @@ const UserTaskModal = ({
 			// 	},
 			// ],
 			input: (
-				<Upload onChange={onFileUpload}>
-					<Button icon={<UploadOutlined />}>Upload</Button>
+				<Upload customRequest={customRequest} disabled={modalData.recordingLink !== "temp"}>
+					<Button icon={<UploadOutlined />} disabled={modalData.recordingLink !== "temp"}>Upload</Button>
 				</Upload>
 			),
 		},

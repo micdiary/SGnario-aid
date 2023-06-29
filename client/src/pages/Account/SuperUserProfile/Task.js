@@ -121,7 +121,12 @@ const SuperUserTask = ({ task, setView }) => {
 						dataIndex="recordingLink"
 						key="recordingLink"
 						render={(text, record) => {
-							return <Typography.Link>{text}</Typography.Link>;
+							if(text.startsWith("https")){
+								return <Typography.Link href={text} target="_blank">{text.startsWith("https")?text:"NULL"}</Typography.Link>;
+							}
+							else{
+								return <Typography>NULL</Typography>;
+							}
 						}}
 					></Column>
 

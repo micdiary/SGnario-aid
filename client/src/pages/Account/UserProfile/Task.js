@@ -27,7 +27,6 @@ const Task = ({ task, setView }) => {
 	const [editingKey, setEditingKey] = useState("");
 
 	useEffect(() => {
-		console.log(task);
 		setPopulateData(populateTaskData(task));
 	}, [task]);
 
@@ -36,12 +35,7 @@ const Task = ({ task, setView }) => {
 		setModalVisible(true);
 		setModalData(record);
 	};
-
-	const onFileUpload = ({ file, fileList }) => {
-		console.log(file);
-		console.log(fileList);
-	};
-
+	
 	const onFinish = (values) => {
 		const req = {
 			taskId: task._id,
@@ -49,6 +43,7 @@ const Task = ({ task, setView }) => {
 			stutter: values.patientStutter,
 			fluency: values.patientFluency,
 			remark: values.patientRemark,
+			file: values.recordingLink.file,
 		};
 
 		updateTask(req).then((res) => {
@@ -63,6 +58,12 @@ const Task = ({ task, setView }) => {
 	};
 
 	const generateModal = () => {
+		const customRequest = ({ file, onSuccess }) => {
+			setTimeout(() => {
+				onSuccess("ok");
+			}, 0);
+		};
+
 		const formItem = [
 			{
 				label: "Video Name",
@@ -124,7 +125,7 @@ const Task = ({ task, setView }) => {
 				// 	},
 				// ],
 				input: (
-					<Upload onChange={onFileUpload}>
+					<Upload customRequest={customRequest}>
 						<Button icon={<UploadOutlined />}>Upload</Button>
 					</Upload>
 				),
@@ -257,7 +258,12 @@ const Task = ({ task, setView }) => {
 						dataIndex="recordingLink"
 						key="recordingLink"
 						render={(text, record) => {
-							return <Typography.Link>{text}</Typography.Link>;
+							if(text.startsWith("https")){
+								return <Typography.Link href={text} target="_blank">{text.startsWith("https")?text:"NULL"}</Typography.Link>;
+							}
+							else{
+								return <Typography>NULL</Typography>;
+							}
 						}}
 					></Column>
 

@@ -18,5 +18,9 @@ export async function getTaskById(req) {
 
 export async function updateTask(req) {
 	const token = getToken();
-	return requestPost(USER_TASK_SUBMISSION_API, { req: { token: token, fields: req } });
+	const formData = new FormData();
+	formData.append("token", token);
+	formData.append("fields", JSON.stringify(req));
+	formData.append("file", req.file.originFileObj);
+	return requestPost(USER_TASK_SUBMISSION_API, { req: formData}, "multipart/form-data");
 }
