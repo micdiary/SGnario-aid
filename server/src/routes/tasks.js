@@ -55,6 +55,7 @@ router.post("/create", async (req, res) => {
             therapist: therapist.email,
             patient: email,
             scenario: scenario,
+            category: scenarioFound.category,
             videos: videos,
             submissions: submissions,
         });
