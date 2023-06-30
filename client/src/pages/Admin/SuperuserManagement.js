@@ -10,29 +10,19 @@ import {
 	Select,
 	Popconfirm,
 } from "antd";
-import {
-	deleteUser,
-	getPatients,
-	getTherapists,
-	registerSuperuser,
-} from "../../api/admin";
+import { deleteUser, getTherapists, registerSuperuser } from "../../api/admin";
 
 const { Option } = Select;
 
-const AccountManagement = () => {
+const SuperuserManagement = () => {
 	const [data, setData] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [form] = Form.useForm();
 
 	useEffect(() => {
-		getPatients().then((res) => {
-			let tempData = [];
-			tempData.push(res.users);
-			getTherapists().then((res) => {
-				tempData.push(res.therapists);
-				setData(tempData[0].concat(tempData[1]));
-			});
+		getTherapists().then((res) => {
+			setData(res.therapists);
 		});
 	}, []);
 
@@ -190,10 +180,6 @@ const AccountManagement = () => {
 					text: "Educator",
 					value: "educator",
 				},
-				{
-					text: "User",
-					value: "user",
-				},
 			],
 			onFilter: (value, record) => record.role.indexOf(value) === 0,
 		},
@@ -234,4 +220,4 @@ const AccountManagement = () => {
 	);
 };
 
-export default AccountManagement;
+export default SuperuserManagement;
