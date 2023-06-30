@@ -13,18 +13,17 @@ import {
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import {
-	checkDuplicateVideo,
-	createScenario,
 	getScenarios,
 	deleteScenario,
 	updateScenario,
 	updateScenarioVideoName,
 } from "../../api/scenarios";
+import AddScenariosModal from "./AddScenariosModal";
 
 const { Option } = Select;
 
 const Scenarios = () => {
-	const [open, setOpen] = useState(false);
+	const [addScenarioModalVisible, setAddScenarioModalVisible] = useState(false);
 	const [data, setData] = useState([]);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [categoryOptions, setCategoryOptions] = useState([]);
@@ -72,51 +71,18 @@ const Scenarios = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, categorySelected]);
 
-	const showModal = () => {
-		setOpen(true);
-	};
-
-	const handleOk = () => {
-		setConfirmLoading(true);
-		form.submit();
-	};
-
-	const handleCancel = () => {
-		setOpen(false);
-	};
-
-	// Adding New Scenario
-	const onFormFinish = (values) => {
-		for (let i = 0; i < values.videos.length; i++) {
-			checkDuplicateVideo(values.videos[i].videoId, values.videos[i].videoName)
-				.then((isDuplicate) => {
-					if (isDuplicate) {
-						alert("Video already exists");
-						return;
-					} else if (i === values.videos.length - 1) {
-						const req = {
-							...values,
-							dateAdded: new Date(),
-						};
-						createScenario(req)
-							.then((res) => {
-								setCategoryOptions([]);
-								alert("Scenario created successfully");
-							})
-							.catch((error) => {
-								console.error(error);
-								alert("Failed to create scenario");
-							});
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-					alert("Failed to check duplicate video");
-				});
+	useEffect(() => {
+		if (editScenario) {
+			form.setFieldsValue({
+				scenario: editScenario.scenario,
+				videos: editScenario.videos,
+			});
+			setScenarioOptions([editScenario.scenario]);
 		}
-		form.resetFields();
-		setConfirmLoading(false);
-		setOpen(false);
+	}, [editScenario]);
+
+	const showModal = () => {
+		setAddScenarioModalVisible(true);
 	};
 
 	const onEditFormFinish = async (values) => {
@@ -258,7 +224,6 @@ const Scenarios = () => {
 			],
 			input: (
 				<Select
-					disabled={!categorySelected}
 					placeholder="Select a scenario"
 					dropdownRender={(menu) => (
 						<>
@@ -383,62 +348,12 @@ const Scenarios = () => {
 					expandedRowRender,
 				}}
 			/>
-			<Modal
-				title="Add Scenario"
-				open={open}
-				onOk={handleOk}
-				confirmLoading={confirmLoading}
-				onCancel={handleCancel}
-			>
-				<Form form={form} onFinish={onFormFinish}>
-					{modalForm(formItem)}
-					<Form.List name="videos">
-						{(fields, { add, remove }) => (
-							<>
-								{fields.map((field) => (
-									<Space
-										key={field.key}
-										style={{ display: "flex", marginBottom: 8 }}
-										align="baseline"
-									>
-										<Form.Item
-											{...field}
-											key={`videoId${field.key}`}
-											name={[field.name, "videoId"]}
-											rules={[{ required: true, message: "Missing video ID" }]}
-										>
-											<Input placeholder="Video ID" />
-										</Form.Item>
-										<Form.Item
-											{...field}
-											key={`videoName${field.key}`}
-											name={[field.name, "videoName"]}
-											rules={[
-												{ required: true, message: "Missing video name" },
-											]}
-										>
-											<Input placeholder="Video Name" />
-										</Form.Item>
-										<MinusCircleOutlined onClick={() => remove(field.name)} />
-									</Space>
-								))}
-								<Form.Item>
-									<Button
-										type="dashed"
-										onClick={() => add()}
-										style={{
-											width: "100%",
-										}}
-										icon={<PlusOutlined />}
-									>
-										Add Video
-									</Button>
-								</Form.Item>
-							</>
-						)}
-					</Form.List>
-				</Form>
-			</Modal>
+			<AddScenariosModal
+				data={data}
+				setData={setData}
+				addScenarioModalVisible={addScenarioModalVisible}
+				setAddScenarioModalVisible={setAddScenarioModalVisible}
+			/>
 			<Modal
 				title="Edit Scenario"
 				open={editOpen}
