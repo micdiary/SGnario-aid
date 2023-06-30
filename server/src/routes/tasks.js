@@ -117,9 +117,6 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const { id, role } = decodedToken;
-
-        // fields is a string even though headers is set to application/json in postman
-        // not sure why
         const { taskId, submissionId, videoName, stutter, fluency, remark } =
             JSON.parse(fields);
 
@@ -135,81 +132,112 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
             return res.status(401).json({ error: "Unauthorised" });
         }
 
-        // Find folder to upload
-        const therapist = await SuperuserModel.findOne({
-            email: task.therapist,
-        });
-
-        const patientFolderId = therapist.patientFolders.find((folder) => {
-            return folder.patient === user.email;
-        }).folderId;
-
-        // Folder does not exist
-        if (!patientFolderId) {
-            return res.status(404).json({ error: "Folder does not exist!" });
-        }
-
-        // Upload file
-        const clientEmail = therapist.clientEmail;
-        const privateKey = decrypt(
-            therapist.privateKey,
-            process.env.ENCRYPTION_KEY
-        );
-
-        const uploadDetails = await doUpload(
-            req.file,
-            patientFolderId,
-            clientEmail,
-            privateKey
-        );
-
-        // Uesr uploaded file that is not a video
-        if (!uploadDetails) {
-            return res
-                .status(400)
-                .json({ error: "Only video files are accepted" });
-        }
-
-        const recordingWebLink = uploadDetails.responseData.webViewLink;
-        const videoDuration = uploadDetails.duration;
-
         let updatedTask;
-        // New submission
-        if (!submissionId) {
-            const newSubmission = {
-                "title": videoName,
-                "recordingLink": recordingWebLink,
-                "videoDuration": videoDuration,
-                "dateSubmitted": new Date(),
-                "patientStutter": stutter,
-                "patientFluency": fluency,
-                "patientRemark": remark,
-            };
+        if (req.file) {
+            // New or existing submission
 
-            updatedTask = await TaskModel.findByIdAndUpdate(
-                taskId,
-                {
-                    $push: { submissions: newSubmission },
-                },
-                { new: true }
-            );
+            // Find folder to upload
+            const therapist = await SuperuserModel.findOne({
+                email: task.therapist,
+            });
 
-            if (!updatedTask) {
-                return res.status(404).json({ error: "Task not found" });
+            const patientFolderId = therapist.patientFolders.find((folder) => {
+                return folder.patient === user.email;
+            }).folderId;
+
+            // Folder does not exist
+            if (!patientFolderId) {
+                return res
+                    .status(404)
+                    .json({ error: "Folder does not exist!" });
             }
 
-            return res.status(200).json({
-                "message": "Task successfully updated",
-                "task": updatedTask,
-            });
+            // Upload file
+            const clientEmail = therapist.clientEmail;
+            const privateKey = decrypt(
+                therapist.privateKey,
+                process.env.ENCRYPTION_KEY
+            );
+
+            const uploadDetails = await doUpload(
+                req.file,
+                patientFolderId,
+                clientEmail,
+                privateKey
+            );
+
+            // User uploaded file that is not a video
+            if (!uploadDetails) {
+                return res
+                    .status(400)
+                    .json({ error: "Only video files are accepted" });
+            }
+
+            const recordingWebLink = uploadDetails.responseData.webViewLink;
+            const videoDuration = uploadDetails.duration;
+            const dateSubmitted = new Date();
+
+            if (!submissionId) {
+                // Pre-created submission
+                const newSubmission = {
+                    "title": videoName,
+                    "recordingLink": recordingWebLink,
+                    "videoDuration": videoDuration,
+                    "dateSubmitted": dateSubmitted,
+                    "patientStutter": stutter,
+                    "patientFluency": fluency,
+                    "patientRemark": remark,
+                };
+
+                updatedTask = await TaskModel.findByIdAndUpdate(
+                    taskId,
+                    {
+                        $push: { submissions: newSubmission },
+                    },
+                    { new: true }
+                );
+
+                if (!updatedTask) {
+                    return res.status(404).json({ error: "Task not found" });
+                }
+
+                return res.status(200).json({
+                    "message": "Task successfully updated",
+                    "task": updatedTask,
+                });
+            } else {
+                // New submission
+                updatedTask = await TaskModel.findOneAndUpdate(
+                    {
+                        _id: taskId,
+                        "submissions._id": submissionId,
+                    },
+                    {
+                        $set: {
+                            "submissions.$.recordingLink": recordingWebLink,
+                            "submissions.$.videoDuration": videoDuration,
+                            "submissions.$.dateSubmitted": dateSubmitted,
+                            "submissions.$.patientStutter": stutter,
+                            "submissions.$.patientFluency": fluency,
+                            "submissions.$.patientRemark": remark,
+                        },
+                    },
+                    { new: true }
+                );
+                return res.status(200).json({
+                    message: "Task successfully updated",
+                    "task": updatedTask,
+                });
+            }
         } else {
-            // Existing submission
+            // Modify score/feedback
             updatedTask = await TaskModel.findOneAndUpdate(
-                { _id: taskId, "submissions._id": submissionId },
+                {
+                    _id: taskId,
+                    "submissions._id": submissionId,
+                },
                 {
                     $set: {
-                        "submissions.$.recordingLink": recordingWebLink,
-                        "submissions.$.videoDuration": videoDuration,
                         "submissions.$.patientStutter": stutter,
                         "submissions.$.patientFluency": fluency,
                         "submissions.$.patientRemark": remark,
