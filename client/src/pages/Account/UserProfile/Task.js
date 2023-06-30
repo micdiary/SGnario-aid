@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
 	Button,
 	Table,
@@ -8,13 +9,15 @@ import {
 	Upload,
 	Modal,
 	Input,
-	InputNumber,
+	Slider,
 	Select,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import UserTaskModal from "./TaskModal";
 import { updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
+import { stutterMarks, fluencyMarks } from "../../../constants";
+import * as constants from "../../../constants";
 
 const { Column, ColumnGroup } = Table;
 const Task = ({ task, setView }) => {
@@ -35,7 +38,7 @@ const Task = ({ task, setView }) => {
 		setModalVisible(true);
 		setModalData(record);
 	};
-	
+
 	const onFinish = (values) => {
 		const req = {
 			taskId: task._id,
@@ -91,7 +94,18 @@ const Task = ({ task, setView }) => {
 						message: "Please input your score!",
 					},
 				],
-				input: <InputNumber />,
+				input: (
+					<Slider
+						style={{ width: "70%" }}
+						tooltip={{
+							visible: true,
+							formatter: (value) => stutterMarks[value],
+						}}
+						defaultValue={0}
+						min={0}
+						max={8}
+					/>
+				),
 			},
 			{
 				label: "Fluency",
@@ -102,7 +116,18 @@ const Task = ({ task, setView }) => {
 						message: "Please input your score!",
 					},
 				],
-				input: <InputNumber />,
+				input: (
+					<Slider
+						style={{ width: "70%" }}
+						tooltip={{
+							visible: true,
+							formatter: (value) => fluencyMarks[value],
+						}}
+						defaultValue={0}
+						min={0}
+						max={8}
+					/>
+				),
 			},
 			{
 				label: "Remark",
@@ -172,7 +197,14 @@ const Task = ({ task, setView }) => {
 			>
 				Add a new recording
 			</Button>
-			<Typography.Title>{task.scenario}</Typography.Title>
+			<Link
+				to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
+					task.category
+				)}&scenario=${encodeURIComponent(task.scenario)}`}
+				target="_blank"
+			>
+				<Typography.Title>{task.scenario}</Typography.Title>
+			</Link>
 			<Form form={form} component={false}>
 				<Table
 					expandable={{
@@ -214,7 +246,6 @@ const Task = ({ task, setView }) => {
 						dataIndex="videoName"
 						key="videoName"
 					></Column>
-					<Column title="Video Link" dataIndex="videoId" key="videoId"></Column>
 					<ColumnGroup title="Self Evaluation">
 						<Column
 							title="Stutter"
@@ -254,14 +285,17 @@ const Task = ({ task, setView }) => {
 						/>
 					</ColumnGroup>
 					<Column
-						title="Recording"
-						dataIndex="recordingLink"
-						key="recordingLink"
+						title="Recording Duration (s)"
+						dataIndex="videoDuration"
+						key="videoDuration"
 						render={(text, record) => {
-							if(text.startsWith("https")){
-								return <Typography.Link href={text} target="_blank">{text.startsWith("https")?text:"NULL"}</Typography.Link>;
-							}
-							else{
+							if (record.recordingLink.startsWith("https")) {
+								return (
+									<Typography.Link href={record.recordingLink} target="_blank">
+										{text}
+									</Typography.Link>
+								);
+							} else {
 								return <Typography>NULL</Typography>;
 							}
 						}}

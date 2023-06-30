@@ -46,3 +46,27 @@ export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`
 export const INCOMPLETE_TAG = "Incomplete";
 export const PENDING_TAG = "Pending";
 export const COMPLETE_TAG = "Complete";
+
+export const stutterMarks = {
+    0: "No Stutter (0)",
+    1: "Extremely Mild Stutter (1)",
+    2: "Mild Stutter (2)",
+    3: "Mild Stutter (3)",
+    4: "Moderate Stutter (4)",
+    5: "Moderate Stutter (5)",
+    6: "Severe Stutter (6)",
+    7: "Severe Stutter (7)",
+    8: "Extremely Severe Stutter (8)",
+};
+
+export const fluencyMarks = {
+    0: "No Technique (0)",
+    1: "Less Technique (1)",
+    2: "Less Technique (2)",
+    3: "Moderate Technique (3)",
+    4: "Moderate Technique (4)",
+    5: "Moderate Technique (5)",
+    6: "More Technique (6)",
+    7: "More Technique (7)",
+    8: "Maximum Technique (8)",
+};

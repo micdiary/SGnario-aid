@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, InputNumber, Input } from "antd";
+import { Form, Modal, InputNumber, Input, Slider } from "antd";
 import { updatePatientTasks } from "../../../api/therapist";
 import { populateTaskData } from "../../../utils/task";
+import { stutterMarks, fluencyMarks } from "../../../constants";
 
 const SuperUserTaskModal = ({
 	modalVisible,
@@ -76,7 +77,18 @@ const SuperUserTaskModal = ({
 					message: "Please input your score!",
 				},
 			],
-			input: <InputNumber />,
+			input: (
+				<Slider
+					style={{ width: "70%" }}
+					tooltip={{
+						visible: true,
+						formatter: (value) => stutterMarks[value],
+					}}
+					defaultValue={0}
+					min={0}
+					max={8}
+				/>
+			),
 		},
 		{
 			label: "Fluency",
@@ -87,7 +99,18 @@ const SuperUserTaskModal = ({
 					message: "Please input your score!",
 				},
 			],
-			input: <InputNumber />,
+			input: (
+				<Slider
+					style={{ width: "70%" }}
+					tooltip={{
+						visible: true,
+						formatter: (value) => fluencyMarks[value],
+					}}
+					defaultValue={0}
+					min={0}
+					max={8}
+				/>
+			),
 		},
 		{
 			label: "Remark",
@@ -98,7 +121,7 @@ const SuperUserTaskModal = ({
 					message: "Please input your remark!",
 				},
 			],
-			input: <Input />,
+			input: <Input.TextArea rows={3} />,
 		},
 	];
 

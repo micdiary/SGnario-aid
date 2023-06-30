@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Menu, Row, Col } from "antd";
-import { UserOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+	UserOutlined,
+	HomeOutlined,
+	AppstoreOutlined,
+} from "@ant-design/icons";
 
 import SuperUserProfile from "./SuperUserProfile/Profile";
 import SuperUserDashboard from "./SuperUserProfile/Dashboard";
@@ -11,19 +15,6 @@ import Dashboard from "./UserProfile/Dashboard";
 import Task from "./UserProfile/Task";
 import { getUserType } from "../../utils/account";
 import { getProfile } from "../../api/profile";
-
-const menuItems = [
-	{
-		label: "Profile",
-		key: "profile",
-		icon: <UserOutlined />,
-	},
-	{
-		label: "Dashboard",
-		key: "dashboard",
-		icon: <HomeOutlined />,
-	},
-];
 
 const Account = () => {
 	const [view, setView] = useState("profile");
@@ -38,11 +29,29 @@ const Account = () => {
 
 	useEffect(() => {
 		setUserType(getUserType());
-
 		getProfile().then((res) => {
 			setProfile(res);
 		});
 	}, []);
+
+	const menuItems = [
+		{
+			label: "Profile",
+			key: "profile",
+			icon: <UserOutlined />,
+		},
+		{
+			label: "Dashboard",
+			key: "dashboard",
+			icon: <HomeOutlined />,
+		},
+		{
+			label: "Storage Configurations",
+			key: "storage",
+			icon: <AppstoreOutlined />,
+			hidden: userType === "user",
+		},
+	];
 
 	return (
 		<Row gutter={24}>

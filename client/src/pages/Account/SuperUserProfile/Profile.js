@@ -17,7 +17,6 @@ const SuperUserProfile = ({ profile }) => {
 	const [isProfileFormValid, setIsProfileFormValid] = useState(false);
 	const profileValues = Form.useWatch([], profileForm);
 	useEffect(() => {
-		console.log("profileValues: ", profileValues);
 		if (profileValues !== undefined && profileValues.purpose !== undefined) {
 			if (
 				profileValues.name !== "" &&

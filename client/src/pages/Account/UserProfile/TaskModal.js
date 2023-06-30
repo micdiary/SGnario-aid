@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, InputNumber, Input, Upload, Button } from "antd";
+import { Form, Modal, InputNumber, Input, Upload, Button, Slider } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
+import { stutterMarks, fluencyMarks } from "../../../constants";
 
 const UserTaskModal = ({
 	modalVisible,
@@ -85,7 +86,18 @@ const UserTaskModal = ({
 					message: "Please input your score!",
 				},
 			],
-			input: <InputNumber />,
+			input: (
+				<Slider
+					style={{ width: "70%" }}
+					tooltip={{
+						visible: true,
+						formatter: (value) => stutterMarks[value],
+					}}
+					defaultValue={0}
+					min={0}
+					max={8}
+				/>
+			),
 		},
 		{
 			label: "Fluency",
@@ -96,7 +108,18 @@ const UserTaskModal = ({
 					message: "Please input your score!",
 				},
 			],
-			input: <InputNumber />,
+			input: (
+				<Slider
+					style={{ width: "70%" }}
+					tooltip={{
+						visible: true,
+						formatter: (value) => fluencyMarks[value],
+					}}
+					defaultValue={0}
+					min={0}
+					max={8}
+				/>
+			),
 		},
 		{
 			label: "Remark",
@@ -107,7 +130,7 @@ const UserTaskModal = ({
 					message: "Please input your remark!",
 				},
 			],
-			input: <Input />,
+			input: <Input.TextArea rows={3} />,
 		},
 		{
 			label: "Recording Link",
@@ -119,8 +142,16 @@ const UserTaskModal = ({
 			// 	},
 			// ],
 			input: (
-				<Upload customRequest={customRequest} disabled={modalData.recordingLink !== "temp"}>
-					<Button icon={<UploadOutlined />} disabled={modalData.recordingLink !== "temp"}>Upload</Button>
+				<Upload
+					customRequest={customRequest}
+					disabled={modalData.recordingLink !== "temp"}
+				>
+					<Button
+						icon={<UploadOutlined />}
+						disabled={modalData.recordingLink !== "temp"}
+					>
+						Upload
+					</Button>
 				</Upload>
 			),
 		},

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Table, Typography, Popconfirm, Form, Tag, Upload } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import SuperTaskTaskModal from "./TaskModal";
 import { populateTaskData } from "../../../utils/task";
+import * as constants from "../../../constants";
 
 const { Column, ColumnGroup } = Table;
 const SuperUserTask = ({ task, setView }) => {
@@ -36,7 +37,14 @@ const SuperUserTask = ({ task, setView }) => {
 			>
 				Back
 			</Button>
-			<Typography.Title>{task.scenario}</Typography.Title>
+			<Link
+				to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
+					task.category
+				)}&scenario=${encodeURIComponent(task.scenario)}`}
+				target="_blank"
+			>
+				<Typography.Title>{task.scenario}</Typography.Title>
+			</Link>
 			<Form form={form} component={false}>
 				<Table
 					expandable={{
@@ -77,7 +85,6 @@ const SuperUserTask = ({ task, setView }) => {
 						dataIndex="videoName"
 						key="videoName"
 					></Column>
-					<Column title="Video Link" dataIndex="videoId" key="videoId"></Column>
 					<ColumnGroup title="Self Evaluation">
 						<Column
 							title="Stutter"
@@ -117,19 +124,21 @@ const SuperUserTask = ({ task, setView }) => {
 						/>
 					</ColumnGroup>
 					<Column
-						title="Recording"
-						dataIndex="recordingLink"
-						key="recordingLink"
+						title="Recording Duration (s)"
+						dataIndex="videoDuration"
+						key="videoDuration"
 						render={(text, record) => {
-							if(text.startsWith("https")){
-								return <Typography.Link href={text} target="_blank">{text.startsWith("https")?text:"NULL"}</Typography.Link>;
-							}
-							else{
+							if (record.recordingLink.startsWith("https")) {
+								return (
+									<Typography.Link href={record.recordingLink} target="_blank">
+										{text}
+									</Typography.Link>
+								);
+							} else {
 								return <Typography>NULL</Typography>;
 							}
 						}}
 					></Column>
-
 					<Column
 						title="Action"
 						key="action"
