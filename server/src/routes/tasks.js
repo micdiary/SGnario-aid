@@ -331,6 +331,55 @@ router.get("/status/:identifier", async (req, res) => {
     }
 });
 
+// Change status
+router.post("/status", async (req, res) => {
+    const { token, fields } = req.body;
+    try {
+        const { newStatus, taskId } = fields;
+
+        // Check if valid status
+        if (!["Incomplete", "Pending", "Completed"].includes(newStatus)) {
+            return res.status(404).json({ error: "Invalid status" });
+        }
+
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id, role } = decodedToken;
+
+        // Check if valid user
+        const user =
+            (await UserModel.findOne({ _id: id })) ||
+            (await SuperuserModel.findOne({ _id: id }));
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Check if valid task
+        const task = await TaskModel.findOne({ _id: taskId });
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        // Check if task belongs to user
+        if (
+            (role === "user" && user.email !== task.patient) ||
+            (role !== "user" && user.email !== task.therapist)
+        ) {
+            return res.status(401).json({ error: "Unauthorised" });
+        }
+
+        // Change status
+        task.status = newStatus;
+        await task.save();
+
+        return res
+            .status(200)
+            .json({ "message": "Status successfully updated", task });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // Get the duration of the uploading video in seconds
 const getDuration = async (filePath) => {
     try {
