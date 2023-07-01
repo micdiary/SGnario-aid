@@ -169,7 +169,7 @@ router.post("/set-drive-credentials", async (req, res) => {
     }
 });
 
-// Get therapists
+// Get therapists name and email
 router.get("/therapists", async (req, res) => {
     try {
         const therapists = await SuperuserModel.find({ role: "therapist" });

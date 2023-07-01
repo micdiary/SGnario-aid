@@ -291,6 +291,46 @@ router.post("/therapist/evaluation", async (req, res) => {
     }
 });
 
+// Get task status count
+router.get("/status/:identifier", async (req, res) => {
+    // if called by therapist, id === id
+    // if called by patient, id === token
+    const identifier = req.params.identifier;
+    try {
+        let userId;
+        try {
+            const decodedToken = jwt.verify(identifier, process.env.JWT_SECRET);
+            const { id } = decodedToken;
+            userId = id;
+        } catch (err) {
+            userId = identifier;
+        }
+        let user = await UserModel.findOne({ _id: userId });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // find tasks assigned to user
+        const tasks = await TaskModel.find({ patient: user.email });
+
+        // count status
+        const totalCount = tasks.length;
+        const statusCounts = tasks.reduce((counts, obj) => {
+            counts[obj.status] = (counts[obj.status] || 0) + 1;
+            return counts;
+        }, {});
+
+        return res.status(200).json({
+            "total": totalCount,
+            "status": statusCounts,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // Get the duration of the uploading video in seconds
 const getDuration = async (filePath) => {
     try {
