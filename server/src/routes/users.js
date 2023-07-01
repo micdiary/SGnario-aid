@@ -8,13 +8,15 @@ dotenv.config();
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 
+const JWT_SECRET = process.env.JWT_SECRET
+
 const router = express.Router();
 
 // Get User Profile
 router.get("/profile/:token", async (req, res) => {
     const token = req.params.token;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         const userFound = await UserModel.findOne({ _id: id }, { password: 0 });
@@ -37,7 +39,7 @@ router.get("/profile/:token", async (req, res) => {
 router.post("/edit-profile", async (req, res) => {
     const { token, fields } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         let updatedUser;
@@ -138,7 +140,7 @@ router.post("/edit-profile", async (req, res) => {
 router.post("/set-drive-credentials", async (req, res) => {
     const { token, fields } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         const { clientEmail, privateKey, rootFolderId } = fields;
@@ -189,7 +191,7 @@ router.get("/therapists", async (req, res) => {
 router.post("/therapists", async (req, res) => {
     const { token } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { role } = decodedToken;
 
         // Validate authorisation
@@ -213,7 +215,7 @@ router.post("/therapists", async (req, res) => {
 router.get("/patients/:token", async (req, res) => {
     const token = req.params.token;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         // Validate authorisation
@@ -251,7 +253,7 @@ router.get("/patients/:token", async (req, res) => {
 router.post("/remove-user", async (req, res) => {
     const { token, userId } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         if (role !== "therapist" || role == "educator") {
@@ -281,7 +283,7 @@ router.post("/remove-user", async (req, res) => {
 router.delete("/", async (req, res) => {
     const { token, userId } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         if (role !== "admin") {

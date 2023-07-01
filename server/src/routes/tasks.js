@@ -13,6 +13,8 @@ import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
 import { ScenariosModel } from "../models/Scenarios.js";
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const router = express.Router();
 
 // Configure Multer to handle file uploads
@@ -22,7 +24,7 @@ const upload = multer({ dest: "uploads/" });
 router.post("/create", async (req, res) => {
     const { token, fields } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         if (role !== "therapist") {
@@ -75,7 +77,7 @@ router.post("/create", async (req, res) => {
 router.get("/user/token/:token", async (req, res) => {
     const token = req.params.token;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         const { email } = await UserModel.findOne({ _id: id });
@@ -117,7 +119,7 @@ router.get("/:id", async (req, res) => {
 router.post("/user/submission", upload.single("file"), async (req, res) => {
     const { token, fields } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
         const { taskId, submissionId, videoName, stutter, fluency, remark } =
             JSON.parse(fields);
@@ -262,7 +264,7 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
 router.post("/therapist/evaluation", async (req, res) => {
     const { token, fields } = req.body;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
         const { taskId, submissionId, stutter, fluency, remark } = fields;
 
@@ -299,7 +301,7 @@ router.get("/status/:identifier", async (req, res) => {
     try {
         let userId;
         try {
-            const decodedToken = jwt.verify(identifier, process.env.JWT_SECRET);
+            const decodedToken = jwt.verify(identifier, JWT_SECRET);
             const { id } = decodedToken;
             userId = id;
         } catch (err) {
@@ -342,7 +344,7 @@ router.post("/status", async (req, res) => {
             return res.status(404).json({ error: "Invalid status" });
         }
 
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id, role } = decodedToken;
 
         // Check if valid user

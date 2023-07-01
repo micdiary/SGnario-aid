@@ -11,6 +11,8 @@ import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { AdminModel } from "../models/Admins.js";
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const router = express.Router();
 
 // Register new user
@@ -180,10 +182,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Login user and return JWT token for cookie storage
-    const token = jwt.sign(
-        { id: id, role: accountRole },
-        process.env.JWT_SECRET
-    );
+    const token = jwt.sign({ id: id, role: accountRole }, JWT_SECRET);
 
     return res.status(200).json({ token: token });
 });
@@ -199,7 +198,7 @@ router.post("/forgot-password", async (req, res) => {
 
     // Generate JWT token for password reset
     // Token expiry time: 20 minutes
-    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const resetToken = jwt.sign({ email }, JWT_SECRET, {
         expiresIn: "1200s",
     });
 
@@ -233,7 +232,7 @@ router.post("/reset-password", async (req, res) => {
 
     try {
         // Verify JWT token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
 
         // Hashing password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -286,7 +285,7 @@ router.get("/role/:token", async (req, res) => {
 
     try {
         // Verify token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
         const { id } = decodedToken;
 
         let user;
