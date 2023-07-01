@@ -39,6 +39,26 @@ const Task = ({ task, setView }) => {
 		setModalData(record);
 	};
 
+	const values = Form.useWatch([], addRecordingForm);
+	const [isFormValid, setIsFormValid] = useState(false);
+
+	useEffect(() => {
+		if (values !== undefined) {
+			if (
+				values.patientStutter !== undefined &&
+				values.patientFluency !== undefined &&
+				values.patientRemark !== undefined &&
+				values.recordingLink !== undefined
+			) {
+				setIsFormValid(true);
+			} else {
+				setIsFormValid(false);
+			}
+		} else {
+			setIsFormValid(false);
+		}
+	}, [values]);
+
 	const onFinish = (values) => {
 		const req = {
 			taskId: task._id,
@@ -138,7 +158,7 @@ const Task = ({ task, setView }) => {
 						message: "Please input your remark!",
 					},
 				],
-				input: <Input />,
+				input: <Input.TextArea rows={3} />,
 			},
 			{
 				label: "Recording",
@@ -237,11 +257,6 @@ const Task = ({ task, setView }) => {
 					rowKey="key"
 				>
 					<Column
-						title="Date Added"
-						dataIndex="dateAdded"
-						key="dateAdded"
-					></Column>
-					<Column
 						title="Video Name"
 						dataIndex="videoName"
 						key="videoName"
@@ -300,7 +315,11 @@ const Task = ({ task, setView }) => {
 							}
 						}}
 					></Column>
-
+					<Column
+						title="Date Submitted"
+						dataIndex="dateSubmitted"
+						key="dateSubmitted"
+					></Column>
 					<Column
 						title="Action"
 						key="action"
@@ -317,7 +336,11 @@ const Task = ({ task, setView }) => {
 				title="Add a new recording"
 				open={recordingModalVisible}
 				onOk={onModalOk}
-				onCancel={() => setRecordingModalVisible(false)}
+				okButtonProps={{ disabled: !isFormValid }}
+				onCancel={() => {
+					setRecordingModalVisible(false);
+					addRecordingForm.resetFields();
+				}}
 			>
 				<Form form={addRecordingForm} onFinish={onFinish}>
 					{generateModal()}

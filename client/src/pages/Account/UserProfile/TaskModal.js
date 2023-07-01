@@ -16,22 +16,22 @@ const UserTaskModal = ({
     const [isFormValid, setIsFormValid] = useState(false);
     const values = Form.useWatch([], form);
 
-    useEffect(() => {
-        if (values !== undefined) {
-            if (
-                values.patientStutter !== "" &&
-                values.patientFluency !== "" &&
-                values.patientRemark !== "" &&
-                values.recordingLink !== ""
-            ) {
-                setIsFormValid(true);
-            } else {
-                setIsFormValid(false);
-            }
-        } else {
-            setIsFormValid(false);
-        }
-    }, [values]);
+	useEffect(() => {
+		if (values !== undefined) {
+			if (
+				values.patientStutter !== "" &&
+				values.patientFluency !== "" &&
+				values.patientRemark !== "" &&
+				values.recordingLink !== ""
+			) {
+				setIsFormValid(true);
+			} else {
+				setIsFormValid(false);
+			}
+		} else {
+			setIsFormValid(false);
+		}
+	}, [values]);
 
     useEffect(() => {
         form.setFieldsValue({

@@ -19,6 +19,7 @@ export function populateTaskData(task) {
 				task.submissions[i].therapistRemark || "No Therapist Remark",
 			recordingLink: task.submissions[i].recordingLink || "",
 			videoDuration: task.submissions[i].videoDuration || "",
+			dateSubmitted: task.submissions[i].dateSubmitted || "",
 		};
 		tempData.push(temp);
 	}
