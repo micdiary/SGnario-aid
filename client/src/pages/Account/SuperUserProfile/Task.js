@@ -76,11 +76,6 @@ const SuperUserTask = ({ task, setView }) => {
 					pagination={false}
 				>
 					<Column
-						title="Date Added"
-						dataIndex="dateAdded"
-						key="dateAdded"
-					></Column>
-					<Column
 						title="Video Name"
 						dataIndex="videoName"
 						key="videoName"
@@ -138,6 +133,11 @@ const SuperUserTask = ({ task, setView }) => {
 								return <Typography>NULL</Typography>;
 							}
 						}}
+					></Column>
+					<Column
+						title="Date Submitted"
+						dataIndex="dateSubmitted"
+						key="dateSubmitted"
 					></Column>
 					<Column
 						title="Action"
