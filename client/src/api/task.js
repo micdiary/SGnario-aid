@@ -1,5 +1,10 @@
 import { requestGet, requestPost } from "../utils/request";
-import { CREATE_TASK_API, GET_TASKS_BY_PATIENT_API, GET_TASK_BY_ID_API, USER_TASK_SUBMISSION_API } from "../constants.js";
+import {
+	CREATE_TASK_API,
+	GET_TASKS_BY_PATIENT_API,
+	GET_TASK_BY_ID_API,
+	USER_TASK_SUBMISSION_API,
+} from "../constants.js";
 import { getToken } from "../utils/account";
 
 export async function createTasks(req) {
@@ -13,7 +18,7 @@ export async function getTasksByToken() {
 }
 
 export async function getTaskById(req) {
-    return requestGet(`${GET_TASK_BY_ID_API}/${req}`);
+	return requestGet(`${GET_TASK_BY_ID_API}/${req}`);
 }
 
 export async function updateTask(req) {
@@ -21,6 +26,12 @@ export async function updateTask(req) {
 	const formData = new FormData();
 	formData.append("token", token);
 	formData.append("fields", JSON.stringify(req));
-	formData.append("file", req.file.originFileObj);
-	return requestPost(USER_TASK_SUBMISSION_API, { req: formData}, "multipart/form-data");
+	if (req.file) {
+		formData.append("file", req.file.originFileObj);
+	}
+	return requestPost(
+		USER_TASK_SUBMISSION_API,
+		{ req: formData },
+		"multipart/form-data"
+	);
 }

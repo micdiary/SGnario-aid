@@ -194,6 +194,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			</Button>
 			<Table columns={columns} dataSource={tasks} rowKey="_id" />
 			<Modal
+				destroyOnClose
 				title="Assign Task"
 				open={isModalVisible}
 				onOk={handleOk}

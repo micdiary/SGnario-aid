@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, InputNumber, Input, Upload, Button, Slider } from "antd";
+import { Form, Modal, Input, Upload, Button, Slider } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
@@ -21,8 +21,7 @@ const UserTaskModal = ({
 			if (
 				values.patientStutter !== "" &&
 				values.patientFluency !== "" &&
-				values.patientRemark !== "" &&
-				values.recordingLink !== "temp"
+				values.patientRemark !== ""
 			) {
 				setIsFormValid(true);
 			} else {
@@ -105,7 +104,7 @@ const UserTaskModal = ({
 			rules: [
 				{
 					required: true,
-					message: "Please input your score!",
+					message: "Please input your fscore!",
 				},
 			],
 			input: (
@@ -144,12 +143,9 @@ const UserTaskModal = ({
 			input: (
 				<Upload
 					customRequest={customRequest}
-					disabled={modalData.recordingLink !== "temp"}
+					disabled={modalData.recordingLink}
 				>
-					<Button
-						icon={<UploadOutlined />}
-						disabled={modalData.recordingLink !== "temp"}
-					>
+					<Button icon={<UploadOutlined />} disabled={modalData.recordingLink}>
 						Upload
 					</Button>
 				</Upload>
@@ -175,6 +171,7 @@ const UserTaskModal = ({
 	return (
 		<Form form={form} name="validateOnly" onFinish={onFormFinish}>
 			<Modal
+				destroyOnClose
 				open={modalVisible}
 				onOk={handleOk}
 				okButtonProps={{ disabled: !isFormValid }}

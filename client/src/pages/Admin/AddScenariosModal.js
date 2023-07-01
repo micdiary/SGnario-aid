@@ -252,6 +252,7 @@ const AddScenariosModal = ({
 
 	return (
 		<Modal
+			destroyOnClose
 			title="Add Scenario"
 			open={addScenarioModalVisible}
 			onOk={handleOk}

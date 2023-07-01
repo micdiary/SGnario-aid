@@ -48,7 +48,6 @@ const SuperUserTaskModal = ({
 			fluency: values.therapistFluency,
 			remark: values.therapistRemark,
 		};
-		console.log(req);
 		setConfirmLoading(true);
 		updatePatientTasks(req).then((res) => {
 			alert(res.message || res.errror);
@@ -144,6 +143,7 @@ const SuperUserTaskModal = ({
 	return (
 		<Form form={form} name="validateOnly" onFinish={onFormFinish}>
 			<Modal
+				destroyOnClose
 				open={modalVisible}
 				onOk={handleOk}
 				okButtonProps={{ disabled: !isFormValid }}

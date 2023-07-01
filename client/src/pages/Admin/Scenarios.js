@@ -355,6 +355,7 @@ const Scenarios = () => {
 				setAddScenarioModalVisible={setAddScenarioModalVisible}
 			/>
 			<Modal
+				destroyOnClose
 				title="Edit Scenario"
 				open={editOpen}
 				onOk={handleEditOk}

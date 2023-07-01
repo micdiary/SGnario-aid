@@ -313,6 +313,7 @@ const Task = ({ task, setView }) => {
 				</Table>
 			</Form>
 			<Modal
+				destroyOnClose
 				title="Add a new recording"
 				open={recordingModalVisible}
 				onOk={onModalOk}

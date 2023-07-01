@@ -206,6 +206,7 @@ const SuperuserManagement = () => {
 			</Button>
 			<Table columns={columns} dataSource={data} rowKey="_id" />
 			<Modal
+				destroyOnClose
 				title="Add Therapist"
 				open={open}
 				onOk={handleOk}
