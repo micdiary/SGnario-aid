@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
     try {
         // Checking if user exists
         if (await userExists(email)) {
-            return res.status(409).json({ message: "User already exists!" });
+            return res.status(409).json({ error: "User already exists" });
         }
 
         // Hashing password
@@ -87,7 +87,7 @@ router.post("/register", async (req, res) => {
 
         return res
             .status(201)
-            .json({ message: "User registered successfully!" });
+            .json({ message: "User registered successfully" });
     } catch (err) {
         return res.status(500).json({ error: "Internal Server Error" });
     }
@@ -116,7 +116,7 @@ router.post("/register-superuser", async (req, res) => {
     });
     await newUser.save();
 
-    return res.status(201).json({ message: "User registered successfully!" });
+    return res.status(201).json({ message: "User registered successfully" });
 });
 
 router.post("/register-admin", async (req, res) => {
@@ -124,7 +124,7 @@ router.post("/register-admin", async (req, res) => {
 
     // Checking if user exists
     if (await userExists(email)) {
-        return res.status(409).json({ message: "User already exists!" });
+        return res.status(409).json({ message: "User already exists" });
     }
 
     // Hashing password
@@ -140,7 +140,7 @@ router.post("/register-admin", async (req, res) => {
 
     await newUser.save();
 
-    return res.status(201).json({ message: "Admin registered successfully!" });
+    return res.status(201).json({ message: "User registered successfully" });
 });
 
 // Login
@@ -154,11 +154,9 @@ router.post("/login", async (req, res) => {
     let isPasswordValid;
     let id;
     let accountRole;
-    // Check if user exists and
     // Check if credentials are valid
-    if (!(await userExists(email))) {
-        return res.status(404).json({ message: "User doesn't exists!" });
-    } else if (user) {
+
+    if (user) {
         ({ isPasswordValid, id, accountRole } = await verifyAccount(
             user,
             password
@@ -178,22 +176,24 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) {
         return res
             .status(401)
-            .json({ message: "Email or password is incorrect" });
+            .json({ error: "Email or password is incorrect" });
     }
 
     // Login user and return JWT token for cookie storage
     const token = jwt.sign({ id: id, role: accountRole }, JWT_SECRET);
 
-    return res.status(200).json({ token: token });
+    return res.status(200).json({ message: "Login success", token: token });
 });
 
 // Forgot password
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
 
+    const name = await userExists(email);
+
     // Check if user exists
-    if (!(await userExists(email))) {
-        return res.status(404).json({ message: "User doesn't exist!" });
+    if (!name) {
+        return res.status(404).json({ error: "User doesn't exist" });
     }
 
     // Generate JWT token for password reset
@@ -210,11 +210,29 @@ router.post("/forgot-password", async (req, res) => {
         },
     });
 
+    const emailBody = `
+Hi ${toProperCase("zemus koh")}! <br><br>
+
+It seems like you have forgotten your password.<br>
+We received a request to reset the password for your account.<br><br>
+
+To reset your password, click on the button below:<br>
+<p>
+  <a href="http://localhost:3000/reset-password?token=${resetToken}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
+    Reset Password
+  </a>
+</p>
+
+Alternatively, you can click on this <a href="http://localhost:3000/reset-password?token=${resetToken}">link.</a><br><br>
+
+If you did not request for a password reset, please ignore this email.
+    `;
+
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Password Reset",
-        text: `Click the following link to reset your password: http:localhost:3000/reset-password?token=${resetToken}`,
+        html: emailBody,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
@@ -275,7 +293,14 @@ router.post("/reset-password", async (req, res) => {
             .status(200)
             .json({ message: "Password successfully resetted" });
     } catch (err) {
-        return res.status(401).json({ error: "Invalid or expired token" });
+        if (
+            err instanceof jwt.TokenExpiredError ||
+            err instanceof jwt.JsonWebTokenError
+        ) {
+            return res.status(401).json({ error: "Invalid or expired token" });
+        }
+
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -289,7 +314,10 @@ router.get("/role/:token", async (req, res) => {
 
         return res.status(200).json({ "role": role });
     } catch (err) {
-        return res.status(401).json({ error: "Invalid token" });
+        if (err instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ error: "Invalid token" });
+        }
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -307,9 +335,16 @@ async function userExists(email) {
     const superuser = await SuperuserModel.findOne({ email: email });
     const admin = await AdminModel.findOne({ email: email });
     if (user || superuser || admin) {
-        return true;
+        return user.name || superuser.name || admin.name;
     }
     return false;
+}
+
+// Proper Case
+function toProperCase(str) {
+    return str.toLowerCase().replace(/(^|\s)\w/g, function (match) {
+        return match.toUpperCase();
+    });
 }
 
 export { router as authRouter };
