@@ -6,12 +6,7 @@ const TaskSchema = new mongoose.Schema({
     dateAssigned: { type: Date, required: true, default: Date.now },
     scenario: { type: String, required: true },
     category: { type: String, required: true },
-    recommendedLength: [
-        {
-            videoName: { type: String, required: true },
-            length: { type: Number, required: true, default: 0 },
-        },
-    ],
+    recommendedLength: { type: [Number], required: true },
     videos: [
         {
             videoId: { type: String, required: true },

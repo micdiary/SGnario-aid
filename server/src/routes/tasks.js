@@ -29,7 +29,7 @@ router.post("/create", async (req, res) => {
             return res.status(401).json({ "error": "Unauthorised" });
         }
 
-        const { email, scenario } = fields;
+        const { email, scenario, recommendedLength } = fields;
         const therapist = await SuperuserModel.findOne({ _id: id });
 
         const scenarioFound = await ScenariosModel.findOne({
@@ -58,6 +58,7 @@ router.post("/create", async (req, res) => {
             category: scenarioFound.category,
             videos: videos,
             submissions: submissions,
+            recommendedLength: recommendedLength,
         });
 
         await newTask.save();
