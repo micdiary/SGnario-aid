@@ -120,7 +120,7 @@ router.post("/register-superuser", async (req, res) => {
 });
 
 router.post("/register-admin", async (req, res) => {
-    const { name, email, password, dob, gender, issue, therapist } = req.body;
+    const { name, email, password } = req.body;
 
     // Checking if user exists
     if (await userExists(email)) {
@@ -282,20 +282,12 @@ router.post("/reset-password", async (req, res) => {
 // Get User's Role
 router.get("/role/:token", async (req, res) => {
     const token = req.params.token;
-
     try {
         // Verify token
         const decodedToken = jwt.verify(token, JWT_SECRET);
-        const { id } = decodedToken;
+        const { id, role } = decodedToken;
 
-        let user;
-        const userFound = await UserModel.findOne({ _id: id });
-        const superuserFound = await SuperuserModel.findOne({ _id: id });
-        const adminFound = await AdminModel.findOne({ _id: id });
-
-        user = userFound || superuserFound || adminFound;
-
-        return res.status(201).json({ "role": user.role });
+        return res.status(200).json({ "role": role });
     } catch (err) {
         return res.status(401).json({ error: "Invalid token" });
     }
