@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Typography, Popconfirm } from "antd";
+import { Space, Table, Typography, Popconfirm, Input } from "antd";
 import { deleteUser, getPatients } from "../../api/admin";
 
 const UserManagement = () => {
 	const [data, setData] = useState([]);
+	const [search, setSearch] = useState("");
 
 	useEffect(() => {
 		getPatients().then((res) => {
@@ -17,6 +18,10 @@ const UserManagement = () => {
 			const newData = data.filter((item) => item._id !== value._id);
 			setData(newData);
 		});
+	};
+
+	const onSearch = (value) => {
+		setSearch(value);
 	};
 
 	const columns = [
@@ -53,7 +58,28 @@ const UserManagement = () => {
 
 	return (
 		<>
-			<Table columns={columns} dataSource={data} rowKey="_id" />
+			<Input.Search
+				placeholder="search user"
+				onSearch={onSearch}
+				onChange={(e) => onSearch(e.target.value)}
+				style={{
+					width: 200,
+					marginBottom: 16,
+				}}
+			></Input.Search>
+			<Table
+				columns={columns}
+				dataSource={
+					search === ""
+						? data
+						: data.filter(
+								(item) =>
+									item.name.toLowerCase().includes(search.toLowerCase()) ||
+									item.email.toLowerCase().includes(search.toLowerCase())
+						  )
+				}
+				rowKey="_id"
+			/>
 		</>
 	);
 };

@@ -9,6 +9,7 @@ import {
 	Input,
 	Select,
 	Popconfirm,
+	Row,
 } from "antd";
 import { deleteUser, getTherapists, registerSuperuser } from "../../api/admin";
 
@@ -19,6 +20,7 @@ const SuperuserManagement = () => {
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [form] = Form.useForm();
+	const [search, setSearch] = useState("");
 
 	useEffect(() => {
 		getTherapists().then((res) => {
@@ -37,6 +39,10 @@ const SuperuserManagement = () => {
 
 	const handleCancel = () => {
 		setOpen(false);
+	};
+
+	const onSearch = (value) => {
+		setSearch(value);
 	};
 
 	const onFormFinish = (values) => {
@@ -204,7 +210,30 @@ const SuperuserManagement = () => {
 			<Button type="primary" style={{ marginBottom: 16 }} onClick={showModal}>
 				Add Therapist
 			</Button>
-			<Table columns={columns} dataSource={data} rowKey="_id" />
+			<Row>
+				<Input.Search
+					placeholder="search user"
+					onSearch={onSearch}
+					onChange={(e) => onSearch(e.target.value)}
+					style={{
+						width: 200,
+						marginBottom: 16,
+					}}
+				></Input.Search>
+			</Row>
+			<Table
+				columns={columns}
+				dataSource={
+					search === ""
+						? data
+						: data.filter(
+								(item) =>
+									item.name.toLowerCase().includes(search.toLowerCase()) ||
+									item.email.toLowerCase().includes(search.toLowerCase())
+						  )
+				}
+				rowKey="_id"
+			/>
 			<Modal
 				destroyOnClose
 				title="Add Therapist"
