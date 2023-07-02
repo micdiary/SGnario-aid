@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Tag } from "antd";
-import { INCOMPLETE_TAG, PENDING_TAG, COMPLETE_TAG } from "../../../constants";
+import { INCOMPLETE_TAG, PENDING_TAG, COMPLETE_TAG, TAG } from "../../../constants";
 import { getTasksByToken } from "../../../api/task";
 
 const Dashboard = ({ setView, setTask }) => {
@@ -35,7 +35,7 @@ const Dashboard = ({ setView, setTask }) => {
 			dataIndex: "status",
 			render: (tag) => (
 				<>
-					<Tag color={tag === INCOMPLETE_TAG ? "volcano" : "green"} key={tag}>
+					<Tag color={TAG[tag]} key={tag}>
 						{tag.toUpperCase()}
 					</Tag>
 				</>

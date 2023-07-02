@@ -12,16 +12,18 @@ import {
 	Slider,
 	Select,
 	Descriptions,
+	Row,
+	Col,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import UserTaskModal from "./TaskModal";
-import { updateTask } from "../../../api/task";
+import { updateStatus, updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
 import { stutterMarks, fluencyMarks } from "../../../constants";
 import * as constants from "../../../constants";
 
 const { Column, ColumnGroup } = Table;
-const Task = ({ task, setView }) => {
+const Task = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
 	const [form] = Form.useForm();
 	const [addRecordingForm] = Form.useForm();
@@ -59,6 +61,18 @@ const Task = ({ task, setView }) => {
 			setIsFormValid(false);
 		}
 	}, [values]);
+
+	const updateBtnOnclick = () => {
+		const req = {
+			newStatus: "Pending",
+			taskId: task._id,
+		};
+
+		updateStatus(req).then((res) => {
+			alert(res.message || res.error);
+			setTask(res.task);
+		});
+	};
 
 	const onFinish = (values) => {
 		const req = {
@@ -214,18 +228,44 @@ const Task = ({ task, setView }) => {
 				type="primary"
 				style={{
 					marginBottom: 16,
+					marginRight: 16,
 				}}
 			>
 				Add a new recording
 			</Button>
-			<Link
-				to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
-					task.category
-				)}&scenario=${encodeURIComponent(task.scenario)}`}
-				target="_blank"
+			<Button
+				onClick={() => {
+					updateBtnOnclick();
+				}}
+				disabled={task.status !== "Incomplete"}
+				type="primary"
+				style={{
+					marginBottom: 16,
+				}}
 			>
-				<Typography.Title>{task.scenario}</Typography.Title>
-			</Link>
+				Mark as Pending
+			</Button>
+			<Row align={"middle"} gutter={12}>
+				<Col>
+					<Link
+						to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
+							task.category
+						)}&scenario=${encodeURIComponent(task.scenario)}`}
+						target="_blank"
+					>
+						<Typography.Title
+							style={{
+								display: "inline-block",
+							}}
+						>
+							{task.scenario}
+						</Typography.Title>
+					</Link>
+				</Col>
+				<Col>
+					<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
+				</Col>
+			</Row>
 			<Form form={form} component={false}>
 				<Table
 					expandable={{

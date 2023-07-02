@@ -41,11 +41,18 @@ export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
 export const GET_PATIENTS_TASKS_API = `${URL}/tasks/user/id`;
 export const GET_TASK_BY_ID_API = `${URL}/tasks`;
 export const USER_TASK_SUBMISSION_API = `${URL}/tasks/user/submission`;
+export const TASK_STATUS_API = `${URL}/tasks/status`;
 export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`;
 
 export const INCOMPLETE_TAG = "Incomplete";
 export const PENDING_TAG = "Pending";
 export const COMPLETE_TAG = "Complete";
+
+export const TAG = {
+    Incomplete: "volcano",
+    Pending: "yellow",
+    Complete: "green",
+};
 
 export const stutterMarks = {
     0: "No Stutter (0)",

@@ -86,9 +86,9 @@ const Account = () => {
 					))}
 				{view === "task" &&
 					(userType === "therapist" || userType === "educator" ? (
-						<SuperUserTask task={task} setView={setView} />
+						<SuperUserTask task={task} setTask={setTask} setView={setView} />
 					) : (
-						<Task task={task} setView={setView} />
+						<Task task={task} setTask={setTask} setView={setView} />
 					))}
 			</Col>
 		</Row>

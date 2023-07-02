@@ -9,13 +9,16 @@ import {
 	Tag,
 	Upload,
 	Descriptions,
+	Row,
+	Col,
 } from "antd";
 import SuperTaskTaskModal from "./TaskModal";
 import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
+import { updateStatus } from "../../../api/task";
 
 const { Column, ColumnGroup } = Table;
-const SuperUserTask = ({ task, setView }) => {
+const SuperUserTask = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalData, setModalData] = useState({});
@@ -31,6 +34,18 @@ const SuperUserTask = ({ task, setView }) => {
 		setModalData(record);
 	};
 
+	const updateBtnOnclick = () => {
+		const req = {
+			newStatus: "Complete",
+			taskId: task._id,
+		};
+
+		updateStatus(req).then((res) => {
+			alert(res.message || res.error);
+			setTask(res.task);
+		});
+	};
+
 	return (
 		<>
 			<Button
@@ -44,14 +59,39 @@ const SuperUserTask = ({ task, setView }) => {
 			>
 				Back
 			</Button>
-			<Link
-				to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
-					task.category
-				)}&scenario=${encodeURIComponent(task.scenario)}`}
-				target="_blank"
+			<Button
+				onClick={() => {
+					updateBtnOnclick();
+				}}
+				disabled={task.status !== "Pending"}
+				type="primary"
+				style={{
+					marginBottom: 16,
+				}}
 			>
-				<Typography.Title>{task.scenario}</Typography.Title>
-			</Link>
+				Mark as completed
+			</Button>
+			<Row align={"middle"} gutter={12}>
+				<Col>
+					<Link
+						to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
+							task.category
+						)}&scenario=${encodeURIComponent(task.scenario)}`}
+						target="_blank"
+					>
+						<Typography.Title
+							style={{
+								display: "inline-block",
+							}}
+						>
+							{task.scenario}
+						</Typography.Title>
+					</Link>
+				</Col>
+				<Col>
+					<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
+				</Col>
+			</Row>
 			<Form form={form} component={false}>
 				<Table
 					expandable={{

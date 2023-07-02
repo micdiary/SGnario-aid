@@ -3,6 +3,7 @@ import {
 	CREATE_TASK_API,
 	GET_TASKS_BY_PATIENT_API,
 	GET_TASK_BY_ID_API,
+	TASK_STATUS_API,
 	USER_TASK_SUBMISSION_API,
 } from "../constants.js";
 import { getToken } from "../utils/account";
@@ -34,4 +35,11 @@ export async function updateTask(req) {
 		{ req: formData },
 		"multipart/form-data"
 	);
+}
+
+export async function updateStatus(req) {
+	const token = getToken();
+	return requestPost(`${TASK_STATUS_API}`, {
+		req: { token: token, fields: req },
+	});
 }
