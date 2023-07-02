@@ -62,11 +62,19 @@ const Task = ({ task, setTask, setView }) => {
 		}
 	}, [values]);
 
-	const updateBtnOnclick = () => {
-		const req = {
-			newStatus: "Pending",
-			taskId: task._id,
-		};
+	const updateBtnOnclick = (status) => {
+		let req = {};
+		if (status === "Pending") {
+			req = {
+				newStatus: "Incomplete",
+				taskId: task._id,
+			};
+		} else {
+			req = {
+				newStatus: "Pending",
+				taskId: task._id,
+			};
+		}
 
 		updateStatus(req).then((res) => {
 			alert(res.message || res.error);
@@ -208,6 +216,19 @@ const Task = ({ task, setTask, setView }) => {
 		return modalForm(formItem);
 	};
 
+	const renderStatusBtn = (status) => {
+		switch (status) {
+			case "Incomplete":
+				return "Mark as pending";
+			case "Pending":
+				return "Mark as incomplete";
+			case "Completed":
+				return "Task completed";
+			default:
+				return "Mark as incomplete";
+		}
+	};
+
 	return (
 		<>
 			<Button
@@ -235,15 +256,15 @@ const Task = ({ task, setTask, setView }) => {
 			</Button>
 			<Button
 				onClick={() => {
-					updateBtnOnclick();
+					updateBtnOnclick(task.status);
 				}}
-				disabled={task.status !== "Incomplete"}
+				disabled={task.status === "Complete"}
 				type="primary"
 				style={{
 					marginBottom: 16,
 				}}
 			>
-				Mark as Pending
+				{renderStatusBtn(task.status)}
 			</Button>
 			<Row align={"middle"} gutter={12}>
 				<Col>

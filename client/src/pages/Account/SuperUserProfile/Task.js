@@ -34,16 +34,37 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 		setModalData(record);
 	};
 
-	const updateBtnOnclick = () => {
-		const req = {
-			newStatus: "Complete",
-			taskId: task._id,
-		};
+	const updateBtnOnclick = (status) => {
+		let req = {};
+		if (status === "Pending") {
+			req = {
+				newStatus: "Completed",
+				taskId: task._id,
+			};
+		} else {
+			req = {
+				newStatus: "Pending",
+				taskId: task._id,
+			};
+		}
 
 		updateStatus(req).then((res) => {
 			alert(res.message || res.error);
 			setTask(res.task);
 		});
+	};
+
+	const renderStatusBtn = (status) => {
+		switch (status) {
+			case "Incomplete":
+				return "Pending submission";
+			case "Pending":
+				return "Mark as completed";
+			case "Completed":
+				return "Mark as pending";
+			default:
+				return "Pending submission";
+		}
 	};
 
 	return (
@@ -61,15 +82,15 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 			</Button>
 			<Button
 				onClick={() => {
-					updateBtnOnclick();
+					updateBtnOnclick(task.status);
 				}}
-				disabled={task.status !== "Pending"}
+				disabled={task.status === "Incomplete"}
 				type="primary"
 				style={{
 					marginBottom: 16,
 				}}
 			>
-				Mark as completed
+				{renderStatusBtn(task.status)}
 			</Button>
 			<Row align={"middle"} gutter={12}>
 				<Col>

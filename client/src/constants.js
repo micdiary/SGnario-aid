@@ -46,12 +46,12 @@ export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`
 
 export const INCOMPLETE_TAG = "Incomplete";
 export const PENDING_TAG = "Pending";
-export const COMPLETE_TAG = "Complete";
+export const COMPLETED_TAG = "Completed";
 
 export const TAG = {
     Incomplete: "volcano",
     Pending: "yellow",
-    Complete: "green",
+    Completed: "green",
 };
 
 export const stutterMarks = {
