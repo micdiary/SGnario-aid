@@ -11,6 +11,7 @@ import {
 	Input,
 	Slider,
 	Select,
+	Descriptions,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import UserTaskModal from "./TaskModal";
@@ -331,6 +332,22 @@ const Task = ({ task, setView }) => {
 					></Column>
 				</Table>
 			</Form>
+			<Descriptions
+				title={"Recommended Duration for Recordings"}
+				bordered
+				style={{
+					marginTop: 16,
+				}}
+			>
+				{task.recommendedLength &&
+					task.recommendedLength.map((item, index) => {
+						return (
+							<Descriptions.Item label={task.videos[index].videoName} span={3}>
+								{item} seconds
+							</Descriptions.Item>
+						);
+					})}
+			</Descriptions>
 			<Modal
 				destroyOnClose
 				title="Add a new recording"

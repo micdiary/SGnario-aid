@@ -15,6 +15,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [patientOptions, setPatientOptions] = useState([]);
 	const [scenarioOptions, setScenarioOptions] = useState([]);
+	const [selectedScenario, setSelectedScenario] = useState({});
 	const [tasks, setTasks] = useState([]);
 
 	const fetchPatientTasks = async () => {
@@ -68,16 +69,32 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	const onFormFinish = (values) => {
 		setConfirmLoading(true);
+
+		let temp = [];
+		Object.values(values.recommendedLength).forEach((key) => {
+			temp.push(key);
+		});
+
 		const req = {
 			email: values.patient,
 			scenario: values.scenario,
 			dateAssigned: new Date(),
+			recommendedLength: temp,
 		};
+
 		createTasks(req).then((res) => {
 			alert(res.message || res.error);
 		});
 		setConfirmLoading(false);
 		setIsModalVisible(false);
+	};
+
+	const scenarioOnChange = (value) => {
+		scenarioOptions.forEach((scenario) => {
+			if (scenario.scenario === value) {
+				setSelectedScenario(scenario);
+			}
+		});
 	};
 
 	const formItem = [
@@ -118,7 +135,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				},
 			],
 			input: (
-				<Select placeholder="Select a scenario">
+				<Select placeholder="Select a scenario" onChange={scenarioOnChange}>
 					{scenarioOptions.length > 0 &&
 						scenarioOptions.map((scenario) => {
 							return (
@@ -203,6 +220,20 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			>
 				<Form form={form} onFinish={onFormFinish}>
 					{modalForm(formItem)}
+					<Form.List name="recommendedLength">
+						{() =>
+							selectedScenario.videos &&
+							selectedScenario.videos.map((video, i) => {
+								return (
+									<Form.Item name={"recommendedLength" + i}>
+										<Input
+											placeholder={`Recommended length for ${video.videoName} in seconds`}
+										/>
+									</Form.Item>
+								);
+							})
+						}
+					</Form.List>
 				</Form>
 			</Modal>
 		</>

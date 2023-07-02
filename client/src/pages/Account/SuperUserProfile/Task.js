@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Table, Typography, Popconfirm, Form, Tag, Upload } from "antd";
+import {
+	Button,
+	Table,
+	Typography,
+	Popconfirm,
+	Form,
+	Tag,
+	Upload,
+	Descriptions,
+} from "antd";
 import SuperTaskTaskModal from "./TaskModal";
 import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
@@ -8,7 +17,6 @@ import * as constants from "../../../constants";
 const { Column, ColumnGroup } = Table;
 const SuperUserTask = ({ task, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
-	const [editingKey, setEditingKey] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalData, setModalData] = useState({});
 
@@ -19,7 +27,6 @@ const SuperUserTask = ({ task, setView }) => {
 	const [form] = Form.useForm();
 
 	const edit = (record) => {
-		setEditingKey(record.key);
 		setModalVisible(true);
 		setModalData(record);
 	};
@@ -150,6 +157,22 @@ const SuperUserTask = ({ task, setView }) => {
 					></Column>
 				</Table>
 			</Form>
+			<Descriptions
+				title={"Recommended Duration for Recordings"}
+				bordered
+				style={{
+					marginTop: 16,
+				}}
+			>
+				{task.recommendedLength &&
+					task.recommendedLength.map((item, index) => {
+						return (
+							<Descriptions.Item label={task.videos[index].videoName} span={3}>
+								{item} seconds
+							</Descriptions.Item>
+						);
+					})}
+			</Descriptions>
 			<SuperTaskTaskModal
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}
