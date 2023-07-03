@@ -20,7 +20,7 @@ const router = express.Router();
 // Configure Multer to handle file uploads
 const upload = multer({ dest: "uploads/" });
 
-// Create Task
+// Create a Task
 router.post("/create", async (req, res) => {
     const { token, fields } = req.body;
     try {
@@ -73,6 +73,18 @@ router.post("/create", async (req, res) => {
     }
 });
 
+// Get task by task ID
+router.get("/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        const task = await TaskModel.find({ _id: id });
+        res.status(200).json(task);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ "error": "Internal Server Error" });
+    }
+});
+
 // Get tasks by patient with token
 router.get("/user/token/:token", async (req, res) => {
     const token = req.params.token;
@@ -97,18 +109,6 @@ router.get("/user/id/:id", async (req, res) => {
         const { email } = await UserModel.findOne({ _id: id });
         const tasks = await TaskModel.find({ patient: email });
         res.status(200).json(tasks);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ "error": "Internal Server Error" });
-    }
-});
-
-// Get task by task ID
-router.get("/:id", async (req, res) => {
-    const id = req.params.id;
-    try {
-        const task = await TaskModel.find({ _id: id });
-        res.status(200).json(task);
     } catch (err) {
         console.log(err);
         res.status(500).json({ "error": "Internal Server Error" });
