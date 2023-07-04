@@ -96,68 +96,75 @@ const Header = ({ handleCategoryFilter }) => {
     }, []);
 
     const menuItems = [{
-            label: <a href={constants.HOME_URL}>Home</a>,
-            key: "home",
-        },
-        {
-            label: "Scenarios",
-            key: "scenarios",
-            children: submenuItems,
-        },
-        {
-            label: <a href={constants.ABOUT_US_URL}>About Us</a>,
-            key: "about-us",
-        },
-        {
-            label: <a href={constants.TUTORIAL_URL}>Tutorial</a>,
-            key: "tutorial",
-        },
-        {
-            label: <a href={constants.CONTACT_URL}>Contact</a>,
-            key: "contact",
-        },
-        {
-            label: <a href={constants.TERMS_CONDITIONS_URL}>Terms & Conditions</a>,
-            key: "terms-conditions",
-        },
-        {
-            label: <a href={constants.ACCOUNT_URL}>Account</a>,
-            key: "account",
-            hidden: userID === null,
-        },
+        label: <a href={constants.HOME_URL}>Home</a>,
+        key: "home",
+    },
+    {
+        label: "Scenarios",
+        key: "scenarios",
+        children: submenuItems,
+    },
+
+    {
+        label: "Others",
+        key: "others",
+        children: [
+            {
+                label: <a href={constants.ABOUT_US_URL}>About Us</a>,
+                key: "about-us",
+            },
+            {
+                label: <a href={constants.TUTORIAL_URL}>Tutorial</a>,
+                key: "tutorial",
+            },
+            {
+                label: <a href={constants.CONTACT_URL}>Contact</a>,
+                key: "contact",
+            },
+            {
+                label: <a href={constants.TERMS_CONDITIONS_URL}>Terms & Conditions</a>,
+                key: "terms-conditions",
+            },
+        ]
+    },
+    {
+        label: <a href={constants.ACCOUNT_URL}>Account</a>,
+        key: "account",
+        hidden: userID === null,
+    },
     ];
 
     const adminMenuItems = [{
         label: <a href={constants.ADMIN_URL}>Admin</a>,
         key: "admin",
         hidden: userID === "admin",
-    }, ];
+    },];
 
     const pathBreadcrumbItems = [{
         title: <a href={constants.HOME_URL}>Home</a>,
-    }, ];
+    },];
 
     const loginBreadcrumbItems =
         userID !== null ? [{
             title: (
                 <a
-                href={constants.HOME_URL}
-                onClick={() => {
-                  removeToken();
-                  removeUserID();
-                  removeUserType();
-                  removeUserStore();
-                }}
-              >
-                Logout
-              </a>
+                    href={constants.HOME_URL}
+                    onClick={() => {
+                        removeToken();
+                        removeUserID();
+                        removeUserType();
+                        removeUserStore();
+                    }}
+                >
+                    Logout
+                </a>
             ),
-        }, ] : [{
-                title: <a href={constants.LOGIN_URL}>Login</a>,
-            },
-            {
-                title: <a href={constants.REGISTER_URL}>Register</a>,
-            },
+        },] : [{
+            title: <a href={constants.LOGIN_URL}>Login</a>,
+        },
+        {
+            title: <a href={constants.REGISTER_URL}>Register</a>,
+        },
         ];
 
     // Retrieve category and scenario from the URL query parameters
