@@ -43,3 +43,7 @@ export async function updateStatus(req) {
 		req: { token: token, fields: req },
 	});
 }
+
+export async function getTaskStatusCount(req) {
+	return requestGet(`${TASK_STATUS_API}/${req}`);
+}
