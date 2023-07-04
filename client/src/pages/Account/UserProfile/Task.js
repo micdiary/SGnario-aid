@@ -30,14 +30,12 @@ const Task = ({ task, setTask, setView }) => {
     const [recordingModalVisible, setRecordingModalVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalData, setModalData] = useState({});
-    const [editingKey, setEditingKey] = useState("");
 
     useEffect(() => {
         setPopulateData(populateTaskData(task));
     }, [task]);
 
     const edit = (record) => {
-        setEditingKey(record.key);
         setModalVisible(true);
         setModalData(record);
     };

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Form, Input, Select, Table } from "antd";
+import { Button, Modal, Form, Input, Select, Table, Tag } from "antd";
 import {
 	getPatientsByTherapist,
 	getPatientsTasks,
 } from "../../../api/therapist";
-import { createTasks } from "../../../api/task";
+import { createTasks, getTaskStatusCount } from "../../../api/task";
 import { getScenarios } from "../../../api/scenarios";
 
 const { Option } = Select;
@@ -16,23 +16,18 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const [patientOptions, setPatientOptions] = useState([]);
 	const [scenarioOptions, setScenarioOptions] = useState([]);
 	const [selectedScenario, setSelectedScenario] = useState({});
-	const [tasks, setTasks] = useState([]);
 
 	const fetchPatientTasks = async () => {
 		try {
 			const patients = await getPatientsByTherapist();
-			setPatientOptions(patients.users || []);
-
-			let tempTasks = [];
 
 			for (let i = 0; i < patients.users.length; i++) {
 				const patientTasks = await getPatientsTasks(patients.users[i]._id);
-				for (let j = 0; j < patientTasks.length; j++) {
-					tempTasks.push(patientTasks[j]);
-				}
+				patients.users[i].tasks = patientTasks;
+				const taskStatusCount = await getTaskStatusCount(patients.users[i]._id)
+				patients.users[i].taskStatusCount = taskStatusCount;
 			}
-
-			setTasks(tempTasks);
+			setPatientOptions(patients.users || []);
 		} catch (error) {
 			// Handle error
 			console.error(error);
@@ -84,9 +79,10 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 		createTasks(req).then((res) => {
 			alert(res.message || res.error);
+			fetchPatientTasks();
+			setConfirmLoading(false);
+			setIsModalVisible(false);
 		});
-		setConfirmLoading(false);
-		setIsModalVisible(false);
 	};
 
 	const scenarioOnChange = (value) => {
@@ -167,49 +163,96 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	const columns = [
 		{
-			title: "Patient",
-			dataIndex: "patient",
-			key: "patient",
+			title: "Patient Name",
+			dataIndex: "name",
+			key: "name",
 		},
 		{
-			title: "Scenario",
-			dataIndex: "scenario",
-			key: "scenario",
+			title: "Gender",
+			dataIndex: "gender",
+			key: "gender",
 		},
 		{
-			title: "Date Assigned",
-			dataIndex: "dateAssigned",
-			key: "dateAssigned",
+			title: "Email",
+			dataIndex: "email",
+			key: "email",
 		},
 		{
-			title: "Status",
-			dataIndex: "status",
-			key: "status",
+			title: "Pending Tasks",
+			dataIndex: "taskStatusCount",
+			key: "taskStatusCount",
+			render: (tasks) => tasks.status.Pending ? tasks.status.Pending : 0,
 		},
 		{
-			title: "Action",
-			dataIndex: "action",
-			key: "action",
-			render: (text, record) => (
-				<Button
-					type="primary"
-					onClick={() => {
-						setView("task");
-						setTask(record);
-					}}
-				>
-					Grade Task
-				</Button>
-			),
+			title: "Issue",
+			dataIndex: "issue",
+			key: "issue",
+			render: (issue) => renderIssues(issue),
 		},
 	];
+
+	const renderIssues = (issues) => {
+		return issues.map((issue, index) => {
+			return <Tag key={index}> {issue}</Tag>;
+		});
+	};
 
 	return (
 		<>
 			<Button type="primary" onClick={showModal}>
 				Assign Task
 			</Button>
-			<Table columns={columns} dataSource={tasks} rowKey="_id" />
+			<Table
+				columns={columns}
+				dataSource={patientOptions}
+				rowKey="_id"
+				expandable={{
+					expandedRowRender: (record) => {
+						const columns = [
+							{
+								title: "Date Assigned",
+								dataIndex: "dateAssigned",
+								key: "dateAssigned",
+							},
+							{
+								title: "Scenario",
+								dataIndex: "scenario",
+								key: "scenario",
+							},
+							{
+								title: "Status",
+								dataIndex: "status",
+								key: "status",
+							},
+							{
+								title: "Action",
+								dataIndex: "action",
+								key: "action",
+								render: (text, record) => (
+									<Button
+										type="primary"
+										onClick={() => {
+											setView("task");
+											setTask(record);
+										}}
+									>
+										Grade Task
+									</Button>
+								),
+							},
+						];
+						return (
+							<Table
+								columns={columns}
+								dataSource={record.tasks}
+								rowKey="_id"
+								pagination={false}
+							/>
+						);
+					},
+					// rowExpandable: (record) => record.tasks.length > 0,
+				}}
+			/>
 			<Modal
 				destroyOnClose
 				title="Assign Task"
