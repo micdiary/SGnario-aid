@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Tag } from "antd";
-import { INCOMPLETE_TAG, PENDING_TAG, COMPLETE_TAG, TAG } from "../../../constants";
+import { TAG } from "../../../constants";
 import { getTasksByToken } from "../../../api/task";
 
 const Dashboard = ({ setView, setTask }) => {
@@ -55,7 +55,7 @@ const Dashboard = ({ setView, setTask }) => {
 		setView("task");
 	};
 
-	return <Table columns={columns} dataSource={tasks}></Table>;
+	return <Table columns={columns} dataSource={tasks} rowKey={"_id"}></Table>;
 };
 
 export default Dashboard;

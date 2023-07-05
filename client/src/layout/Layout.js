@@ -29,42 +29,43 @@ import { getScenarios } from "../api/scenarios";
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
 const Layout = () => {
-    const localUserID = getUserID();
-    const storeUserID = userStore((state) => state.userID);
-    const [userID, setUserID] = useState(
-        localUserID !== null ? localUserID : storeUserID
-    );
+  const localUserID = getUserID();
+  const storeUserID = userStore((state) => state.userID);
+  const [userID, setUserID] = useState(
+    localUserID !== null ? localUserID : storeUserID
+  );
 
-    const [scenarios, setScenarios] = useState([]);
-    const [filteredScenarios, setFilteredScenarios] = useState([]);
+  const [allScenarios, setAllScenarios] = useState([]);
+  const [filteredScenarios, setFilteredScenarios] = useState([]);
 
-    useEffect(() => {
-        setUserID(localUserID !== null ? localUserID : storeUserID);
-    }, [localUserID, storeUserID]);
+  useEffect(() => {
+    setUserID(localUserID !== null ? localUserID : storeUserID);
+  }, [localUserID, storeUserID]);
 
-    useEffect(() => {
-        const fetchScenarios = async () => {
-            try {
-                const response = await getScenarios();
-                setScenarios(response);
-            } catch (error) {
-                console.error("Error fetching scenarios:", error);
-                // Handle the error (e.g., show error message to the user)
-            }
-        };
-
-        fetchScenarios();
-    }, []);
-
-    const handleCategoryFilter = (scenarioName, category) => {
-        const filteredScenarios = scenarios.filter(
-            (scenario) => scenario.scenario === scenarioName && scenario.category === category
-        );
-        setFilteredScenarios(filteredScenarios);
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      try {
+        const response = await getScenarios();
+        setAllScenarios(response);
+      } catch (error) {
+        console.error("Error fetching scenarios:", error);
+        // Handle the error (e.g., show error message to the user)
+      }
     };
 
-    return (
-        <BrowserRouter>
+    fetchScenarios();
+  }, []);
+
+  const handleCategoryFilter = (scenarioName, category) => {
+    const filteredScenarios = allScenarios.filter(
+      (scenario) =>
+        scenario.scenario === scenarioName && scenario.category === category
+    );
+    setFilteredScenarios(filteredScenarios);
+  };
+
+  return (
+    <BrowserRouter>
       <AntLayout
         style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
@@ -75,12 +76,15 @@ const Layout = () => {
           style={{
             padding: "0 50px",
             marginTop: 24,
-            minHeight: 280,
+            minHeight: "calc(100vh - 152px)",
           }}
         >
           <Routes>
             <Route exact path={constants.HOME_URL} element={<Home />} />
-            <Route path={constants.SCENARIOS_URL} element={<Scenarios filteredScenarios={filteredScenarios}/>} />
+            <Route
+              path={constants.SCENARIOS_URL}
+              element={<Scenarios allScenarios={allScenarios} filteredScenarios={filteredScenarios} />}
+            />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
             <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
             <Route path={constants.CONTACT_URL} element={<Contact />} />
@@ -127,7 +131,7 @@ const Layout = () => {
         </AntFooter>
       </AntLayout>
     </BrowserRouter>
-    );
+  );
 };
 
 export default Layout;
