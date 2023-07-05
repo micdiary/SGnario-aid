@@ -103,7 +103,18 @@ const Header = ({ handleCategoryFilter }) => {
 			key: "home",
 		},
 		{
-			label: <a href={constants.SCENARIOS_URL}>Scenarios</a>,
+			label: (
+				<a 
+					className="ant-dropdown-link"
+					href={constants.SCENARIOS_URL}
+					style={{
+						color: "white",
+						opacity: 0.65,
+					}}
+				>
+					Scenarios
+				</a>
+			),
 			key: "scenarios",
 			children: submenuItems,
 		},
@@ -160,6 +171,7 @@ const Header = ({ handleCategoryFilter }) => {
 					theme="dark"
 					mode="horizontal"
 					disabledOverflow
+					selectedKeys={[-1]}
 					triggerSubMenuAction="hover"
 					forceSubMenuRender
 					items={userRole === "admin" ? adminMenuItems : menuItems}
