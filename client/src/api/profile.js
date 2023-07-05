@@ -11,3 +11,8 @@ export async function editProfile(req) {
   const token = getToken();
   return requestPost(EDIT_PROFILE_API, { req: { token: token, fields: req } });
 }
+
+export async function setStorageConfigurations(req) {
+  const token = getToken();
+  return requestPost(EDIT_PROFILE_API, { req: { token: token, fields: req } });
+}

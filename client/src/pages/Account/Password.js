@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Button, Form, Typography, Divider } from "antd";
-import { resetPassword } from "../../../api/account";
-import { generateForm } from "../../../utils/form";
+import { resetPassword } from "../../api/account";
+import { generateForm } from "../../utils/form";
 
 const Password = () => {
 	const [passwordForm] = Form.useForm();

@@ -16,7 +16,8 @@ import SuperUserStorage from "./SuperUserProfile/Storage";
 import Profile from "./UserProfile/Profile";
 import Dashboard from "./UserProfile/Dashboard";
 import Task from "./UserProfile/Task";
-import Password from "./UserProfile/Password";
+
+import Password from "./Password";
 
 import {
 	getUserType,
@@ -76,7 +77,7 @@ const Account = () => {
 					icon: <LockOutlined />,
 				},
 				{
-					label: "Storage Configurations",
+					label: "Storage",
 					key: "storage",
 					icon: <AppstoreOutlined />,
 					hidden: userType === "user",
@@ -116,7 +117,7 @@ const Account = () => {
 				case "profile":
 					return <SuperUserProfile profile={profile} setProfile={setProfile} />;
 				case "password":
-					return <Password profile={profile} />;
+					return <Password profile={profile} setProfile={setProfile} />;
 				case "storage":
 					return <SuperUserStorage profile={profile} />;
 				default:

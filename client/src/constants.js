@@ -27,7 +27,7 @@ export const PROFILE_API = `${URL}/users/profile`;
 export const EDIT_PROFILE_API = `${URL}/users/edit-profile`;
 export const THERAPISTS_API = `${URL}/users/therapists`;
 export const GET_PATIENTS_API = `${URL}/users/patients`;
-export const ADD_API_KEY_API = `${URL}/users/add-api-key`;
+export const DRIVE_CREDENTIALS_API = `${URL}/users/set-drive-credentials`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
