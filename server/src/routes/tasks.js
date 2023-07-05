@@ -31,33 +31,23 @@ router.post("/create", async (req, res) => {
             return res.status(401).json({ "error": "Unauthorised" });
         }
 
-        const { email, scenario, recommendedLength } = fields;
+        const { email, videos, recommendedLength } = fields; // videos [{category, scenario, videoName}]
+
         const therapist = await SuperuserModel.findOne({ _id: id });
-
-        const scenarioFound = await ScenariosModel.findOne({
-            scenario: scenario,
-        });
-
-        // Scenario does not exist
-        if (!scenarioFound) {
-            return res
-                .status(400)
-                .json({ "message": "Scenario does not exist" });
-        }
-
-        const { videos } = scenarioFound;
 
         let submissions = [];
         for (let i = 0; i < videos.length; i++) {
-            const tempSubmission = { "title": videos[i].videoName };
+            const tempSubmission = {
+                "category": videos[i].category,
+                "scenario": videos[i].scenario,
+                "title": videos[i].videoName,
+            };
             submissions.push(tempSubmission);
         }
 
         const newTask = new TaskModel({
             therapist: therapist.email,
             patient: email,
-            scenario: scenario,
-            category: scenarioFound.category,
             videos: videos,
             submissions: submissions,
             recommendedLength: recommendedLength,
