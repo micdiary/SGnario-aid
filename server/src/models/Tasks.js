@@ -4,12 +4,16 @@ const TaskSchema = new mongoose.Schema({
     therapist: { type: String, required: true },
     patient: { type: String, required: true },
     dateAssigned: { type: Date, required: true, default: Date.now },
-    scenario: { type: String, required: true },
-    category: { type: String, required: true },
-    recommendedLength: { type: [Number], required: true },
+    recommendedLength: [
+        {
+            videoName: { type: String, required: true },
+            length: { type: Number, required: true },
+        },
+    ],
     videos: [
         {
-            videoId: { type: String, required: true },
+            category: { type: String, required: true },
+            scenario: { type: String, required: true },
             videoName: { type: String, required: true },
         },
     ],
