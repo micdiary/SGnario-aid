@@ -103,7 +103,7 @@ const Header = ({ handleCategoryFilter }) => {
 			key: "home",
 		},
 		{
-			label: "Scenarios",
+			label: <a href={constants.SCENARIOS_URL}>Scenarios</a>,
 			key: "scenarios",
 			children: submenuItems,
 		},
