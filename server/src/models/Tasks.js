@@ -1,8 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 const TaskSchema = new mongoose.Schema({
+    title: { type: String, required: true },
     therapist: { type: String, required: true },
     patient: { type: String, required: true },
+    patientName: { type: String, required: true },
     dateAssigned: { type: Date, required: true, default: Date.now },
     recommendedLength: [
         {
