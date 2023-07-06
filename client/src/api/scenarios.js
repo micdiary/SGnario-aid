@@ -5,6 +5,7 @@ import {
 	UPDATE_SCENARIO_VIDEONAME_API,
 	UPDATE_SCENARIO_API,
 	DELETE_SCENARIO_API,
+	DELETE_SCENARIO_VIDEO_API,
 } from "../constants.js";
 
 export async function getScenarios() {
@@ -55,6 +56,16 @@ export async function deleteScenario(id) {
 		return response; // Assuming the response contains the success message or status
 	} catch (error) {
 		throw new Error("Failed to delete scenario");
+	}
+}
+
+export async function deleteScenarioVideo(id, videoId) {
+	try {
+	    const url = DELETE_SCENARIO_VIDEO_API.replace(":id", id).replace(":videoId", videoId);
+	    const response = await requestDelete(url);
+	    return response; // Assuming the response contains the success message or status
+	  } catch (error) {
+	    throw new Error("Failed to delete video");
 	}
 }
 

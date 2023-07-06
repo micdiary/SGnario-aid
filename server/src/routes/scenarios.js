@@ -161,4 +161,28 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// DELETE /:id/video/:videoId
+router.delete("/:id/video/:videoId", async (req, res) => {
+  const { id, videoId } = req.params;
+
+  try {
+    // Find the scenario by ID and video ID
+    const scenario = await ScenariosModel.findOneAndUpdate(
+      { _id: id },
+      { $pull: { videos: { videoId: videoId } } },
+      { new: true }
+    );
+
+    if (!scenario) {
+      return res.status(404).json({ error: "Scenario or video not found" });
+    }
+
+    return res.json(scenario);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 export { router as scenariosRouter };

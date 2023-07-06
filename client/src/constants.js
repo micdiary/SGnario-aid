@@ -35,6 +35,7 @@ export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
 export const UPDATE_SCENARIO_VIDEONAME_API = `${URL}/scenarios/:id/video/:videoId`;
 export const UPDATE_SCENARIO_API = `${URL}/scenarios/:id`;
 export const DELETE_SCENARIO_API = `${URL}/scenarios/:id`;
+export const DELETE_SCENARIO_VIDEO_API = `${URL}/scenarios/:id/video/:videoId`;
 
 export const CREATE_TASK_API = `${URL}/tasks/create`;
 export const GET_TASKS_BY_PATIENT_API = `${URL}/tasks/user/token`;
