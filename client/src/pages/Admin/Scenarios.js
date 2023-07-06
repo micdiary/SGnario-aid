@@ -16,7 +16,7 @@ import {
 	getScenarios,
 	deleteScenario,
 	updateScenario,
-	updateScenarioVideoName,
+	updateScenarioVideo,
 } from "../../api/scenarios";
 import AddScenariosModal from "./AddScenariosModal";
 
@@ -99,7 +99,7 @@ const Scenarios = () => {
 			if (existingVideo) {
 				existingVideo.videoName = video.videoName;
 				// Perform API call to update the video name
-				await updateScenarioVideoName(
+				await updateScenarioVideo(
 					editScenario._id,
 					video.videoId,
 					video.videoName

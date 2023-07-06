@@ -2,7 +2,7 @@ import { requestGet, requestPut, requestPost, requestDelete } from "../utils/req
 import {
 	SCENARIOS_URL_API,
 	CREATE_SCENARIOS_API,
-	UPDATE_SCENARIO_VIDEONAME_API,
+	UPDATE_SCENARIO_VIDEO_API,
 	UPDATE_SCENARIO_API,
 	DELETE_SCENARIO_API,
 	DELETE_SCENARIO_VIDEO_API,
@@ -26,18 +26,19 @@ export async function createScenario(req) {
 	}
 }
 
-export async function updateScenarioVideoName(id, videoId, videoName) {
-	try {
-		const url = UPDATE_SCENARIO_VIDEONAME_API.replace(":id", id).replace(
-			":videoId",
-			videoId
-		);
-		const response = await requestPut(url, { videoName });
-		return response; // Assuming the response contains the updated scenario data
-	} catch (error) {
-		throw new Error("Failed to update scenario video name");
-	}
+export async function updateScenarioVideo(id, videoId, newVideoId, newVideoName) {
+  try {
+    const url = UPDATE_SCENARIO_VIDEO_API.replace(":id", id).replace(
+      ":videoId",
+      videoId
+    );
+    const response = await requestPut(url, { newVideoId, newVideoName });
+    return response; // Assuming the response contains the updated scenario data
+  } catch (error) {
+    throw new Error("Failed to update scenario video name");
+  }
 }
+
 
 export async function updateScenario(id, updatedData) {
 	try {

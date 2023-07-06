@@ -97,13 +97,13 @@ router.post("/create-scenario", async (req, res) => {
 // PUT /:id/video/:videoId
 router.put("/:id/video/:videoId", async (req, res) => {
   const { id, videoId } = req.params;
-  const { videoName } = req.body;
+  const { newVideoId, newVideoName } = req.body;
 
   try {
     // Find the scenario by ID and video ID
     const scenario = await ScenariosModel.findOneAndUpdate(
       { _id: id, "videos.videoId": videoId },
-      { $set: { "videos.$.videoName": videoName } },
+      { $set: { "videos.$.videoId": newVideoId, "videos.$.videoName": newVideoName } },
       { new: true }
     );
 
@@ -117,6 +117,7 @@ router.put("/:id/video/:videoId", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // PUT /:id
 router.put("/:id", async (req, res) => {
