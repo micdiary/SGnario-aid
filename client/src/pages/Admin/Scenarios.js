@@ -79,6 +79,7 @@ const Scenarios = () => {
 			});
 			setScenarioOptions([editScenario.scenario]);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [editScenario]);
 
 	const showModal = () => {

@@ -127,10 +127,20 @@ const Account = () => {
 	};
 
 	return (
-		<Layout>
+		<Layout
+			style={{
+				margin: "0 -50px",
+			}}
+		>
 			<Layout.Sider
+				breakpoint="lg"
+				collapsedWidth="0"
+				zeroWidthTriggerStyle={{
+					top: "50px",
+				}}
 				style={{
 					backgroundColor: "white",
+					height: "calc(100vh - 152px)",
 				}}
 			>
 				<Space
@@ -145,6 +155,7 @@ const Account = () => {
 						style={{
 							width: "100%",
 							borderRight: "none",
+							height: "calc(100vh - 238px)",
 						}}
 						defaultSelectedKeys={["dashboard"]}
 						mode="inline"
@@ -155,8 +166,6 @@ const Account = () => {
 							style={{
 								width: "calc(100% - 16px)",
 								margin: "8px",
-								position: "absolute",
-								bottom: 0,
 							}}
 							onClick={() => {
 								removeToken();
@@ -173,7 +182,6 @@ const Account = () => {
 			<Layout.Content
 				style={{
 					padding: 24,
-					height: "calc(100vh - 376px)",
 				}}
 			>
 				{generateContent()}

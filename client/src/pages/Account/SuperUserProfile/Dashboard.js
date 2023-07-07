@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Form, Input, Select, Table, Tag } from "antd";
+import { Button, Modal, Form, Input, Select, Table, Tag, Cascader } from "antd";
+import Loader from "../../../components/Loader";
 import {
 	getPatientsByTherapist,
 	getPatientsTasks,
@@ -14,8 +15,8 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [patientOptions, setPatientOptions] = useState([]);
-	const [scenarioOptions, setScenarioOptions] = useState([]);
-	const [selectedScenario, setSelectedScenario] = useState({});
+	const [videoOptions, setVideoOptions] = useState([]);
+	const [selectedScenario, setSelectedScenario] = useState([]);
 
 	const fetchPatientTasks = async () => {
 		try {
@@ -24,7 +25,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			for (let i = 0; i < patients.users.length; i++) {
 				const patientTasks = await getPatientsTasks(patients.users[i]._id);
 				patients.users[i].tasks = patientTasks;
-				const taskStatusCount = await getTaskStatusCount(patients.users[i]._id)
+				const taskStatusCount = await getTaskStatusCount(patients.users[i]._id);
 				patients.users[i].taskStatusCount = taskStatusCount;
 			}
 			setPatientOptions(patients.users || []);
@@ -43,11 +44,41 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			fetchPatientTasks();
 
 			getScenarios().then((res) => {
-				setScenarioOptions(res || []);
+				const options = res.reduce((acc, cur) => {
+					const category = cur.category;
+					const scenario = cur.scenario;
+					const found = acc.findIndex((item) => item.value === category);
+
+					const videoOptions = {
+						value: scenario,
+						label: scenario,
+						children: cur.videos.map((video) => {
+							return {
+								value: video.videoName,
+								label: video.videoName,
+							};
+						}),
+					};
+
+					if (found < 0) {
+						let temp = {
+							value: category,
+							label: category,
+							children: [videoOptions],
+						};
+						return [...acc, temp];
+					}
+
+					let copy = [...acc];
+					copy[found].children.push(videoOptions);
+					return copy;
+				}, []);
+
+				setVideoOptions(options || []);
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [profile]);
 
 	const showModal = () => {
 		setIsModalVisible(true);
@@ -65,32 +96,50 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const onFormFinish = (values) => {
 		setConfirmLoading(true);
 
-		let temp = [];
-		Object.values(values.recommendedLength).forEach((key) => {
-			temp.push(key);
+		let videos = [];
+		for (let i = 0; i < values.videos.length; i++) {
+			videos.push({
+				category: values.videos[i][0],
+				scenario: values.videos[i][1],
+				videoName: values.videos[i][2],
+			});
+		}
+
+		let recommendedLength = [];
+		Object.entries(values.recommendedLength).forEach((entry) => {
+			let key = entry[0];
+			let value = entry[1];
+			recommendedLength.push({
+				videoName: key,
+				length: value,
+			});
 		});
 
 		const req = {
+			title: values.title,
+			name: patientOptions.find((patient) => patient.email === values.patient)
+				.name,
 			email: values.patient,
-			scenario: values.scenario,
-			dateAssigned: new Date(),
-			recommendedLength: temp,
+			videos: videos,
+			recommendedLength: recommendedLength,
 		};
 
 		createTasks(req).then((res) => {
 			alert(res.message || res.error);
 			fetchPatientTasks();
-			setConfirmLoading(false);
+			form.resetFields();
 			setIsModalVisible(false);
+			setConfirmLoading(false);
 		});
 	};
 
-	const scenarioOnChange = (value) => {
-		scenarioOptions.forEach((scenario) => {
-			if (scenario.scenario === value) {
-				setSelectedScenario(scenario);
-			}
-		});
+	const videosOnChange = (value) => {
+		console.log(value);
+		let temp = [];
+		for (let i = 0; i < value.length; i++) {
+			temp.push(value[i][2]);
+		}
+		setSelectedScenario(temp);
 	};
 
 	const formItem = [
@@ -122,8 +171,19 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			),
 		},
 		{
-			label: "Scenario",
-			name: "scenario",
+			label: "Task Title",
+			name: "title",
+			rules: [
+				{
+					required: true,
+					message: "Please input your task title!",
+				},
+			],
+			input: <Input />,
+		},
+		{
+			label: "Videos",
+			name: "videos",
 			rules: [
 				{
 					required: true,
@@ -131,16 +191,12 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				},
 			],
 			input: (
-				<Select placeholder="Select a scenario" onChange={scenarioOnChange}>
-					{scenarioOptions.length > 0 &&
-						scenarioOptions.map((scenario) => {
-							return (
-								<Option key={scenario.scenario} value={scenario.scenario}>
-									({scenario.category}) {scenario.scenario}
-								</Option>
-							);
-						})}
-				</Select>
+				<Cascader
+					onChange={videosOnChange}
+					options={videoOptions}
+					showCheckedStrategy={Cascader.SHOW_CHILD}
+					multiple
+				/>
 			),
 		},
 	];
@@ -181,7 +237,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			title: "Pending Tasks",
 			dataIndex: "taskStatusCount",
 			key: "taskStatusCount",
-			render: (tasks) => tasks.status.Pending ? tasks.status.Pending : 0,
+			render: (tasks) => (tasks.status.Pending ? tasks.status.Pending : 0),
 		},
 		{
 			title: "Issue",
@@ -197,7 +253,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 		});
 	};
 
-	return (
+	return profile.name ? (
 		<>
 			<Button type="primary" onClick={showModal}>
 				Assign Task
@@ -215,9 +271,9 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 								key: "dateAssigned",
 							},
 							{
-								title: "Scenario",
-								dataIndex: "scenario",
-								key: "scenario",
+								title: "Title",
+								dataIndex: "title",
+								key: "title",
 							},
 							{
 								title: "Status",
@@ -233,6 +289,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 										type="primary"
 										onClick={() => {
 											setView("task");
+											console.log(record);
 											setTask(record);
 										}}
 									>
@@ -250,7 +307,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 							/>
 						);
 					},
-					// rowExpandable: (record) => record.tasks.length > 0,
 				}}
 			/>
 			<Modal
@@ -265,12 +321,12 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 					{modalForm(formItem)}
 					<Form.List name="recommendedLength">
 						{() =>
-							selectedScenario.videos &&
-							selectedScenario.videos.map((video, i) => {
+							selectedScenario &&
+							selectedScenario.map((video, i) => {
 								return (
-									<Form.Item name={"recommendedLength" + i}>
+									<Form.Item name={video}>
 										<Input
-											placeholder={`Recommended length for ${video.videoName} in seconds`}
+											placeholder={`Recommended length for ${video} in seconds`}
 										/>
 									</Form.Item>
 								);
@@ -280,6 +336,8 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				</Form>
 			</Modal>
 		</>
+	) : (
+		<Loader />
 	);
 };
 

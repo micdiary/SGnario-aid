@@ -8,16 +8,15 @@ const Dashboard = ({ setView, setTask }) => {
 
 	useEffect(() => {
 		getTasksByToken().then((res) => {
-			console.log(res);
 			setTasks(res);
 		});
 	}, []);
 
 	const columns = [
 		{
-			title: "Scenario",
-			dataIndex: "scenario",
-			key: "scenario",
+			title: "Task Title",
+			dataIndex: "title",
+			key: "title",
 		},
 		{
 			title: "Date Assigned",
@@ -55,7 +54,7 @@ const Dashboard = ({ setView, setTask }) => {
 		setView("task");
 	};
 
-	return <Table columns={columns} dataSource={tasks} rowKey={"_id"}></Table>;
+	return <Table columns={columns} dataSource={tasks} rowKey={"_id"} scroll={{x:true}}></Table>;
 };
 
 export default Dashboard;

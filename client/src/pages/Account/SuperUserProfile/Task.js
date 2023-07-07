@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {
-	Button,
-	Table,
-	Typography,
-	Form,
-	Tag,
-	Descriptions,
-	Row,
-	Col,
-} from "antd";
+import { Button, Typography, Tag, Row, Col, Divider, Breadcrumb } from "antd";
 import SuperTaskTaskModal from "./TaskModal";
 import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
 import { updateStatus } from "../../../api/task";
+import TaskCard from "../../../components/TaskCard";
 
-const { Column, ColumnGroup } = Table;
 const SuperUserTask = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
 	const [modalVisible, setModalVisible] = useState(false);
@@ -24,8 +14,6 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 	useEffect(() => {
 		setPopulateData(populateTaskData(task));
 	}, [task]);
-
-	const [form] = Form.useForm();
 
 	const edit = (record) => {
 		setModalVisible(true);
@@ -67,171 +55,69 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 
 	return (
 		<>
-			<Button
-				onClick={() => {
-					setView("dashboard");
-				}}
-				type="primary"
-				style={{
-					marginRight: 16,
-				}}
-			>
-				Back
-			</Button>
-			<Button
-				onClick={() => {
-					updateBtnOnclick(task.status);
-				}}
-				disabled={task.status === "Incomplete"}
-				type="primary"
-				style={{
-					marginBottom: 16,
-				}}
-			>
-				{renderStatusBtn(task.status)}
-			</Button>
-			<Row align={"middle"} gutter={12}>
-				<Col>
-					<Link
-						to={`${constants.SCENARIOS_URL}?category=${encodeURIComponent(
-							task.category
-						)}&scenario=${encodeURIComponent(task.scenario)}`}
-						target="_blank"
+			<Breadcrumb
+				items={[
+					{
+						href: "#",
+						title: "Dashboard",
+						onClick: () => {
+							setView("dashboard");
+						},
+					},
+					{
+						title: task.title,
+					},
+				]}
+			/>
+			<Divider />
+			<Row justify={"space-between"} gutter={[0, 12]}>
+				<Col
+					span={12}
+					style={{
+						display: "inline-flex",
+						alignItems: "center",
+					}}
+				>
+					<Typography.Title
+						style={{
+							minWidth: 120,
+							margin: 0,
+							marginRight: 4,
+						}}
+						level={2}
 					>
-						<Typography.Title
-							style={{
-								display: "inline-block",
-							}}
-						>
-							{task.scenario}
-						</Typography.Title>
-					</Link>
-				</Col>
-				<Col>
+						{task.title}
+					</Typography.Title>
 					<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
 				</Col>
-			</Row>
-			<Form form={form} component={false}>
-				<Table
-					expandable={{
-						expandedRowRender: (record) => {
-							const data = [
-								{
-									key: record.key,
-									patientRemark: record.patientRemark,
-									therapistRemark: record.therapistRemark,
-								},
-							];
-							return (
-								<Table dataSource={data} pagination={false}>
-									<Column
-										title="Patient Remark"
-										dataIndex="patientRemark"
-										key="patientRemark"
-									></Column>
-									<Column
-										title="Therapist Remark"
-										dataIndex="therapistRemark"
-										key="therapistRemark"
-									></Column>
-								</Table>
-							);
-						},
+				<Col
+					style={{
+						display: "inline-flex",
+						alignItems: "center",
 					}}
-					dataSource={populateData}
-					pagination={false}
 				>
-					<Column
-						title="Video Name"
-						dataIndex="videoName"
-						key="videoName"
-					></Column>
-					<ColumnGroup title="Self Evaluation">
-						<Column
-							title="Stutter"
-							dataIndex="patientStutter"
-							key="patientStutter"
-						/>
-						<Column
-							title="Fluency"
-							dataIndex="patientFluency"
-							key="patientFluency"
-						/>
-					</ColumnGroup>
-					<ColumnGroup title="Therapist Evaluation">
-						<Column
-							title="Stutter"
-							dataIndex="therapistStutter"
-							key="therapistStutter"
-							render={(text, record) => {
-								if (record.therapistStutter === "") {
-									return <Tag color="yellow">Pending</Tag>;
-								} else {
-									return <Tag color="green">{text}</Tag>;
-								}
-							}}
-						/>
-						<Column
-							title="Fluency"
-							dataIndex="therapistFluency"
-							key="therapistFluency"
-							render={(text, record) => {
-								if (record.therapistStutter === "") {
-									return <Tag color="yellow">Pending</Tag>;
-								} else {
-									return <Tag color="green">{text}</Tag>;
-								}
-							}}
-						/>
-					</ColumnGroup>
-					<Column
-						title="Recording Duration (s)"
-						dataIndex="videoDuration"
-						key="videoDuration"
-						render={(text, record) => {
-							if (record.recordingLink.startsWith("https")) {
-								return (
-									<Typography.Link href={record.recordingLink} target="_blank">
-										{text}
-									</Typography.Link>
-								);
-							} else {
-								return <Typography>NULL</Typography>;
-							}
+					<Button
+						onClick={() => {
+							updateBtnOnclick(task.status);
 						}}
-					></Column>
-					<Column
-						title="Date Submitted"
-						dataIndex="dateSubmitted"
-						key="dateSubmitted"
-					></Column>
-					<Column
-						title="Action"
-						key="action"
-						render={(_, record) => (
-							<Typography.Link onClick={() => edit(record)}>
-								Edit
-							</Typography.Link>
-						)}
-					></Column>
-				</Table>
-			</Form>
-			<Descriptions
-				title={"Recommended Duration for Recordings"}
-				bordered
-				style={{
-					marginTop: 16,
-				}}
-			>
-				{task.recommendedLength &&
-					task.recommendedLength.map((item, index) => {
+						disabled={task.status === "Incomplete"}
+						type="primary"
+					>
+						{renderStatusBtn(task.status)}
+					</Button>
+				</Col>
+			</Row>
+			<Divider />
+			<Row gutter={[16, 16]}>
+				{populateData &&
+					populateData.map((record) => {
 						return (
-							<Descriptions.Item label={task.videos[index].videoName} span={3}>
-								{item} seconds
-							</Descriptions.Item>
+							<Col span={24} lg={8}>
+								<TaskCard record={record} editCard={edit} />
+							</Col>
 						);
 					})}
-			</Descriptions>
+			</Row>
 			<SuperTaskTaskModal
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}

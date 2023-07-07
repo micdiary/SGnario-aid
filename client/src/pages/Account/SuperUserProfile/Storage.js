@@ -10,7 +10,6 @@ const Storage = ({ profile, setProfile }) => {
 	useEffect(() => {
 		storageForm.setFieldsValue({
 			clientEmail: profile.clientEmail,
-			privateKey: profile.privateKey,
 			rootFolderId: profile.rootFolderId,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,7 +36,7 @@ const Storage = ({ profile, setProfile }) => {
 					message: "Please input your private key!",
 				},
 			],
-			input: <Input />,
+			input: <Input.TextArea rows={5} />,
 		},
 		{
 			label: "Root Folder Id",

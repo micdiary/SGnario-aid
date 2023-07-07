@@ -16,3 +16,13 @@ code {
   color: #fff;
   opacity: 1 !important;
 }
+
+.task-modal-steps .ant-steps-icon-dot, .task-modal-steps .ant-steps-item-tail::after {
+  color: #1677ff !important;
+  background-color: #1677ff !important;
+}
+
+.task-modal-steps .ant-steps-item-title {
+  color: black !important;
+  opacity: 0.88;
+}
