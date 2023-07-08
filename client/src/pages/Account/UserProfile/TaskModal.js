@@ -32,7 +32,8 @@ const UserTaskModal = ({
 			if (
 				values.patientStutter !== "" &&
 				values.patientFluency !== "" &&
-				values.patientRemark !== ""
+				values.patientRemark !== "" &&
+				values.recordingLink !== undefined
 			) {
 				setIsFormValid(true);
 			} else {

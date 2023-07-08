@@ -139,7 +139,7 @@ const Task = ({ task, setTask, setView }) => {
 				{populateData &&
 					populateData.map((record) => {
 						return (
-							<Col span={24} lg={8}>
+							<Col span={24} lg={12}>
 								<TaskCard record={record} editCard={edit} />
 							</Col>
 						);
