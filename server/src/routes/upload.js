@@ -1,112 +1,162 @@
 import express from "express";
+import jwt, { verify } from "jsonwebtoken";
 import { google } from "googleapis";
 import fs from "fs";
 import multer from "multer";
 import { getVideoDurationInSeconds } from "get-video-duration";
+
+import { SuperuserModel } from "../models/Superusers.js";
+import { getDrive, doUpload } from "../utils/driveHelper.js";
+import { encrypt, decrypt } from "../utils/cryptography.js";
 
 const router = express.Router();
 
 // Configure Multer to handle file uploads
 const upload = multer({ dest: "uploads/" });
 
-const getDrive = async () => {
-    const credentials = {
-        client_email: "",
-        private_key: "",
-    };
-    // Authenticate with the Google Drive API using credentials from the credentials.json file
-    const auth = new google.auth.GoogleAuth({
-        credentials,
-        scopes: ["https://www.googleapis.com/auth/drive.file"],
-    });
-
-    const client = await auth.getClient();
-    return google.drive({ version: "v3", auth: client });
-};
-
-const getDuration = async (filePath) => {
+router.post("/test", upload.single("file"), async (req, res) => {
     try {
-        const duration = await getVideoDurationInSeconds(filePath);
-        return Math.round(duration);
-    } catch (error) {
-        throw error;
-    }
-};
+        const { token } = req.body;
 
-// Route to handle file uploads
-router.post("/upload", upload.single("file"), async (req, res) => {
-    try {
-        const {
-            file,
-            body: { folderId },
-        } = req;
-
-        // Check if a file was uploaded
-        if (!file) {
-            return res.status(400).json({ message: "No file uploaded" });
+        if (!req.file) {
+            return res.status(404).json({ error: "No file uploaded" });
         }
 
-        const drive = await getDrive();
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id, role } = decodedToken;
 
-        // Define the uploadToDrive function
-        const uploadToDrive = async (fileData, folderId) => {
-            try {
-                // Create a file metadata object
-                const fileMetadata = {
-                    name: fileData.originalname,
-                    parents: [folderId],
-                };
+        // Get drive credentials
+        const user = await SuperuserModel.findOne({ _id: id });
+        const { clientEmail, privateKey, rootFolderId } = user;
+        const decryptedPrivateKey = decrypt(
+            privateKey,
+            process.env.ENCRYPTION_KEY
+        );
 
-                // Create the media upload object
-                const media = {
-                    mimeType: fileData.mimetype,
-                    body: fs.createReadStream(fileData.path),
-                };
+        // Upload file
+        const uploadDetails = await doUpload(
+            req.file,
+            rootFolderId,
+            clientEmail,
+            decryptedPrivateKey
+        );
 
-                // Upload the file
-                const response = await drive.files.create({
-                    requestBody: fileMetadata,
-                    media: media,
-                    fields: "kind, id, name, mimeType, webViewLink",
-                });
+        if (!uploadDetails) {
+            return res
+                .status(400)
+                .json({ error: "Only video files are accepted" });
+        }
 
-                // Append permissions to make it readable by everyone and editable by uploader
-                await drive.permissions.create({
-                    fileId: response.data.id,
-                    requestBody: {
-                        role: "reader",
-                        type: "anyone",
-                    },
-                    supportsAllDrives: true,
-                });
-
-                //Get video duration
-                const duration = await getDuration(fileData.path);
-                console.log(duration); //Add to DB
-
-                console.log("File uploaded successfully:", response.data);
-                return response.data;
-            } catch (error) {
-                console.error("Error uploading file to Google Drive:", error);
-                throw error;
-            }
-        };
-
-        // Call the uploadToDrive function with the uploaded file
-        const uploadedFile = await uploadToDrive(file, folderId);
-
-        // Delete the temporary file
-        fs.unlinkSync(file.path);
-
-        res.status(200).json({
-            message: "File uploaded successfully",
-            fileId: uploadedFile.id,
-        });
-    } catch (error) {
-        console.error("Error handling file upload:", error);
-        res.status(500).json({ message: "Failed to upload file" });
+        return res.status(201).json({ message: "File uploaded successfully" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+/**
+ * Moved to ../utils/driveHelper.js
+ * Upload function inbuilt into task submission
+ */
+
+// const getDrive = async () => {
+//     const credentials = {
+//         client_email: "",
+//         private_key: "",
+//     };
+//     // Authenticate with the Google Drive API using credentials from the credentials.json file
+//     const auth = new google.auth.GoogleAuth({
+//         credentials,
+//         scopes: ["https://www.googleapis.com/auth/drive.file"],
+//     });
+
+//     const client = await auth.getClient();
+//     return google.drive({ version: "v3", auth: client });
+// };
+
+// const getDuration = async (filePath) => {
+//     try {
+//         const duration = await getVideoDurationInSeconds(filePath);
+//         return Math.round(duration);
+//     } catch (error) {
+//         throw error;
+//     }
+// };
+
+// // Route to handle file uploads
+// router.post("/upload", upload.single("file"), async (req, res) => {
+//     try {
+//         const {
+//             file,
+//             body: { folderId },
+//         } = req;
+
+//         // Check if a file was uploaded
+//         if (!file) {
+//             return res.status(400).json({ message: "No file uploaded" });
+//         }
+
+//         const drive = await getDrive();
+
+//         // Define the uploadToDrive function
+//         const uploadToDrive = async (fileData, folderId) => {
+//             try {
+//                 // Create a file metadata object
+//                 const fileMetadata = {
+//                     name: fileData.originalname,
+//                     parents: [folderId],
+//                 };
+
+//                 // Create the media upload object
+//                 const media = {
+//                     mimeType: fileData.mimetype,
+//                     body: fs.createReadStream(fileData.path),
+//                 };
+
+//                 // Upload the file
+//                 const response = await drive.files.create({
+//                     requestBody: fileMetadata,
+//                     media: media,
+//                     fields: "kind, id, name, mimeType, webViewLink",
+//                 });
+
+//                 // Append permissions to make it readable by everyone and editable by uploader
+//                 await drive.permissions.create({
+//                     fileId: response.data.id,
+//                     requestBody: {
+//                         role: "reader",
+//                         type: "anyone",
+//                     },
+//                     supportsAllDrives: true,
+//                 });
+
+//                 //Get video duration
+//                 const duration = await getDuration(fileData.path);
+//                 console.log(duration); //Add to DB
+
+//                 console.log("File uploaded successfully:", response.data);
+//                 return response.data;
+//             } catch (error) {
+//                 console.error("Error uploading file to Google Drive:", error);
+//                 throw error;
+//             }
+//         };
+
+//         // Call the uploadToDrive function with the uploaded file
+//         const uploadedFile = await uploadToDrive(file, folderId);
+
+//         // Delete the temporary file
+//         fs.unlinkSync(file.path);
+
+//         res.status(200).json({
+//             message: "File uploaded successfully",
+//             fileId: uploadedFile.id,
+//         });
+//     } catch (error) {
+//         console.error("Error handling file upload:", error);
+//         res.status(500).json({ message: "Failed to upload file" });
+//     }
+// });
 
 router.post("/createFolder", async (req, res) => {
     try {
@@ -149,15 +199,14 @@ router.post("/delete", async (req, res) => {
         await drive.files.delete({
             fileId: fileId,
         });
-        console.log( fileId + " deleted successfully");
+        console.log(fileId + " deleted successfully");
         res.status(200).json({
             message: fileId + " deleted successfully",
         });
     } catch (error) {
         console.error("Error deleting file:", error);
-        res.status(500).json({ message: "Failed to delete file"});
+        res.status(500).json({ message: "Failed to delete file" });
     }
 });
-
 
 export { router as uploadRouter };

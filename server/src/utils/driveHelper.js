@@ -1,4 +1,6 @@
 import { google } from "googleapis";
+import { getVideoDurationInSeconds } from "get-video-duration";
+import fs from "fs";
 
 const getDrive = async (clientEmail, privateKey) => {
     try {
@@ -38,8 +40,7 @@ const createFolder = async (folderName, folderId, _drive) => {
         if (folderResponse) {
             console.log("Folder created successfully:", folderResponse.data);
             return folderResponse.data;
-        }
-        else {
+        } else {
             console.log("Failed to create folder:", folderResponse.data);
             return folderResponse.data;
         }
@@ -65,55 +66,86 @@ const deleteFolder = async (folderId, _drive) => {
     }
 };
 
-export { getDrive, createFolder, deleteFolder };
+// Get the duration of the uploading video in seconds
+const getDuration = async (filePath) => {
+    try {
+        const duration = await getVideoDurationInSeconds(filePath);
+        return Math.round(duration);
+    } catch (error) {
+        console.log(error);
+        throw "Not a video";
+    }
+};
 
-// router.post("/createFolder", async (req, res) => {
-//     try {
-//         const { folderName, folderId } = req.body;
+// Function to upload video to drive
+const uploadToDrive = async (drive, fileData, folderId) => {
+    try {
+        //Get video duration
+        const duration = await getDuration(fileData.path);
 
-//         const drive = await getDrive();
+        // Create a file metadata object
+        const fileMetadata = {
+            name: fileData.originalname,
+            parents: [folderId],
+        };
 
-//         // Create a folder metadata object
-//         const folderMetadata = {
-//             name: folderName,
-//             mimeType: "application/vnd.google-apps.folder",
-//             parents: [folderId],
-//         };
+        // Create the media upload object
+        const media = {
+            mimeType: fileData.mimetype,
+            body: fs.createReadStream(fileData.path),
+        };
 
-//         // Create the folder
-//         const folderResponse = await drive.files.create({
-//             requestBody: folderMetadata,
-//         });
+        // Upload the file
+        const response = await drive.files.create({
+            requestBody: fileMetadata,
+            media: media,
+            fields: "kind, id, name, mimeType, webViewLink",
+        });
 
-//         console.log("Folder created successfully:", folderResponse.data);
+        // Append permissions to make it readable by everyone and editable by uploader
+        await drive.permissions.create({
+            fileId: response.data.id,
+            requestBody: {
+                role: "reader",
+                type: "anyone",
+            },
+            supportsAllDrives: true,
+        });
 
-//         const newFolderId = folderResponse.data.id;
+        const finalResponse = {
+            "responseData": response.data,
+            "duration": duration,
+        };
 
-//         res.status(200).json({
-//             message: "Folder created successfully",
-//             folderId: newFolderId,
-//         });
-//     } catch (error) {
-//         console.error("Error creating folder:", error);
-//         res.status(500).json({ message: "Failed to create folder" });
-//     }
-// });
+        console.log("File uploaded successfully:", finalResponse);
+        return finalResponse;
+    } catch (error) {
+        console.log("Error uploading file to Google Drive:", error);
+        throw error;
+    }
+};
 
-// router.post("/deleteFolder", async (req, res) => {
-//     try {
-//         const { folderId } = req.body;
+// Calling uploadToDrive
+const doUpload = async (file, folderId, clientEmail, privateKey) => {
+    try {
+        // Check if a file was uploaded
+        if (!file) {
+            return null;
+        }
 
-//         const drive = await getDrive();
-//         // Delete the folder
-//         await drive.files.delete({
-//             fileId: folderId,
-//         });
-//         console.log("Folder deleted successfully");
-//         res.status(200).json({
-//             message: "Folder deleted successfully",
-//         });
-//     } catch (error) {
-//         console.error("Error deleting folder:", error);
-//         res.status(500).json({ message: "Failed to delete folder" });
-//     }
-// });
+        const drive = await getDrive(clientEmail, privateKey);
+
+        // Call the uploadToDrive function with the uploaded file
+        const uploadedFile = await uploadToDrive(drive, file, folderId);
+
+        // Delete the temporary file
+        fs.unlinkSync(file.path);
+
+        return uploadedFile;
+    } catch (error) {
+        console.error("Error handling file upload:", error);
+        return null;
+    }
+};
+
+export { getDrive, createFolder, deleteFolder, doUpload };

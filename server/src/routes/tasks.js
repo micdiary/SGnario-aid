@@ -2,12 +2,11 @@ import express from "express";
 import jwt, { verify } from "jsonwebtoken";
 import multer from "multer";
 import fs from "fs";
-import { getVideoDurationInSeconds } from "get-video-duration";
 import * as dotenv from "dotenv";
 dotenv.config();
 
 import { encrypt, decrypt } from "../utils/cryptography.js";
-import { getDrive } from "../utils/driveHelper.js";
+import { getDrive, doUpload } from "../utils/driveHelper.js";
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
@@ -131,7 +130,6 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
         let updatedTask;
         if (req.file) {
             // New or existing submission
-
             // Find folder to upload
             const therapist = await SuperuserModel.findOne({
                 email: task.therapist,
@@ -374,86 +372,6 @@ router.post("/status", async (req, res) => {
     }
 });
 
-// Get the duration of the uploading video in seconds
-const getDuration = async (filePath) => {
-    try {
-        const duration = await getVideoDurationInSeconds(filePath);
-        return Math.round(duration);
-    } catch (error) {
-        console.log(error);
-        throw "Not a video";
-    }
-};
-
 // Perform file uploading to google drive in the given folderId
-const doUpload = async (file, folderId, clientEmail, privateKey) => {
-    try {
-        // Check if a file was uploaded
-        if (!file) {
-            return null;
-        }
-
-        const drive = await getDrive(clientEmail, privateKey);
-
-        // Define the uploadToDrive function
-        const uploadToDrive = async (fileData, folderId) => {
-            try {
-                //Get video duration
-                const duration = await getDuration(fileData.path);
-
-                // Create a file metadata object
-                const fileMetadata = {
-                    name: fileData.originalname,
-                    parents: [folderId],
-                };
-
-                // Create the media upload object
-                const media = {
-                    mimeType: fileData.mimetype,
-                    body: fs.createReadStream(fileData.path),
-                };
-
-                // Upload the file
-                const response = await drive.files.create({
-                    requestBody: fileMetadata,
-                    media: media,
-                    fields: "kind, id, name, mimeType, webViewLink",
-                });
-
-                // Append permissions to make it readable by everyone and editable by uploader
-                await drive.permissions.create({
-                    fileId: response.data.id,
-                    requestBody: {
-                        role: "reader",
-                        type: "anyone",
-                    },
-                    supportsAllDrives: true,
-                });
-
-                const finalResponse = {
-                    "responseData": response.data,
-                    "duration": duration,
-                };
-
-                console.log("File uploaded successfully:", finalResponse);
-                return finalResponse;
-            } catch (error) {
-                console.log("Error uploading file to Google Drive:", error);
-                throw error;
-            }
-        };
-
-        // Call the uploadToDrive function with the uploaded file
-        const uploadedFile = await uploadToDrive(file, folderId);
-
-        // Delete the temporary file
-        fs.unlinkSync(file.path);
-
-        return uploadedFile;
-    } catch (error) {
-        console.error("Error handling file upload:", error);
-        return null;
-    }
-};
 
 export { router as taskRouter };
