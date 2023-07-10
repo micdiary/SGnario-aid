@@ -7,7 +7,7 @@ const styles = {
     marginBottom: "20px",
   },
   h3: {
-    fontSize: "18px",
+    fontSize: "20px",
     fontWeight: "bold",
     marginTop: "24px",
     marginBottom: "12px",
@@ -18,6 +18,7 @@ const styles = {
     marginBottom: "12px",
   },
   li: {
+    fontSize: "18px",
     marginBottom: "8px",
   },
   strong: {
@@ -76,7 +77,7 @@ const TermsConditions = () => {
       <div>
         <h3 style={styles.h3}>Education:</h3>
         <ul style={styles.ul}>
-          <li>
+          <li style={styles.li}>
             SGnario-Aid web site can be used for educational purposes under the following conditions:
             <ul style={styles.ul}>
               <li style={styles.li}>You are registered as an educational services provider with government authorities in your jurisdiction.</li>

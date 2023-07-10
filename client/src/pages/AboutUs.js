@@ -13,7 +13,7 @@ const styles = {
     marginBottom: "20px",
   },
   p: {
-    fontSize: "18px",
+    fontSize: "20px",
     marginBottom: "12px",
     lineHeight: "1.5",
     textAlign: "justify",

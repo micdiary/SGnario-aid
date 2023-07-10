@@ -1,41 +1,62 @@
 import React, { useState } from "react";
 import VideoPlayer from '../components/youtube';
 
+import * as constants from "../constants";
+
+import logo from "../assets/logo.jpg";
+import videos from "../assets/videos.jpg";
+import steps from "../assets/steps.jpg";
+
+import card1 from "../assets/card1.jpg";
+import card2 from "../assets/card2.jpg";
+import card3 from "../assets/card3.jpg";
+import card4 from "../assets/card4.jpg";
+
 import { Carousel } from 'antd';
 import { Card } from 'antd';
 const { Meta } = Card;
 
 // css for intro
 const styles = {
-  container: {
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
   h1: {
     fontSize: "32px",
     fontWeight: "bold",
     margin: "12px 0",
     wordWrap: "break-word",
   },
-  p: {
+  h2: {
+    fontSize: "26px",
+    fontWeight: "bold",
+    margin: "12px 0",
+    wordWrap: "break-word",
+  },
+  h3: {
     fontSize: "18px",
     margin: "12px 0",
     wordWrap: "break-word",
   },
-};
+  p: {
+    fontSize: "20px",
+    margin: "12px 0",
+    wordWrap: "break-word",
+  },
 
-// css for carousel
-const contentStyle: React.CSSProperties = {
-  height: '400px',
-  width: '900px',
-  color: '#fff',
-  lineHeight: '160px',
-  textAlign: 'center',
-  background: '#364d79',
-  margin: 'auto',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
+  // css for carousel
+  carouselImageContainer: {
+    height: '500px',
+    width: '1000px',
+    textAlign: 'center',
+    flexDirection: "column",
+    background: 'lightGrey',
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  carouselImage: {
+    width: "700px",
+    height: "350px",
+  },
 };
 
 // css for card
@@ -174,46 +195,58 @@ const Home = () => {
 
       {/* <br></br><br></br><br></br> */}
 
-      <div style={styles.container}>
+      <div>
         <br />
-        <h1>Welcome to SGnario-Aid</h1>
-        <h2>The Simulated Scenario System</h2>
+        <h1 style={styles.h1}>Welcome to SGnario-Aid</h1>
+        <h2 style={styles.h2}>The Simulated Scenario System</h2>
 
-        <p style={styles.p}>Improve your social, interview, and speech skills by practicing real-life interactions with the free SGnario-Aid Simulated Scenario System. SGnario-Aid contains over 100 recorded video scenarios for you to work through. To learn more about this exciting system, visit the About page.</p>
+        <p style={styles.p}>Improve your social, interview, and speech skills by practicing real-life interactions with the free SGnario-Aid Simulated Scenario System.
+          SGnario-Aid contains over 100 recorded video scenarios for you to work through. To learn more about this exciting system, visit the <a href={constants.ABOUT_US_URL}>About Us</a> page.</p>
 
-        <p style={styles.p}>To begin using the simulated scenarios, please Register or Login to your free SGnario-Aid account and then navigate to the scenarios by the scenarios menu item.</p>
+        <p style={styles.p}>To begin using the simulated scenarios, please <a href={constants.REGISTER_URL}>Register</a> or <a href={constants.LOGIN_URL}>Login</a> to your free SGnario-Aid account and then navigate to the scenarios by the scenarios menu item.</p>
       </div>
 
+      <br></br><br></br><br></br>
       <div>
-        <Carousel autoplay>
+        {/* codes for carousel */}
+        <Carousel autoplay autoplaySpeed={4000}>
           <div>
-            <img src={"https://asterius.federation.edu.au/scenariaid/images/teppssquare.png"} alt="Image 1" style={contentStyle} />
-          </div>
-          <div>
-            <img src={"client/src/assets/logo.jpg"} alt="Image 2" style={contentStyle} />
-          </div>
-          <div>
-            <img src={"https://asterius.federation.edu.au/scenariaid/templates/shape5_vertex/images/s5_logo.png"} alt="Image 3" style={contentStyle} />
-          </div>
-          <div>
-            <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnk7ZsVLk1wx_-AkswB57_JJwi9SL1fBlHMA&usqp=CAU"} alt="Image 4" style={contentStyle} />
+            <div style={styles.carouselImageContainer}>
+              <h3 style={styles.h2}>Want to try out SGnario-Aid for free?</h3>
+              <p style={styles.h3}>Click on the link to sign up now! <a href={constants.REGISTER_URL}> Sign Up</a></p>
+              <img src={logo} alt="logo" style={styles.carouselImage} />
+            </div>
           </div>
 
+          <div>
+            <div style={styles.carouselImageContainer}>
+              <h3 style={styles.h2}>Over 100 staged streaming videos to try</h3>
+              <p style={styles.h3}>Scenarios of different categories to try out for free! <a href={constants.SCENARIOS_URL}> View More</a></p>
+              <img src={videos} alt="videos" style={styles.carouselImage} />
+            </div>
+          </div>
+
+          <div>
+            <div style={styles.carouselImageContainer}>
+              <h3 style={styles.h2}>Seamless and easy to use</h3>
+              <p style={styles.h3}>With a guide to teach you how to use! <a href={constants.TUTORIAL_URL}> View More</a></p>
+              <img src={steps} alt="steps" style={styles.carouselImage} />
+            </div>
+          </div>
         </Carousel>
       </div>
+      <br></br><br></br><br></br>
 
-      <br></br><br></br><br></br><br></br>
-
+      {/* codes for card */}
       <div style={cardContainerStyle}>
-
         <Card
           hoverable
           style={cardStyle}
           cover={
             <img
               alt="example"
-              src="https://www.nuhs.edu.sg/About-NUHS/careers/PublishingImages/Pages/Speech%20Therapist_Banner.jpg"
-               style={{ height: '200px' }} 
+              src={card1}
+              style={{ height: '200px' }}
             />
           }
         >
@@ -231,9 +264,9 @@ const Home = () => {
         <Card
           hoverable
           style={cardStyle}
-          cover={<img 
-            alt="example" 
-            src="https://www.healthxchange.sg/sites/hexassets/Assets/children/speech-therapy-child-neurological-conditions-augmentative-alternative-communication.jpg"
+          cover={<img
+            alt="example"
+            src={card2}
             style={{ height: '200px' }} />}
         >
           <Meta
@@ -256,10 +289,10 @@ const Home = () => {
 
         <Card hoverable
           style={cardStyle}
-          cover={<img 
-          alt="example" 
-          src="https://t3.ftcdn.net/jpg/04/86/46/12/360_F_486461257_SM0fudzHMzXWsQEr7rAzazjTJyoriLHr.jpg" 
-          style={{ height: '200px' }} />}>
+          cover={<img
+            alt="example"
+            src={card3}
+            style={{ height: '200px' }} />}>
           <Meta
             title="What are the benefits?"
             description={
@@ -280,10 +313,10 @@ const Home = () => {
 
         <Card hoverable
           style={cardStyle}
-          cover={<img 
-          alt="example" 
-          src="https://www.acerislaw.com/wp-content/uploads/2016/05/rate-of-success.jpg" 
-          style={{ height: '200px' }} />}>
+          cover={<img
+            alt="example"
+            src={card4}
+            style={{ height: '200px' }} />}>
           <Meta
             title="Tips to Make Speech Therapy Successful"
             description={
