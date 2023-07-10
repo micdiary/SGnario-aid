@@ -29,7 +29,7 @@ const TaskCard = ({ record, editCard }) => {
 	const generateContentCard = (record) => {
 		const contentTabList = {
 			Recording: (
-				<Descriptions column={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 2 }}>
+				<Descriptions column={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}>
 					<Descriptions.Item label="Recommended Duration">
 						{record.recommendedLength} seconds
 					</Descriptions.Item>

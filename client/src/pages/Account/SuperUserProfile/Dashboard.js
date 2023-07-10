@@ -17,6 +17,29 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	const [patientOptions, setPatientOptions] = useState([]);
 	const [videoOptions, setVideoOptions] = useState([]);
 	const [selectedScenario, setSelectedScenario] = useState([]);
+	const [isFormValid, setIsFormValid] = useState(false);
+
+	const values = Form.useWatch([], form);
+	useEffect(() => {
+		console.log(values);
+		if (values !== undefined) {
+			if (
+				values.patient !== "" &&
+				values.recommendedLength !== "" &&
+				values.title !== "" &&
+				values.recommendedLength !== undefined
+			) {
+				if (
+					Object.keys(values.recommendedLength).length === values.videos.length
+				)
+					setIsFormValid(true);
+			} else {
+				setIsFormValid(false);
+			}
+		} else {
+			setIsFormValid(false);
+		}
+	}, [values]);
 
 	const fetchPatientTasks = async () => {
 		try {
@@ -37,10 +60,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	useEffect(() => {
 		if (profile.email) {
-			form.setFieldsValue({
-				name: profile.email,
-			});
-
 			fetchPatientTasks();
 
 			getScenarios().then((res) => {
@@ -128,13 +147,13 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			alert(res.message || res.error);
 			fetchPatientTasks();
 			form.resetFields();
+			setSelectedScenario([]);
 			setIsModalVisible(false);
 			setConfirmLoading(false);
 		});
 	};
 
 	const videosOnChange = (value) => {
-		console.log(value);
 		let temp = [];
 		for (let i = 0; i < value.length; i++) {
 			temp.push(value[i][2]);
@@ -143,11 +162,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	};
 
 	const formItem = [
-		{
-			label: "Name",
-			name: "name",
-			input: <Input disabled />,
-		},
 		{
 			label: "Patient",
 			name: "patient",
@@ -255,7 +269,13 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	return profile.name ? (
 		<>
-			<Button type="primary" onClick={showModal}>
+			<Button
+				type="primary"
+				onClick={showModal}
+				style={{
+					marginBottom: 16,
+				}}
+			>
 				Assign Task
 			</Button>
 			<Table
@@ -314,6 +334,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				title="Assign Task"
 				open={isModalVisible}
 				onOk={handleOk}
+				okButtonProps={{ disabled: !isFormValid }}
 				confirmLoading={confirmLoading}
 				onCancel={handleCancel}
 			>

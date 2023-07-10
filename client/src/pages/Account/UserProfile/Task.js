@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-	Button,
-	Typography,
-	Tag,
-	Row,
-	Col,
-	Divider,
-	Breadcrumb,
-} from "antd";
+import { Button, Typography, Tag, Row, Col, Divider, Breadcrumb } from "antd";
 import UserTaskModal from "./TaskModal";
 import { updateStatus } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
@@ -85,24 +77,30 @@ const Task = ({ task, setTask, setView }) => {
 			/>
 			<Divider />
 			<Row justify={"space-between"} gutter={[0, 12]}>
-				<Col
-					span={12}
-					style={{
-						display: "inline-flex",
-						alignItems: "center",
-					}}
-				>
-					<Typography.Title
+				<Col span={16}>
+					<Row
+						gutter={[0, 12]}
 						style={{
-							minWidth: 120,
-							margin: 0,
-							marginRight: 4,
+							display: "inline-flex",
+							alignItems: "center",
 						}}
-						level={2}
 					>
-						{task.title}
-					</Typography.Title>
-					<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
+						<Col>
+							<Typography.Title
+								style={{
+									minWidth: 120,
+									margin: 0,
+									marginRight: 4,
+								}}
+								level={2}
+							>
+								{task.title}
+							</Typography.Title>
+						</Col>
+						<Col>
+							<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
+						</Col>
+					</Row>
 				</Col>
 				<Col
 					style={{
@@ -139,7 +137,7 @@ const Task = ({ task, setTask, setView }) => {
 				{populateData &&
 					populateData.map((record) => {
 						return (
-							<Col span={24} lg={12}>
+							<Col span={24} md={12} xxl={8}>
 								<TaskCard record={record} editCard={edit} />
 							</Col>
 						);
