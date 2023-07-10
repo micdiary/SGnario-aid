@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Form, Input, Select, Table, Tag, Cascader } from "antd";
-import Loader from "../../../components/Loader";
+import {
+	Button,
+	Modal,
+	Form,
+	Input,
+	Select,
+	Table,
+	Tag,
+	Cascader,
+	Spin,
+} from "antd";
 import {
 	getPatientsByTherapist,
 	getPatientsTasks,
 } from "../../../api/therapist";
 import { createTasks, getTaskStatusCount } from "../../../api/task";
 import { getScenarios } from "../../../api/scenarios";
+import { showNotification } from "../../../components/Notification";
 
 const { Option } = Select;
 
@@ -21,7 +31,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	const values = Form.useWatch([], form);
 	useEffect(() => {
-		console.log(values);
 		if (values !== undefined) {
 			if (
 				values.patient !== "" &&
@@ -143,14 +152,20 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			recommendedLength: recommendedLength,
 		};
 
-		createTasks(req).then((res) => {
-			alert(res.message || res.error);
-			fetchPatientTasks();
-			form.resetFields();
-			setSelectedScenario([]);
-			setIsModalVisible(false);
-			setConfirmLoading(false);
-		});
+		createTasks(req)
+			.then((res) => {
+				showNotification(res.message);
+				fetchPatientTasks();
+				form.resetFields();
+				setSelectedScenario([]);
+				setIsModalVisible(false);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			})
+			.finally(() => {
+				setConfirmLoading(false);
+			});
 	};
 
 	const videosOnChange = (value) => {
@@ -267,8 +282,8 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 		});
 	};
 
-	return profile.name ? (
-		<>
+	return (
+		<Spin spinning={videoOptions.length === 0}>
 			<Button
 				type="primary"
 				onClick={showModal}
@@ -289,6 +304,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 								title: "Date Assigned",
 								dataIndex: "dateAssigned",
 								key: "dateAssigned",
+								render: (date) => new Date(date).toLocaleDateString("en-SG"),
 							},
 							{
 								title: "Title",
@@ -356,9 +372,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 					</Form.List>
 				</Form>
 			</Modal>
-		</>
-	) : (
-		<Loader />
+		</Spin>
 	);
 };
 

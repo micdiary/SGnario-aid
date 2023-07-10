@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import * as constants from "../constants";
 import { register } from "../api/account";
 import { getTherapists } from "../api/account";
+import { showNotification } from "../components/Notification";
 
 const Register = () => {
 	let navigate = useNavigate();
@@ -205,12 +206,15 @@ const Register = () => {
 				.find((therapist) => therapist.value === values.therapist)
 				.label.split(" ")[0],
 		};
-		console.log(req);
 
-		register(req).then((res) => {
-			alert(res.message || res.error);
-			navigate(constants.LOGIN_URL);
-		});
+		register(req)
+			.then((res) => {
+				showNotification(res.message);
+				navigate(constants.LOGIN_URL);
+			})
+			.catch((err) => {
+				showNotification(err.message);
+			});
 	};
 
 	return (

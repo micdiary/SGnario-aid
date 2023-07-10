@@ -2,6 +2,7 @@ import React from "react";
 import { Input, Button, Form, Typography, Divider } from "antd";
 import { resetPassword } from "../../api/account";
 import { generateForm } from "../../utils/form";
+import { showNotification } from "../../components/Notification";
 
 const Password = () => {
 	const [passwordForm] = Form.useForm();
@@ -59,10 +60,14 @@ const Password = () => {
 			newPassword: values.password,
 		};
 		// Handle the form submission
-		resetPassword(req).then((res) => {
-			alert(res.message || res.error);
-			passwordForm.resetFields();
-		});
+		resetPassword(req)
+			.then((res) => {
+				showNotification(res.message);
+				passwordForm.resetFields();
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 	return (
 		<Form

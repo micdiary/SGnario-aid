@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Tag } from "antd";
+import { Button, Spin, Table, Tag } from "antd";
 import { TAG } from "../../../constants";
 import { getTasksByToken } from "../../../api/task";
 
@@ -54,7 +54,16 @@ const Dashboard = ({ setView, setTask }) => {
 		setView("task");
 	};
 
-	return <Table columns={columns} dataSource={tasks} rowKey={"_id"} scroll={{x:true}}></Table>;
+	return (
+		<Spin spinning={tasks.length === 0}>
+			<Table
+				columns={columns}
+				dataSource={tasks}
+				rowKey={"_id"}
+				scroll={{ x: true }}
+			/>
+		</Spin>
+	);
 };
 
 export default Dashboard;

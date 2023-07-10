@@ -5,6 +5,7 @@ import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
 import { updateStatus } from "../../../api/task";
 import TaskCard from "../../../components/TaskCard";
+import { showNotification } from "../../../components/Notification";
 
 const SuperUserTask = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
@@ -34,10 +35,14 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 			};
 		}
 
-		updateStatus(req).then((res) => {
-			alert(res.message || res.error);
-			setTask(res.task);
-		});
+		updateStatus(req)
+			.then((res) => {
+				showNotification(res.message);
+				setTask(res.task);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
 	const renderStatusBtn = (status) => {

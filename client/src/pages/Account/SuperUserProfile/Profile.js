@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Input, Button, Select, Form, Typography, Divider } from "antd";
-import Loader from "../../../components/Loader";
+import { Input, Button, Select, Form, Typography, Divider, Spin } from "antd";
 import { editProfile } from "../../../api/profile";
 import { generateForm } from "../../../utils/form";
+import { showNotification } from "../../../components/Notification";
 
 const { Option } = Select;
 
@@ -90,31 +90,35 @@ const SuperUserProfile = ({ profile, setProfile }) => {
 			issue: values.issue,
 		};
 		// Handle the form submission
-		editProfile(req).then((res) => {
-			alert(res.message);
-			setProfile(res.user);
-		});
+		editProfile(req)
+			.then((res) => {
+				showNotification(res.message);
+				setProfile(res.user);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
-	return profile.name ? (
-		<Form
-			form={profileForm}
-			wrapperCol={{
-				span: 12,
-			}}
-			layout="vertical"
-			onFinish={onProfileFinish}
-			scrollToFirstError
-		>
-			<Typography.Title level={4}>{profile.name}'s Profile</Typography.Title>
-			<Divider />
-			{generateForm(profileFormItem)}
-			<Button type={"primary"} onClick={() => profileForm.submit()}>
-				Update profile
-			</Button>
-		</Form>
-	) : (
-		<Loader />
+	return (
+		<Spin spinning={!profile.name}>
+			<Form
+				form={profileForm}
+				wrapperCol={{
+					span: 12,
+				}}
+				layout="vertical"
+				onFinish={onProfileFinish}
+				scrollToFirstError
+			>
+				<Typography.Title level={4}>{profile.name}'s Profile</Typography.Title>
+				<Divider />
+				{generateForm(profileFormItem)}
+				<Button type={"primary"} onClick={() => profileForm.submit()}>
+					Update profile
+				</Button>
+			</Form>
+		</Spin>
 	);
 };
 

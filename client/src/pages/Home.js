@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import VideoPlayer from '../components/youtube';
+import React from "react";
 
 import * as constants from "../constants";
 

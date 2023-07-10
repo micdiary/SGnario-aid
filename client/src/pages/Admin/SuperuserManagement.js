@@ -12,6 +12,7 @@ import {
 	Row,
 } from "antd";
 import { deleteUser, getTherapists, registerSuperuser } from "../../api/admin";
+import { showNotification } from "../../components/Notification";
 
 const { Option } = Select;
 
@@ -23,9 +24,13 @@ const SuperuserManagement = () => {
 	const [search, setSearch] = useState("");
 
 	useEffect(() => {
-		getTherapists().then((res) => {
-			setData(res.therapists);
-		});
+		getTherapists()
+			.then((res) => {
+				setData(res.therapists);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	}, []);
 
 	const showModal = () => {
@@ -46,21 +51,29 @@ const SuperuserManagement = () => {
 	};
 
 	const onFormFinish = (values) => {
-		registerSuperuser(values).then((res) => {
-			alert(res.message);
-		});
-		setData([...data, values]);
-		form.resetFields();
-		setConfirmLoading(false);
-		setOpen(false);
+		registerSuperuser(values)
+			.then((res) => {
+				showNotification(res.message);
+				setData([...data, values]);
+				form.resetFields();
+				setConfirmLoading(false);
+				setOpen(false);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
 	const deleteBtn = (value) => {
-		deleteUser(value._id).then((res) => {
-			alert(res.message);
-			const newData = data.filter((item) => item._id !== value._id);
-			setData(newData);
-		});
+		deleteUser(value._id)
+			.then((res) => {
+				showNotification(res.message);
+				const newData = data.filter((item) => item._id !== value._id);
+				setData(newData);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
 	const formItem = [

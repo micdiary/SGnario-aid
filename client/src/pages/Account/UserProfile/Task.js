@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Button, Typography, Tag, Row, Col, Divider, Breadcrumb } from "antd";
+import {
+	Button,
+	Typography,
+	Tag,
+	Row,
+	Col,
+	Divider,
+	Breadcrumb,
+	Spin,
+} from "antd";
 import UserTaskModal from "./TaskModal";
 import { updateStatus } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
 import TaskCard from "../../../components/TaskCard";
 import NewTaskSubmissionModal from "../../../components/NewTaskSubmissionModal";
-import Loader from "../../../components/Loader";
+import { showNotification } from "../../../components/Notification";
 
 const Task = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
@@ -38,10 +47,14 @@ const Task = ({ task, setTask, setView }) => {
 			};
 		}
 
-		updateStatus(req).then((res) => {
-			alert(res.message || res.error);
-			setTask(res.task);
-		});
+		updateStatus(req)
+			.then((res) => {
+				showNotification(res.message);
+				setTask(res.task);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
 	const renderStatusBtn = (status) => {
@@ -57,10 +70,8 @@ const Task = ({ task, setTask, setView }) => {
 		}
 	};
 
-	return formLoading ? (
-		<Loader />
-	) : (
-		<>
+	return (
+		<Spin spinning={formLoading}>
 			<Breadcrumb
 				items={[
 					{
@@ -156,7 +167,7 @@ const Task = ({ task, setTask, setView }) => {
 				modalData={modalData}
 				setPopulateData={setPopulateData}
 			/>
-		</>
+		</Spin>
 	);
 };
 

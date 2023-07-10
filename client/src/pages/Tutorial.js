@@ -11,8 +11,6 @@ import scenarios from "../assets/scenarios.jpg";
 import category from "../assets/category.jpg";
 import filter from "../assets/filter.jpg";
 
-const { Link } = Anchor;
-
 // css for tutorial
 const styles = {
   h2: {
@@ -109,7 +107,7 @@ const Tutorial = () => {
               <h3 style={styles.h2}>Register</h3>
               <p style={styles.h3}>To begin using the simulated scenarios, please register or login to your free SGnario-Aid account.</p>
               <div style={styles.carouselImageContainer}>
-                <img src={register} alt="Account Image" style={styles.carouselImage} />  {/*insert register account image*/}
+                <img src={register} alt="Account" style={styles.carouselImage} />  {/*insert register account image*/}
               </div>
             </div>
 
@@ -117,7 +115,7 @@ const Tutorial = () => {
               <h3 style={styles.h2}>Login</h3>
               <p style={styles.h3}>To begin using the simulated scenarios, please register or login to your free SGnario-Aid account. </p>
               <div style={styles.carouselImageContainer}>
-                <img src={login} alt="Account Image" style={styles.carouselImage} />  {/*insert login image*/}
+                <img src={login} alt="Account" style={styles.carouselImage} />  {/*insert login image*/}
               </div>
             </div>
 
@@ -125,7 +123,7 @@ const Tutorial = () => {
               <h3 style={styles.h2}>Reset Password</h3>
               <p style={styles.h3}>If you are an existing user, but forgot your password. You can click on the forgot password to reset password. </p>
               <div style={styles.carouselImageContainer}>
-                <img src={reset} alt="Account Image" style={styles.carouselImage} />  {/*insert forgot password image*/}
+                <img src={reset} alt="Account" style={styles.carouselImage} />  {/*insert forgot password image*/}
               </div>
             </div>
 
@@ -133,8 +131,8 @@ const Tutorial = () => {
               <h3 style={styles.h2}>Profile</h3>
               <p style={styles.h3}>After logging in, you are able to view and edit your personal information on the Accounts page.</p>
               <div style={styles.carouselImageContainer}>
-                <img src={profile} alt="Account Image" style={{ width: "750px", height: "450px" }} /> {/* insert profile image */}
-                <img src={changepw} alt="Account Image" style={{ width: "750px", height: "450px" }} /> {/* insert change password image */}
+                <img src={profile} alt="Account" style={{ width: "750px", height: "450px" }} /> {/* insert profile image */}
+                <img src={changepw} alt="Account" style={{ width: "750px", height: "450px" }} /> {/* insert change password image */}
               </div>
             </div>
 

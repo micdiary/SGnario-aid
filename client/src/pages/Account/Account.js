@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Layout, Button, Space } from "antd";
+import { Menu, Layout, Button, Space, Spin } from "antd";
 import {
 	UserOutlined,
 	LockOutlined,
@@ -28,7 +28,6 @@ import {
 import { getProfile } from "../../api/profile";
 import { userStore } from "../../utils/store";
 import * as constants from "../../constants";
-import Loader from "../../components/Loader";
 
 const Account = () => {
 	const [view, setView] = useState("dashboard");
@@ -98,7 +97,7 @@ const Account = () => {
 				case "password":
 					return <Password profile={profile} />;
 				default:
-					return <Loader />;
+					return <Spin spinning />;
 			}
 		} else if (userType === "therapist" || userType === "educator") {
 			switch (view) {
@@ -121,7 +120,7 @@ const Account = () => {
 				case "storage":
 					return <SuperUserStorage profile={profile} />;
 				default:
-					return <Loader />;
+					return <Spin spinning />;
 			}
 		}
 	};

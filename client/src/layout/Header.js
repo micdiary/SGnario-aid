@@ -104,7 +104,7 @@ const Header = ({ handleCategoryFilter }) => {
 		},
 		{
 			label: (
-				<a 
+				<a
 					className="ant-dropdown-link"
 					href={constants.SCENARIOS_URL}
 					style={{
@@ -194,6 +194,8 @@ const Header = ({ handleCategoryFilter }) => {
 								<Button type={"primary"}>Login</Button>
 							</Link>
 						</>
+					) : userRole === "admin" ? (
+						<></>
 					) : (
 						<Link to={constants.ACCOUNT_URL}>
 							<Avatar

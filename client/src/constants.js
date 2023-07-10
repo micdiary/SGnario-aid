@@ -30,6 +30,8 @@ export const GET_PATIENTS_API = `${URL}/users/patients`;
 export const DRIVE_CREDENTIALS_API = `${URL}/users/set-drive-credentials`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
 
+export const UPLOAD_API = `${URL}/upload`;
+
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
 export const SCENARIOS_URL_API = `${URL}/scenarios/all`;
 export const UPDATE_SCENARIO_VIDEO_API = `${URL}/scenarios/:id/video/:videoId`;
@@ -45,9 +47,6 @@ export const USER_TASK_SUBMISSION_API = `${URL}/tasks/user/submission`;
 export const TASK_STATUS_API = `${URL}/tasks/status`;
 export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`;
 
-export const INCOMPLETE_TAG = "Incomplete";
-export const PENDING_TAG = "Pending";
-export const COMPLETED_TAG = "Completed";
 
 export const TAG = {
     Incomplete: "volcano",

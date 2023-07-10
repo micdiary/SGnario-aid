@@ -1,29 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 
-import {
-	Table,
-	Button,
-	Modal,
-	Form,
-	Input,
-	Select,
-	Divider,
-	Space,
-	Popconfirm,
-	Typography,
-} from "antd";
+import { Button, Modal, Form, Input, Select, Divider, Space } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import {
 	checkDuplicateVideo,
 	getScenarios,
 	createScenario,
 } from "../../api/scenarios";
+import { showNotification } from "../../components/Notification";
 
 const { Option } = Select;
 
 const AddScenariosModal = ({
 	data,
-    setData,
+	setData,
 	addScenarioModalVisible,
 	setAddScenarioModalVisible,
 }) => {
@@ -94,7 +84,7 @@ const AddScenariosModal = ({
 			checkDuplicateVideo(values.videos[i].videoId, values.videos[i].videoName)
 				.then((isDuplicate) => {
 					if (isDuplicate) {
-						alert("Video already exists");
+						showNotification("Video already exists", "error");
 						return;
 					} else if (i === values.videos.length - 1) {
 						const req = {
@@ -104,18 +94,18 @@ const AddScenariosModal = ({
 						createScenario(req)
 							.then((res) => {
 								setCategoryOptions([]);
-                                setData([...data, res]);
-								alert("Scenario created successfully");
+								setData([...data, res]);
+								showNotification("Scenario created successfully");
 							})
 							.catch((error) => {
 								console.error(error);
-								alert("Failed to create scenario");
+								showNotification("Failed to create scenario", "error");
 							});
 					}
 				})
 				.catch((error) => {
 					console.error(error);
-					alert("Failed to check duplicate video");
+					showNotification("Failed to check duplicate video", "error");
 				});
 		}
 		form.resetFields();

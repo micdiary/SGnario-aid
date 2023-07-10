@@ -19,6 +19,7 @@ import {
 	updateScenarioVideo,
 } from "../../api/scenarios";
 import AddScenariosModal from "./AddScenariosModal";
+import { showNotification } from "../../components/Notification";
 
 const { Option } = Select;
 
@@ -287,14 +288,14 @@ const Scenarios = () => {
 	const handleDelete = (scenarioId) => {
 		deleteScenario(scenarioId)
 			.then(() => {
-				alert("Scenario deleted successfully");
+				showNotification("Scenario deleted successfully");
 				getScenarios().then((res) => {
 					setData(res);
 				});
 			})
 			.catch((error) => {
 				console.error(error);
-				alert("Failed to delete scenario");
+				showNotification("Failed to delete scenario", "error");
 			});
 	};
 

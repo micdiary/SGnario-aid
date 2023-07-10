@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, InputNumber, Input, Slider } from "antd";
+import { Form, Modal, Input, Slider } from "antd";
 import { updatePatientTasks } from "../../../api/therapist";
 import { populateTaskData } from "../../../utils/task";
 import { stutterMarks, fluencyMarks } from "../../../constants";
+import { showNotification } from "../../../components/Notification";
 
 const SuperUserTaskModal = ({
 	modalVisible,
@@ -40,6 +41,7 @@ const SuperUserTaskModal = ({
 	}, [modalData, form]);
 
 	const onFormFinish = (values) => {
+		setConfirmLoading(true);
 		const req = {
 			taskId: modalData.taskId,
 			submissionId: modalData.submissionId,
@@ -48,13 +50,18 @@ const SuperUserTaskModal = ({
 			fluency: values.therapistFluency,
 			remark: values.therapistRemark,
 		};
-		setConfirmLoading(true);
-		updatePatientTasks(req).then((res) => {
-			alert(res.message || res.errror);
-			setPopulateData(populateTaskData(res.task));
-			setConfirmLoading(false);
-			setModalVisible(false);
-		});
+		updatePatientTasks(req)
+			.then((res) => {
+				showNotification(res.message);
+				setPopulateData(populateTaskData(res.task));
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			})
+			.finally(() => {
+				setConfirmLoading(false);
+				setModalVisible(false);
+			});
 	};
 
 	const handleOk = () => {

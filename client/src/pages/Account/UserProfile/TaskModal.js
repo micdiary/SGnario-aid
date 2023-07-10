@@ -15,6 +15,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { updateTask } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
 import { stutterMarks, fluencyMarks } from "../../../constants";
+import { showNotification } from "../../../components/Notification";
 
 const UserTaskModal = ({
 	modalVisible,
@@ -65,11 +66,17 @@ const UserTaskModal = ({
 		};
 
 		setConfirmLoading(true);
-		updateTask(req).then((res) => {
-			alert(res.message || res.errror);
-			setPopulateData(populateTaskData(res.task));
-			setConfirmLoading(false);
-		});
+		updateTask(req)
+			.then((res) => {
+				showNotification(res.message);
+				setPopulateData(populateTaskData(res.task));
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			})
+			.finally(() => {
+				setConfirmLoading(false);
+			});
 	};
 
 	const customRequest = ({ file, onSuccess }) => {

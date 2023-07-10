@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Space, Table, Typography, Popconfirm, Input } from "antd";
 import { deleteUser, getPatients } from "../../api/admin";
+import { showNotification } from "../../components/Notification";
 
 const UserManagement = () => {
 	const [data, setData] = useState([]);
@@ -13,11 +14,15 @@ const UserManagement = () => {
 	}, []);
 
 	const deleteBtn = (value) => {
-		deleteUser(value._id).then((res) => {
-			alert(res.message);
-			const newData = data.filter((item) => item._id !== value._id);
-			setData(newData);
-		});
+		deleteUser(value._id)
+			.then((res) => {
+				showNotification(res.message);
+				const newData = data.filter((item) => item._id !== value._id);
+				setData(newData);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
 	const onSearch = (value) => {

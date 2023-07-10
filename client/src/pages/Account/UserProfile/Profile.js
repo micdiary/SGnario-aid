@@ -9,10 +9,11 @@ import {
 	Radio,
 	Typography,
 	Divider,
+	Spin,
 } from "antd";
 import { editProfile } from "../../../api/profile";
-import Loader from "../../../components/Loader";
 import { generateForm } from "../../../utils/form";
+import { showNotification } from "../../../components/Notification";
 
 const Profile = ({ profile, setProfile }) => {
 	const [profileForm] = Form.useForm();
@@ -110,31 +111,35 @@ const Profile = ({ profile, setProfile }) => {
 			therapistEmail: profile.therapistEmail,
 		};
 		// Handle the form submission
-		editProfile(req).then((res) => {
-			alert(res.message);
-			setProfile(res.user);
-		});
+		editProfile(req)
+			.then((res) => {
+				showNotification(res.message);
+				setProfile(res.user);
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			});
 	};
 
-	return profile.name ? (
-		<Form
-			form={profileForm}
-			wrapperCol={{
-				span: 12,
-			}}
-			layout="vertical"
-			onFinish={onProfileFinish}
-			scrollToFirstError
-		>
-			<Typography.Title level={4}>{profile.name}'s Profile</Typography.Title>
-			<Divider />
-			{generateForm(profileFormItem)}
-			<Button type={"primary"} onClick={() => profileForm.submit()}>
-				Update profile
-			</Button>
-		</Form>
-	) : (
-		<Loader />
+	return (
+		<Spin spinning={!profile.name}>
+			<Form
+				form={profileForm}
+				wrapperCol={{
+					span: 12,
+				}}
+				layout="vertical"
+				onFinish={onProfileFinish}
+				scrollToFirstError
+			>
+				<Typography.Title level={4}>{profile.name}'s Profile</Typography.Title>
+				<Divider />
+				{generateForm(profileFormItem)}
+				<Button type={"primary"} onClick={() => profileForm.submit()}>
+					Update profile
+				</Button>
+			</Form>
+		</Spin>
 	);
 };
 
