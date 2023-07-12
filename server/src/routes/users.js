@@ -1,14 +1,14 @@
 import express from "express";
 import jwt, { verify } from "jsonwebtoken";
 import { encrypt, decrypt } from "../utils/cryptography.js";
-import { getDrive, createFolder } from "../utils/driveHelper.js";
+import { getDrive, createFolder, deleteFolder } from "../utils/driveHelper.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const router = express.Router();
 
@@ -44,71 +44,16 @@ router.post("/edit-profile", async (req, res) => {
 
         let updatedUser;
         if (role === "user") {
-            const { name, dob, gender, issue, therapistName, therapistEmail } =
-                fields;
+            const { name, dob, gender, issue } = fields;
 
             updatedUser = await UserModel.findOne({ _id: id });
-
-            // if therapist changed and not in prev therapist array
-            // push current therapist into array
-            if (
-                !updatedUser.prevTherapists.includes(
-                    updatedUser.therapistEmail
-                ) &&
-                updatedUser.therapistEmail !== therapistEmail
-            ) {
-                updatedUser.prevTherapists.push(updatedUser.therapistEmail);
-            }
 
             updatedUser.name = name;
             updatedUser.dob = dob;
             updatedUser.gender = gender;
             updatedUser.issue = issue;
-            updatedUser.therapistName = therapistName;
-            updatedUser.therapistEmail = therapistEmail;
 
             await updatedUser.save();
-
-            // Find therapist
-            if (therapistEmail) {
-                const therapist = await SuperuserModel.findOne({
-                    email: therapistEmail,
-                });
-
-                // check if therapist configured drive
-                if (!therapist.privateKey) {
-                    return res.status(404).json({
-                        error: "Therapist has not configured drive yet. Please contact your therapist.",
-                    });
-                }
-
-                // check if patient has folder created
-                const hasMatch = therapist.patientFolders.some(
-                    (patientFolder) =>
-                        patientFolder.patient === updatedUser.email
-                );
-
-                if (!hasMatch) {
-                    const { clientEmail, rootFolderId } = therapist;
-
-                    const privateKey = decrypt(
-                        therapist.privateKey,
-                        process.env.ENCRYPTION_KEY
-                    );
-                    const data = await createFolder(
-                        updatedUser.email,
-                        rootFolderId,
-                        await getDrive(clientEmail, privateKey)
-                    );
-
-                    therapist.patientFolders.push({
-                        "patient": updatedUser.email,
-                        "folderId": data.id,
-                    });
-
-                    await therapist.save();
-                }
-            }
         } else if (role === "therapist" || role === "educator") {
             const { name, purpose, organisation } = fields;
             updatedUser = await SuperuserModel.findByIdAndUpdate(
@@ -133,6 +78,82 @@ router.post("/edit-profile", async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/set-therapist", async (req, res) => {
+    const { token, userIds } = req.body;
+    try {
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const { id, role } = decodedToken;
+
+        // Find therapist
+        const therapist = await SuperuserModel.findOne({ _id: id });
+
+        // Check if therapist configured drive
+        if (!therapist.privateKey) {
+            return res
+                .status(404)
+                .json({ error: "Drive has not been configured yet." });
+        }
+
+        let userCount = 0;
+        let usersAdded = [];
+        // Set therapist
+        for (const userId of userIds) {
+            const user = await UserModel.findOne({ _id: userId });
+
+            // To prevent race conditions
+            if (!user.therapistEmail) {
+                let email;
+                let folderId;
+
+                // Check if new therapist
+                const formerTherapist = user.prevTherapists.find(
+                    (prevTherapist) => prevTherapist.email === therapist.email
+                );
+
+                if (!formerTherapist) {
+                    // Create new folder
+                    const { clientEmail, rootFolderId } = therapist;
+                    const privateKey = decrypt(
+                        therapist.privateKey,
+                        process.env.ENCRYPTION_KEY
+                    );
+
+                    const data = await createFolder(
+                        user.email,
+                        rootFolderId,
+                        await getDrive(clientEmail, privateKey)
+                    );
+
+                    folderId = data.id;
+                    email = therapist.email;
+
+                    // push into prevTherapists
+                    user.prevTherapists.push({
+                        "email": email,
+                        "folderId": folderId,
+                    });
+                } else {
+                    ({ email, folderId } = formerTherapist);
+                }
+
+                user.therapistEmail = therapist.email;
+                user.therapistName = therapist.name;
+                await user.save();
+
+                userCount++;
+                usersAdded.push(user.email);
+            }
+        }
+        return res.status(200).json({
+            message: `${userCount} user(s) have been succesfully added`,
+            usersAdded: usersAdded,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Interal Server Error" });
     }
 });
 
@@ -211,6 +232,35 @@ router.post("/therapists", async (req, res) => {
     }
 });
 
+// Get all patients without therapist
+router.get("/newPatients/:token", async (req, res) => {
+    const token = req.params.token;
+    try {
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const { id, role } = decodedToken;
+
+        // Validate authorisation
+        if (role == "user" || role == "admin") {
+            return res.status(401).json({ error: "Unauthorised" });
+        }
+
+        // Find patients without a therapist
+        const patients = await UserModel.find({
+            therapistEmail: { $in: ["", null] },
+        });
+
+        const patientArray = patients.map((obj) => ({
+            name: obj.name,
+            email: obj.email,
+        }));
+
+        return res.status(200).json({ patientArray });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // Get all patients by therapist
 router.get("/patients/:token", async (req, res) => {
     const token = req.params.token;
@@ -248,7 +298,6 @@ router.get("/patients/:token", async (req, res) => {
     }
 });
 
-// User can add himself back
 // Remove patient from therapist
 router.post("/remove-user", async (req, res) => {
     const { token, userId } = req.body;
@@ -290,15 +339,52 @@ router.delete("/", async (req, res) => {
             return res.status(401).json({ error: "Unauthorised" });
         }
 
-        let deleted;
+        const deletedUser = await UserModel.findOne({ _id: userId });
 
-        const deletedUser = await UserModel.findByIdAndDelete(userId);
-        const deletedSuperuser = await SuperuserModel.findByIdAndDelete(userId);
+        // User
+        if (deletedUser) {
+            const { prevTherapists } = deletedUser;
+            for (const prevTherapist of prevTherapists) {
+                // Get therapist drive credentials
+                const therapist = await SuperuserModel.findOne({
+                    email: prevTherapist.email,
+                });
+                const { clientEmail, rootFolderId } = therapist;
+                const privateKey = decrypt(
+                    therapist.privateKey,
+                    process.env.ENCRYPTION_KEY
+                );
 
-        deleted = deletedUser || deletedSuperuser;
+                // Delete folders
+                if (
+                    !deleteFolder(
+                        prevTherapist.folderId,
+                        await getDrive(clientEmail, privateKey)
+                    )
+                ) {
+                    return res.status(500).json({
+                        error: "Internal Server Error. Could not delete folder.",
+                    });
+                }
+            }
+            await deletedUser.deleteOne();
+        } else {
+            const deletedSuperuser = await SuperuserModel.findOne({
+                _id: userId,
+            });
 
-        if (!deleted) {
-            return res.status(404).json({ error: "User does not exist" });
+            // Remove from patients
+            const { email } = deletedSuperuser;
+            console.log(email);
+            const patients = await UserModel.find({ therapistEmail: email });
+
+            for (const patient of patients) {
+                patient.therapistEmail = "";
+                patient.therapistName = "";
+                await patient.save();
+            }
+
+            await deletedSuperuser.deleteOne();
         }
 
         return res.status(200).json({ message: "User successfully deleted" });
@@ -312,5 +398,4 @@ router.delete("/", async (req, res) => {
     }
 });
 
-// create and delete folder APIs
 export { router as userRouter };
