@@ -46,44 +46,9 @@ router.post("/register", async (req, res) => {
             dob: dob,
             gender: gender,
             issue: issue,
-            therapistName: therapistName,
-            therapistEmail: therapistEmail,
         });
 
         await newUser.save();
-
-        // Find therapist
-        if (therapistEmail) {
-            const therapist = await SuperuserModel.findOne({
-                email: therapistEmail,
-            });
-
-            // check if patient has folder created
-            const hasMatch = therapist.patientFolders.some(
-                (patientFolder) => patientFolder.patient === email
-            );
-
-            if (!hasMatch) {
-                const { clientEmail, rootFolderId } = therapist;
-
-                const privateKey = decrypt(
-                    therapist.privateKey,
-                    process.env.ENCRYPTION_KEY
-                );
-                const data = await createFolder(
-                    email,
-                    rootFolderId,
-                    await getDrive(clientEmail, privateKey)
-                );
-
-                therapist.patientFolders.push({
-                    "patient": email,
-                    "folderId": data.id,
-                });
-
-                await therapist.save();
-            }
-        }
 
         return res
             .status(201)
@@ -211,7 +176,7 @@ router.post("/forgot-password", async (req, res) => {
     });
 
     const emailBody = `
-Hi ${toProperCase("zemus koh")}! <br><br>
+Hi ${toProperCase(name)}! <br><br>
 
 It seems like you have forgotten your password.<br>
 We received a request to reset the password for your account.<br><br>
