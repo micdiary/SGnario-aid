@@ -372,6 +372,4 @@ router.post("/status", async (req, res) => {
     }
 });
 
-// Perform file uploading to google drive in the given folderId
-
 export { router as taskRouter };
