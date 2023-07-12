@@ -10,12 +10,6 @@ const SuperuserSchema = new mongoose.Schema({
     clientEmail: { type: String },
     privateKey: { type: String },
     rootFolderId: { type: String },
-    patientFolders: [
-        {
-            patient: { type: String },
-            folderId: { type: String },
-        },
-    ],
 });
 
 export const SuperuserModel = mongoose.model("superusers", SuperuserSchema);

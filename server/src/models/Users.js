@@ -10,7 +10,13 @@ const UserSchema = new mongoose.Schema({
     issue: { type: [String], default: undefined },
     therapistName: { type: String },
     therapistEmail: { type: String },
-    prevTherapists: { type: [String], default: null },
+    currentFolder: { type: String },
+    prevTherapists: [
+        {
+            email: { type: String },
+            folderId: { type: String },
+        },
+    ],
 });
 
 export const UserModel = mongoose.model("users", UserSchema);
