@@ -29,6 +29,9 @@ export const THERAPISTS_API = `${URL}/users/therapists`;
 export const GET_PATIENTS_API = `${URL}/users/patients`;
 export const DRIVE_CREDENTIALS_API = `${URL}/users/set-drive-credentials`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
+export const GET_PATIENTS_WITHOUT_THERAPIST_API = `${URL}/users/newPatients`;
+export const SET_THERAPIST_API = `${URL}/users/set-therapist`;
+export const REMOVE_USER_API = `${URL}/users/remove-user`;
 
 export const UPLOAD_API = `${URL}/upload`;
 
@@ -47,33 +50,32 @@ export const USER_TASK_SUBMISSION_API = `${URL}/tasks/user/submission`;
 export const TASK_STATUS_API = `${URL}/tasks/status`;
 export const SUPERUSER_TASK_SUBMISSION_API = `${URL}/tasks/therapist/evaluation`;
 
-
 export const TAG = {
-    Incomplete: "volcano",
-    Pending: "yellow",
-    Completed: "green",
+	Incomplete: "volcano",
+	Pending: "yellow",
+	Completed: "green",
 };
 
 export const stutterMarks = {
-    0: "No Stutter (0)",
-    1: "Extremely Mild Stutter (1)",
-    2: "Mild Stutter (2)",
-    3: "Mild Stutter (3)",
-    4: "Moderate Stutter (4)",
-    5: "Moderate Stutter (5)",
-    6: "Severe Stutter (6)",
-    7: "Severe Stutter (7)",
-    8: "Extremely Severe Stutter (8)",
+	0: "No Stutter (0)",
+	1: "Extremely Mild Stutter (1)",
+	2: "Mild Stutter (2)",
+	3: "Mild Stutter (3)",
+	4: "Moderate Stutter (4)",
+	5: "Moderate Stutter (5)",
+	6: "Severe Stutter (6)",
+	7: "Severe Stutter (7)",
+	8: "Extremely Severe Stutter (8)",
 };
 
 export const fluencyMarks = {
-    0: "No Technique (0)",
-    1: "Less Technique (1)",
-    2: "Less Technique (2)",
-    3: "Moderate Technique (3)",
-    4: "Moderate Technique (4)",
-    5: "Moderate Technique (5)",
-    6: "More Technique (6)",
-    7: "More Technique (7)",
-    8: "Maximum Technique (8)",
+	0: "No Technique (0)",
+	1: "Less Technique (1)",
+	2: "Less Technique (2)",
+	3: "Moderate Technique (3)",
+	4: "Moderate Technique (4)",
+	5: "Moderate Technique (5)",
+	6: "More Technique (6)",
+	7: "More Technique (7)",
+	8: "Maximum Technique (8)",
 };

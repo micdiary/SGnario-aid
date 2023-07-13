@@ -9,10 +9,16 @@ import {
 	Tag,
 	Cascader,
 	Spin,
+	Space,
+	Typography,
+	Popconfirm,
 } from "antd";
 import {
 	getPatientsByTherapist,
 	getPatientsTasks,
+	getPatientsWithoutTherapist,
+	removePatient,
+	setTherapist,
 } from "../../../api/therapist";
 import { createTasks, getTaskStatusCount } from "../../../api/task";
 import { getScenarios } from "../../../api/scenarios";
@@ -62,8 +68,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			}
 			setPatientOptions(patients.users || []);
 		} catch (error) {
-			// Handle error
-			console.error(error);
+			showNotification(error.message, "error");
 		}
 	};
 
@@ -274,6 +279,30 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			key: "issue",
 			render: (issue) => renderIssues(issue),
 		},
+		{
+			title: "Action",
+			key: "action",
+			render: (text, record) => (
+				<Space size="middle">
+					<Popconfirm
+						title={`Sure to ${record.name}?`}
+						onConfirm={() => {
+							removePatient(record._id)
+								.then((res) => {
+									showNotification(res.message);
+									fetchPatientTasks();
+									populateAddPatientOption();
+								})
+								.catch((err) => {
+									showNotification(err.message, "error");
+								});
+						}}
+					>
+						<Typography.Link onClick={() => {}}>Remove</Typography.Link>
+					</Popconfirm>
+				</Space>
+			),
+		},
 	];
 
 	const renderIssues = (issues) => {
@@ -282,16 +311,103 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 		});
 	};
 
+	// Add Patient Modal
+	const [patientForm] = Form.useForm();
+	const [isPatientModalVisible, setIsPatientModalVisible] = useState(false);
+	const [isPatientFormValid, setIsPatientFormValid] = useState(false);
+	const [addPatientOptions, setAddPatientOptions] = useState([]);
+	const patientFormValues = Form.useWatch([], patientForm);
+
+	useEffect(() => {
+		populateAddPatientOption();
+	}, []);
+
+	useEffect(() => {
+		if (patientFormValues !== undefined) {
+			if (patientFormValues.userIds !== undefined) {
+				if (patientFormValues.userIds.length > 0) {
+					setIsPatientFormValid(true);
+				} else {
+					setIsPatientFormValid(false);
+				}
+			} else {
+				setIsPatientFormValid(false);
+			}
+		} else {
+			setIsPatientFormValid(false);
+		}
+	}, [patientFormValues]);
+
+	const addPatientForm = [
+		{
+			label: "Patient Name",
+			name: "userIds",
+			rules: [
+				{
+					required: true,
+					message: "Please select a patient to add!",
+				},
+			],
+			input: (
+				<Select
+					mode="multiple"
+					options={addPatientOptions.map((patient) => {
+						return {
+							value: patient.id,
+							label: `${patient.name} [${patient.email}]`,
+						};
+					})}
+				/>
+			),
+		},
+	];
+
+	const populateAddPatientOption = () => {
+		getPatientsWithoutTherapist().then((res) => {
+			setAddPatientOptions(res.patientArray);
+		});
+	};
+
+	const onPatientFormOk = () => {
+		setIsPatientModalVisible(false);
+		patientForm.submit();
+	};
+
+	const onPatientFormFinish = (values) => {
+		setConfirmLoading(true);
+		setTherapist(values)
+			.then((res) => {
+				showNotification(res.message);
+				fetchPatientTasks();
+			})
+			.catch((err) => {
+				showNotification(err.message, "error");
+			})
+			.finally(() => {
+				setConfirmLoading(false);
+				patientForm.resetFields();
+			});
+	};
+
 	return (
-		<Spin spinning={videoOptions.length === 0}>
+		<Spin spinning={videoOptions.length === 0 || confirmLoading}>
 			<Button
 				type="primary"
 				onClick={showModal}
 				style={{
 					marginBottom: 16,
+					marginRight: 8,
 				}}
 			>
 				Assign Task
+			</Button>
+			<Button
+				type="primary"
+				onClick={() => {
+					setIsPatientModalVisible(true);
+				}}
+			>
+				Add Patient to Watch
 			</Button>
 			<Table
 				columns={columns}
@@ -325,7 +441,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 										type="primary"
 										onClick={() => {
 											setView("task");
-											console.log(record);
 											setTask(record);
 										}}
 									>
@@ -370,6 +485,21 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 							})
 						}
 					</Form.List>
+				</Form>
+			</Modal>
+			<Modal
+				destroyOnClose
+				title={"Add Patient to Watch"}
+				open={isPatientModalVisible}
+				onOk={onPatientFormOk}
+				confirmLoading={confirmLoading}
+				okButtonProps={{ disabled: !isPatientFormValid }}
+				onCancel={() => {
+					setIsPatientModalVisible(false);
+				}}
+			>
+				<Form form={patientForm} onFinish={onPatientFormFinish}>
+					{modalForm(addPatientForm)}
 				</Form>
 			</Modal>
 		</Spin>

@@ -250,6 +250,7 @@ router.get("/newPatients/:token", async (req, res) => {
         });
 
         const patientArray = patients.map((obj) => ({
+            id: obj._id,
             name: obj.name,
             email: obj.email,
         }));

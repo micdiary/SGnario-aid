@@ -1,29 +1,14 @@
 import { Button, Checkbox, Form, Input, Radio, DatePicker, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import * as constants from "../constants";
 import { register } from "../api/account";
-import { getTherapists } from "../api/account";
 import { showNotification } from "../components/Notification";
 
 const Register = () => {
 	let navigate = useNavigate();
 	const [date, setDate] = useState(null);
-	const [therapists, setTherapists] = useState([]);
-
-	useEffect(() => {
-		getTherapists().then((res) => {
-			let temp = [];
-			for (const therapist in res.therapists) {
-				temp.push({
-					value: therapist,
-					label: `${res.therapists[therapist]} (${therapist})`,
-				});
-			}
-			setTherapists(temp);
-		});
-	}, []);
 
 	const formItem = [
 		{
@@ -120,17 +105,6 @@ const Register = () => {
 			),
 		},
 		{
-			label: "Therapist",
-			name: "therapist",
-			rules: [
-				{
-					required: true,
-					message: "Please select your therapist!",
-				},
-			],
-			input: <Select options={therapists} />,
-		},
-		{
 			label: "Issue",
 			name: "issue",
 			rules: [
@@ -201,10 +175,6 @@ const Register = () => {
 			dob: date,
 			gender: values.gender,
 			issue: values.issue,
-			therapistEmail: values.therapist,
-			therapistName: therapists
-				.find((therapist) => therapist.value === values.therapist)
-				.label.split(" ")[0],
 		};
 
 		register(req)

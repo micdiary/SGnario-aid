@@ -24,7 +24,9 @@ const Profile = ({ profile, setProfile }) => {
 			email: profile.email,
 			dob: dayjs(profile.dob),
 			gender: profile.gender,
-			therapist: `${profile.therapistName} [${profile.therapistEmail}]`,
+			therapist: profile.therapistName
+				? `${profile.therapistName} [${profile.therapistEmail}]`
+				: "No therapist assigned",
 			issue: profile.issue,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,7 +79,7 @@ const Profile = ({ profile, setProfile }) => {
 		{
 			label: "Therapist",
 			name: "therapist",
-			input: <Select disabled />,
+			input: <Input disabled />,
 		},
 		{
 			label: "Issue",

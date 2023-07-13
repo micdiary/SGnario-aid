@@ -5,10 +5,13 @@ import { getTasksByToken } from "../../../api/task";
 
 const Dashboard = ({ setView, setTask }) => {
 	const [tasks, setTasks] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		setLoading(true);
 		getTasksByToken().then((res) => {
 			setTasks(res);
+			setLoading(false);
 		});
 	}, []);
 
@@ -55,7 +58,7 @@ const Dashboard = ({ setView, setTask }) => {
 	};
 
 	return (
-		<Spin spinning={tasks.length === 0}>
+		<Spin spinning={loading}>
 			<Table
 				columns={columns}
 				dataSource={tasks}
