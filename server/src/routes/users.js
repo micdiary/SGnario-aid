@@ -139,6 +139,7 @@ router.post("/set-therapist", async (req, res) => {
                     ({ email, folderId } = formerTherapist);
                 }
 
+                user.currentFolder = folderId;
                 user.therapistEmail = therapist.email;
                 user.therapistName = therapist.name;
                 await user.save();

@@ -131,13 +131,17 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
         if (req.file) {
             // New or existing submission
             // Find folder to upload
+            const patientFolderId = user.folderId;
+            console.log(patientFolderId);
+            console.log(user);
+
             const therapist = await SuperuserModel.findOne({
                 email: task.therapist,
             });
 
-            const patientFolderId = therapist.patientFolders.find((folder) => {
-                return folder.patient === user.email;
-            }).folderId;
+            // const patientFolderId = therapist.patientFolders.find((folder) => {
+            //     return folder.patient === user.email;
+            // }).folderId;
 
             // Folder does not exist
             if (!patientFolderId) {
