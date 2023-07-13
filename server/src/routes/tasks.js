@@ -131,9 +131,8 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
         if (req.file) {
             // New or existing submission
             // Find folder to upload
-            const patientFolderId = user.folderId;
+            const patientFolderId = user.currentFolder;
             console.log(patientFolderId);
-            console.log(user);
 
             const therapist = await SuperuserModel.findOne({
                 email: task.therapist,
