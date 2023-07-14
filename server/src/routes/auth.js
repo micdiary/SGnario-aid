@@ -1,17 +1,21 @@
 import express from "express";
-import jwt, { verify } from "jsonwebtoken";
-import { getDrive, createFolder } from "../utils/driveHelper.js";
-import { decrypt } from "../utils/cryptography.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
-import * as dotenv from "dotenv";
-dotenv.config();
 
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { AdminModel } from "../models/Admins.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+import {
+    JWT_SECRET,
+    EMAIL_NAME,
+    EMAIL_USER,
+    EMAIL_PASS,
+    EMAIL_SUBJECT,
+    EMAIL_BODY,
+    INTERNAL_SERVER_ERROR,
+} from "../constants.js";
 
 const router = express.Router();
 
@@ -54,7 +58,7 @@ router.post("/register", async (req, res) => {
             .status(201)
             .json({ message: "User registered successfully" });
     } catch (err) {
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -120,7 +124,6 @@ router.post("/login", async (req, res) => {
     let id;
     let accountRole;
     // Check if credentials are valid
-
     if (user) {
         ({ isPasswordValid, id, accountRole } = await verifyAccount(
             user,
@@ -170,37 +173,27 @@ router.post("/forgot-password", async (req, res) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
+            user: EMAIL_USER,
+            pass: EMAIL_PASS,
         },
     });
 
-    const emailBody = `
-Hi ${toProperCase(name)}! <br><br>
-
-It seems like you have forgotten your password.<br>
-We received a request to reset the password for your account.<br><br>
-
-To reset your password, click on the button below:<br>
-<p>
-  <a href="http://localhost:3000/reset-password?token=${resetToken}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
-    Reset Password
-  </a>
-</p>
-
-Alternatively, you can click on this <a href="http://localhost:3000/reset-password?token=${resetToken}">link.</a><br><br>
-
-If you did not request for a password reset, please ignore this email.
-    `;
+    const emailBody = EMAIL_BODY.replace("{name}", toProperCase(name)).replace(
+        /{resetToken}/g,
+        resetToken
+    );
 
     const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: {
+            name: EMAIL_NAME,
+            address: EMAIL_USER,
+        },
         to: email,
-        subject: "Password Reset",
+        subject: EMAIL_SUBJECT,
         html: emailBody,
     };
 
-    transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(mailOptions, (err) => {
         if (err) {
             res.status(500).json({ error: "Failed to send reset email" });
         } else {
@@ -265,7 +258,7 @@ router.post("/reset-password", async (req, res) => {
             return res.status(401).json({ error: "Invalid or expired token" });
         }
 
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -282,7 +275,7 @@ router.get("/role/:token", async (req, res) => {
         if (err instanceof jwt.JsonWebTokenError) {
             return res.status(401).json({ error: "Invalid token" });
         }
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -305,6 +298,7 @@ async function userExists(email) {
     return false;
 }
 
+/** Helper functions **/
 // Proper Case
 function toProperCase(str) {
     return str.toLowerCase().replace(/(^|\s)\w/g, function (match) {

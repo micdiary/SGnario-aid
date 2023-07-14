@@ -1,8 +1,9 @@
 import crypto from "crypto";
+import { ENCRYPTION_KEY } from "../constants.js";
 
-const encrypt = (text, encryptionKey) => {
+const encrypt = (text) => {
     const iv = crypto.randomBytes(16);
-    const key = Buffer.from(encryptionKey, "hex");
+    const key = Buffer.from(ENCRYPTION_KEY, "hex");
 
     const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
     let encrypted = cipher.update(text, "utf8", "hex");
@@ -11,9 +12,9 @@ const encrypt = (text, encryptionKey) => {
     return iv.toString("hex") + encrypted;
 };
 
-const decrypt = (encryptedText, encryptionKey) => {
+const decrypt = (encryptedText) => {
     const iv = Buffer.from(encryptedText.slice(0, 32), "hex");
-    const key = Buffer.from(encryptionKey, "hex");
+    const key = Buffer.from(ENCRYPTION_KEY, "hex");
     const encryptedData = encryptedText.slice(32);
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);

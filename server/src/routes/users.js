@@ -1,14 +1,12 @@
 import express from "express";
-import jwt, { verify } from "jsonwebtoken";
-import { encrypt, decrypt } from "../utils/cryptography.js";
-import { getDrive, createFolder, deleteFolder } from "../utils/driveHelper.js";
-import * as dotenv from "dotenv";
-dotenv.config();
+import jwt from "jsonwebtoken";
 
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
+import { encrypt, decrypt } from "../utils/cryptography.js";
+import { getDrive, createFolder, deleteFolder } from "../utils/driveHelper.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 
 const router = express.Router();
 
@@ -31,7 +29,7 @@ router.get("/profile/:token", async (req, res) => {
         return res.status(200).json(user);
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -77,7 +75,7 @@ router.post("/edit-profile", async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -116,10 +114,7 @@ router.post("/set-therapist", async (req, res) => {
                 if (!formerTherapist) {
                     // Create new folder
                     const { clientEmail, rootFolderId } = therapist;
-                    const privateKey = decrypt(
-                        therapist.privateKey,
-                        process.env.ENCRYPTION_KEY
-                    );
+                    const privateKey = decrypt(therapist.privateKey);
 
                     const data = await createFolder(
                         user.email,
@@ -168,10 +163,7 @@ router.post("/set-drive-credentials", async (req, res) => {
         const { clientEmail, privateKey, rootFolderId } = fields;
 
         if (role == "therapist") {
-            const encryptedKey = encrypt(
-                privateKey,
-                process.env.ENCRYPTION_KEY
-            );
+            const encryptedKey = encrypt(privateKey);
             const updatedUser = await SuperuserModel.findByIdAndUpdate(
                 id,
                 {
@@ -189,7 +181,7 @@ router.post("/set-drive-credentials", async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -205,7 +197,7 @@ router.get("/therapists", async (req, res) => {
         return res.status(200).json({ "therapists": therapistsNames });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -229,7 +221,7 @@ router.post("/therapists", async (req, res) => {
         return res.status(200).json({ therapists });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -259,7 +251,7 @@ router.get("/newPatients/:token", async (req, res) => {
         return res.status(200).json({ patientArray });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -296,7 +288,7 @@ router.get("/patients/:token", async (req, res) => {
         return res.status(200).json({ users });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -327,7 +319,7 @@ router.post("/remove-user", async (req, res) => {
         return res.status(200).json({ message: "User successfully removed" });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -352,10 +344,7 @@ router.delete("/", async (req, res) => {
                     email: prevTherapist.email,
                 });
                 const { clientEmail, rootFolderId } = therapist;
-                const privateKey = decrypt(
-                    therapist.privateKey,
-                    process.env.ENCRYPTION_KEY
-                );
+                const privateKey = decrypt(therapist.privateKey);
 
                 // Delete folders
                 if (
@@ -395,7 +384,7 @@ router.delete("/", async (req, res) => {
         if (err instanceof jwt.JsonWebTokenError) {
             return res.status(401).json({ error: "Invalid token" });
         } else {
-            return res.status(500).json({ error: "Internal Server Error" });
+            return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
         }
     }
 });

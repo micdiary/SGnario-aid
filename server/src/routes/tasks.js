@@ -1,18 +1,14 @@
 import express from "express";
-import jwt, { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import multer from "multer";
-import fs from "fs";
-import * as dotenv from "dotenv";
-dotenv.config();
 
-import { encrypt, decrypt } from "../utils/cryptography.js";
-import { getDrive, doUpload } from "../utils/driveHelper.js";
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
 import { TaskModel } from "../models/Tasks.js";
-import { ScenariosModel } from "../models/Scenarios.js";
+import { decrypt } from "../utils/cryptography.js";
+import { doUpload } from "../utils/driveHelper.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 
 const router = express.Router();
 
@@ -27,10 +23,10 @@ router.post("/create", async (req, res) => {
         const { id, role } = decodedToken;
 
         if (role !== "therapist") {
-            return res.status(401).json({ "error": "Unauthorised" });
+            return res.status(401).json({ error: "Unauthorised" });
         }
 
-        const { title, name, email, videos, recommendedLength } = fields; // videos [{category, scenario, videoName}]
+        const { title, name, email, videos, recommendedLength } = fields;
 
         const therapist = await SuperuserModel.findOne({ _id: id });
 
@@ -55,12 +51,10 @@ router.post("/create", async (req, res) => {
         });
 
         await newTask.save();
-        return res
-            .status(201)
-            .json({ "message": "Task assigned succesfully!" });
+        return res.status(201).json({ message: "Task assigned succesfully!" });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -72,7 +66,7 @@ router.get("/:id", async (req, res) => {
         res.status(200).json(task);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ "error": "Internal Server Error" });
+        res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -89,7 +83,7 @@ router.get("/user/token/:token", async (req, res) => {
         res.status(200).json(tasks);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ "error": "Internal Server Error" });
+        res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -102,7 +96,7 @@ router.get("/user/id/:id", async (req, res) => {
         res.status(200).json(tasks);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ "error": "Internal Server Error" });
+        res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -132,15 +126,9 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
             // New or existing submission
             // Find folder to upload
             const patientFolderId = user.currentFolder;
-            console.log(patientFolderId);
-
             const therapist = await SuperuserModel.findOne({
                 email: task.therapist,
             });
-
-            // const patientFolderId = therapist.patientFolders.find((folder) => {
-            //     return folder.patient === user.email;
-            // }).folderId;
 
             // Folder does not exist
             if (!patientFolderId) {
@@ -151,10 +139,7 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
 
             // Upload file
             const clientEmail = therapist.clientEmail;
-            const privateKey = decrypt(
-                therapist.privateKey,
-                process.env.ENCRYPTION_KEY
-            );
+            const privateKey = decrypt(therapist.privateKey);
 
             const uploadDetails = await doUpload(
                 req.file,
@@ -199,7 +184,7 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
                 }
 
                 return res.status(200).json({
-                    "message": "Task successfully updated",
+                    message: "Task successfully updated",
                     "task": updatedTask,
                 });
             } else {
@@ -249,7 +234,7 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -282,7 +267,7 @@ router.post("/therapist/evaluation", async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -322,7 +307,7 @@ router.get("/status/:identifier", async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 
@@ -368,10 +353,10 @@ router.post("/status", async (req, res) => {
 
         return res
             .status(200)
-            .json({ "message": "Status successfully updated", task });
+            .json({ message: "Status successfully updated", task });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
 

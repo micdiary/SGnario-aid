@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import * as dotenv from "dotenv";
-dotenv.config();
 
 import { authRouter } from "./routes/auth.js";
 import { scenariosRouter } from "./routes/scenarios.js";
@@ -10,7 +8,8 @@ import { userRouter } from "./routes/users.js";
 import { taskRouter } from "./routes/tasks.js";
 import { uploadRouter } from "./routes/upload.js";
 
-const PORT = 3001;
+import { PORT, MONGODB_CONNECTION } from "./constants.js";
+
 const app = express();
 
 app.use(express.json());
@@ -23,10 +22,10 @@ app.use("/users", userRouter);
 app.use("/tasks", taskRouter);
 app.use("/upload", uploadRouter);
 
-mongoose.connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@sgnario-aid.4zibt9s.mongodb.net/sgnario-aid?retryWrites=true&w=majority`,
-    { useNewUrlParser: true, useUnifiedTopology: true }
-);
+mongoose.connect(MONGODB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 // Get the default connection
 const db = mongoose.connection;
