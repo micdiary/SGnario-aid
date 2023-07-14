@@ -103,6 +103,7 @@ const Scenarios = () => {
 				// Perform API call to update the video name
 				await updateScenarioVideo(
 					editScenario._id,
+					existingVideo.videoId,
 					video.videoId,
 					video.videoName
 				);
@@ -385,7 +386,7 @@ const Scenarios = () => {
 											name={[field.name, "videoId"]}
 											rules={[{ required: true, message: "Missing video ID" }]}
 										>
-											<Input placeholder="Video ID" disabled />
+											<Input placeholder="Video ID" disabled/>
 										</Form.Item>
 										<Form.Item
 											{...field}
@@ -400,18 +401,6 @@ const Scenarios = () => {
 										<MinusCircleOutlined onClick={() => remove(field.name)} />
 									</Space>
 								))}
-								<Form.Item>
-									<Button
-										type="dashed"
-										onClick={() => add()}
-										style={{
-											width: "100%",
-										}}
-										icon={<PlusOutlined />}
-									>
-										Add Video
-									</Button>
-								</Form.Item>
 							</>
 						)}
 					</Form.List>

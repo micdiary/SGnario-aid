@@ -128,14 +128,6 @@ const Header = ({ handleCategoryFilter }) => {
 					key: "about-us",
 				},
 				{
-					label: <a href={constants.TUTORIAL_URL}>Tutorial</a>,
-					key: "tutorial",
-				},
-				{
-					label: <a href={constants.CONTACT_URL}>Contact</a>,
-					key: "contact",
-				},
-				{
 					label: (
 						<a href={constants.TERMS_CONDITIONS_URL}>Terms & Conditions</a>
 					),

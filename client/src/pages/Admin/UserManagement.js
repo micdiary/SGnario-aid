@@ -41,11 +41,6 @@ const UserManagement = () => {
 			key: "email",
 		},
 		{
-			title: "Role",
-			dataIndex: "role",
-			key: "role",
-		},
-		{
 			title: "Action",
 			key: "action",
 			render: (value) => (

@@ -7,8 +7,6 @@ import Footer from "./Footer";
 import * as constants from "../constants";
 import Home from "../pages/Home";
 import AboutUs from "../pages/AboutUs";
-import Tutorial from "../pages/Tutorial";
-import Contact from "../pages/Contact";
 import TermsConditions from "../pages/TermsConditions";
 import Account from "../pages/Account/Account";
 import Login from "../pages/Login";
@@ -86,8 +84,6 @@ const Layout = () => {
               element={<Scenarios allScenarios={allScenarios} filteredScenarios={filteredScenarios} />}
             />
             <Route path={constants.ABOUT_US_URL} element={<AboutUs />} />
-            <Route path={constants.TUTORIAL_URL} element={<Tutorial />} />
-            <Route path={constants.CONTACT_URL} element={<Contact />} />
             <Route
               path={constants.TERMS_CONDITIONS_URL}
               element={<TermsConditions />}
