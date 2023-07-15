@@ -13,7 +13,7 @@ const { Option } = Select;
 
 const AddScenariosModal = ({
 	data,
-	setData,
+	getData,
 	addScenarioModalVisible,
 	setAddScenarioModalVisible,
 }) => {
@@ -94,7 +94,7 @@ const AddScenariosModal = ({
 						createScenario(req)
 							.then((res) => {
 								setCategoryOptions([]);
-								setData([...data, res]);
+								getData();
 								showNotification("Scenario created successfully");
 							})
 							.catch((error) => {
@@ -242,6 +242,7 @@ const AddScenariosModal = ({
 
 	return (
 		<Modal
+			forceRender
 			destroyOnClose
 			title="Add Scenario"
 			open={addScenarioModalVisible}
@@ -262,19 +263,19 @@ const AddScenariosModal = ({
 								>
 									<Form.Item
 										{...field}
-										key={`videoId${field.key}`}
-										name={[field.name, "videoId"]}
-										rules={[{ required: true, message: "Missing video ID" }]}
-									>
-										<Input placeholder="Video ID" />
-									</Form.Item>
-									<Form.Item
-										{...field}
 										key={`videoName${field.key}`}
 										name={[field.name, "videoName"]}
 										rules={[{ required: true, message: "Missing video name" }]}
 									>
 										<Input placeholder="Video Name" />
+									</Form.Item>
+									<Form.Item
+										{...field}
+										key={`videoId${field.key}`}
+										name={[field.name, "videoId"]}
+										rules={[{ required: true, message: "Missing video ID" }]}
+									>
+										<Input placeholder="Video ID" />
 									</Form.Item>
 									<MinusCircleOutlined onClick={() => remove(field.name)} />
 								</Space>

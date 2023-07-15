@@ -94,42 +94,17 @@ router.post("/create-scenario", async (req, res) => {
   }
 });
 
-// PUT /:id/video/:videoId
-router.put("/:id/video/:videoId", async (req, res) => {
-  const { id, videoId } = req.params;
-  const { newVideoId, newVideoName } = req.body;
-
-  try {
-    // Find the scenario by ID and video ID
-    const scenario = await ScenariosModel.findOneAndUpdate(
-      { _id: id, "videos.videoId": videoId },
-      { $set: { "videos.$.videoId": newVideoId, "videos.$.videoName": newVideoName } },
-      { new: true }
-    );
-
-    if (!scenario) {
-      return res.status(404).json({ error: "Scenario or video not found" });
-    }
-
-    return res.json(scenario);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-
 // PUT /:id
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { scenario } = req.body;
+  const { category, scenario, videos } = req.body;
 
   try {
     // Find the scenario by ID and update the scenario field
     const updatedScenario = await ScenariosModel.findByIdAndUpdate(
       id,
-      { scenario },
-      { new: true }
+      { category, scenario, $set: { videos } },
+      { new: true, runValidators: true }
     );
 
     if (!updatedScenario) {

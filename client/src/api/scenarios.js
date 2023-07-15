@@ -1,8 +1,12 @@
-import { requestGet, requestPut, requestPost, requestDelete } from "../utils/request";
+import {
+	requestGet,
+	requestPut,
+	requestPost,
+	requestDelete,
+} from "../utils/request";
 import {
 	SCENARIOS_URL_API,
 	CREATE_SCENARIOS_API,
-	UPDATE_SCENARIO_VIDEO_API,
 	UPDATE_SCENARIO_API,
 	DELETE_SCENARIO_API,
 	DELETE_SCENARIO_VIDEO_API,
@@ -26,20 +30,6 @@ export async function createScenario(req) {
 	}
 }
 
-export async function updateScenarioVideo(id, videoId, newVideoId, newVideoName) {
-  try {
-    const url = UPDATE_SCENARIO_VIDEO_API.replace(":id", id).replace(
-      ":videoId",
-      videoId
-    );
-    const response = await requestPut(url, { newVideoId, newVideoName });
-    return response; // Assuming the response contains the updated scenario data
-  } catch (error) {
-    throw new Error("Failed to update scenario video name");
-  }
-}
-
-
 export async function updateScenario(id, updatedData) {
 	try {
 		const url = UPDATE_SCENARIO_API.replace(":id", id);
@@ -62,11 +52,14 @@ export async function deleteScenario(id) {
 
 export async function deleteScenarioVideo(id, videoId) {
 	try {
-	    const url = DELETE_SCENARIO_VIDEO_API.replace(":id", id).replace(":videoId", videoId);
-	    const response = await requestDelete(url);
-	    return response; // Assuming the response contains the success message or status
-	  } catch (error) {
-	    throw new Error("Failed to delete video");
+		const url = DELETE_SCENARIO_VIDEO_API.replace(":id", id).replace(
+			":videoId",
+			videoId
+		);
+		const response = await requestDelete(url);
+		return response; // Assuming the response contains the success message or status
+	} catch (error) {
+		throw new Error("Failed to delete video");
 	}
 }
 

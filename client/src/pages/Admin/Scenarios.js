@@ -10,13 +10,13 @@ import {
 	Space,
 	Popconfirm,
 	Typography,
+	Tooltip,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import {
 	getScenarios,
 	deleteScenario,
 	updateScenario,
-	updateScenarioVideo,
 } from "../../api/scenarios";
 import AddScenariosModal from "./AddScenariosModal";
 import { showNotification } from "../../components/Notification";
@@ -40,16 +40,16 @@ const Scenarios = () => {
 
 	const handleEditOk = () => {
 		setConfirmLoading(true);
-		form.submit();
+		editForm.submit();
 	};
 
 	const handleEditCancel = () => {
 		setEditOpen(false);
 	};
 
-	const [form] = Form.useForm();
+	const [editForm] = Form.useForm();
 
-	useEffect(() => {
+	const getScenariosData = async () => {
 		getScenarios().then((res) => {
 			setData(res);
 			for (const scenario of res) {
@@ -58,6 +58,11 @@ const Scenarios = () => {
 				}
 			}
 		});
+	};
+
+	useEffect(() => {
+		getScenariosData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [categoryOptions]);
 
 	useEffect(() => {
@@ -68,13 +73,13 @@ const Scenarios = () => {
 			}
 		}
 		setScenarioOptions(temp);
-		form.setFieldValue("scenario", "");
+		editForm.setFieldValue("scenario", "");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, categorySelected]);
 
 	useEffect(() => {
 		if (editScenario) {
-			form.setFieldsValue({
+			editForm.setFieldsValue({
 				scenario: editScenario.scenario,
 				videos: editScenario.videos,
 			});
@@ -88,34 +93,26 @@ const Scenarios = () => {
 	};
 
 	const onEditFormFinish = async (values) => {
-		const { scenario, videos } = values;
+		const { category, scenario, videos } = values;
 
-		// Update the scenario name
+		// Update the scenario
+		editScenario.category = category;
 		editScenario.scenario = scenario;
-
-		// Update video names
-		videos.forEach(async (video) => {
-			const existingVideo = editScenario.videos.find(
-				(v) => v.videoId === video.videoId
-			);
-			if (existingVideo) {
-				existingVideo.videoName = video.videoName;
-				// Perform API call to update the video name
-				await updateScenarioVideo(
-					editScenario._id,
-					existingVideo.videoId,
-					video.videoId,
-					video.videoName
-				);
-			}
-		});
+		editScenario.videos = videos;
 
 		// Perform API call to update the scenario
-		await updateScenario(editScenario._id, editScenario);
-
-		form.resetFields();
-		setConfirmLoading(false);
-		setEditOpen(false);
+		updateScenario(editScenario._id, editScenario)
+			.then(() => {
+				showNotification("Scenario updated successfully!");
+			})
+			.catch((err) => {
+				showNotification(err, "error");
+			})
+			.finally(() => {
+				editForm.resetFields();
+				setConfirmLoading(false);
+				setEditOpen(false);
+			});
 	};
 
 	const [name, setName] = useState("");
@@ -156,7 +153,12 @@ const Scenarios = () => {
 			},
 		];
 		return (
-			<Table columns={columns} dataSource={record.videos} pagination={false} />
+			<Table
+				columns={columns}
+				dataSource={record.videos}
+				pagination={false}
+				rowKey={"_id"}
+			/>
 		);
 	};
 
@@ -318,6 +320,7 @@ const Scenarios = () => {
 			title: "Date Added",
 			dataIndex: "dateAdded",
 			key: "dateAdded",
+			render: (date) => new Date(date).toLocaleDateString("en-SG"),
 		},
 		{
 			title: "Action",
@@ -353,11 +356,12 @@ const Scenarios = () => {
 			/>
 			<AddScenariosModal
 				data={data}
-				setData={setData}
+				getData={getScenariosData}
 				addScenarioModalVisible={addScenarioModalVisible}
 				setAddScenarioModalVisible={setAddScenarioModalVisible}
 			/>
 			<Modal
+				forceRender
 				destroyOnClose
 				title="Edit Scenario"
 				open={editOpen}
@@ -366,7 +370,7 @@ const Scenarios = () => {
 				onCancel={handleEditCancel}
 			>
 				<Form
-					form={form}
+					form={editForm}
 					onFinish={onEditFormFinish}
 					initialValues={editScenario}
 				>
@@ -382,14 +386,6 @@ const Scenarios = () => {
 									>
 										<Form.Item
 											{...field}
-											key={`videoId${field.key}`}
-											name={[field.name, "videoId"]}
-											rules={[{ required: true, message: "Missing video ID" }]}
-										>
-											<Input placeholder="Video ID" disabled/>
-										</Form.Item>
-										<Form.Item
-											{...field}
 											key={`videoName${field.key}`}
 											name={[field.name, "videoName"]}
 											rules={[
@@ -397,6 +393,14 @@ const Scenarios = () => {
 											]}
 										>
 											<Input placeholder="Video Name" />
+										</Form.Item>
+										<Form.Item
+											{...field}
+											key={`videoId${field.key}`}
+											name={[field.name, "videoId"]}
+											rules={[{ required: true, message: "Missing video ID" }]}
+										>
+											<Input placeholder="Video ID" />
 										</Form.Item>
 										<MinusCircleOutlined onClick={() => remove(field.name)} />
 									</Space>
