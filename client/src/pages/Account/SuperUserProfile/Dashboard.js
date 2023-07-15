@@ -12,6 +12,7 @@ import {
 	Space,
 	Typography,
 	Popconfirm,
+	InputNumber,
 } from "antd";
 import {
 	getPatientsByTherapist,
@@ -23,6 +24,7 @@ import {
 import { createTasks, getTaskStatusCount } from "../../../api/task";
 import { getScenarios } from "../../../api/scenarios";
 import { showNotification } from "../../../components/Notification";
+import { TAG } from "../../../constants";
 
 const { Option } = Select;
 
@@ -40,14 +42,17 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 		if (values !== undefined) {
 			if (
 				values.patient !== "" &&
-				values.recommendedLength !== "" &&
 				values.title !== "" &&
+				values.recommendedLength !== "" &&
+				values.patient !== undefined &&
+				values.title !== undefined &&
 				values.recommendedLength !== undefined
 			) {
 				if (
-					Object.keys(values.recommendedLength).length === values.videos.length
-				)
+					Object.keys(values.recommendedLength).length >= values.videos.length
+				) {
 					setIsFormValid(true);
+				}
 			} else {
 				setIsFormValid(false);
 			}
@@ -142,10 +147,14 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 		Object.entries(values.recommendedLength).forEach((entry) => {
 			let key = entry[0];
 			let value = entry[1];
-			recommendedLength.push({
-				videoName: key,
-				length: value,
-			});
+			for (let i = 0; i < videos.length; i++) {
+				if (videos[i].videoName === key) {
+					recommendedLength.push({
+						videoName: key,
+						length: value,
+					});
+				}
+			}
 		});
 
 		const req = {
@@ -386,6 +395,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			.finally(() => {
 				setConfirmLoading(false);
 				patientForm.resetFields();
+				populateAddPatientOption();
 			});
 	};
 
@@ -431,6 +441,13 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 								title: "Status",
 								dataIndex: "status",
 								key: "status",
+								render: (tag) => (
+									<>
+										<Tag color={TAG[tag]} key={tag}>
+											{tag.toUpperCase()}
+										</Tag>
+									</>
+								),
 							},
 							{
 								title: "Action",
@@ -469,22 +486,34 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				confirmLoading={confirmLoading}
 				onCancel={handleCancel}
 			>
-				<Form form={form} onFinish={onFormFinish}>
+				<Form form={form} onFinish={onFormFinish} layout="vertical">
 					{modalForm(formItem)}
-					<Form.List name="recommendedLength">
-						{() =>
-							selectedScenario &&
-							selectedScenario.map((video, i) => {
-								return (
-									<Form.Item name={video}>
-										<Input
-											placeholder={`Recommended length for ${video} in seconds`}
-										/>
-									</Form.Item>
-								);
-							})
-						}
-					</Form.List>
+					<Form.Item
+						rules={[
+							{
+								required: true,
+								message: "Please input for all duration!",
+							},
+						]}
+						label="Recommended Duration (in seconds)"
+						hidden={selectedScenario.length <= 0}
+					>
+						<Form.List name="recommendedLength">
+							{() =>
+								selectedScenario &&
+								selectedScenario.map((video, i) => {
+									return (
+										<Form.Item key={i} name={video}>
+											<InputNumber
+												style={{ width: "100%" }}
+												placeholder={`${video}`}
+											/>
+										</Form.Item>
+									);
+								})
+							}
+						</Form.List>
+					</Form.Item>
 				</Form>
 			</Modal>
 			<Modal

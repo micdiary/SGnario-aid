@@ -116,6 +116,7 @@ const Register = () => {
 			input: (
 				<Select
 					mode="tags"
+					showSearch={false}
 					options={[
 						{ value: "Stuttering", label: "Stuttering" },
 						{ value: "Voice Disorder", label: "Voice Disorder" },
