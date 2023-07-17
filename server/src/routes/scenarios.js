@@ -97,13 +97,13 @@ router.post("/create-scenario", async (req, res) => {
 // PUT /:id
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { category, scenario, videos } = req.body;
+  const { videos } = req.body;
 
   try {
     // Find the scenario by ID and update the scenario field
     const updatedScenario = await ScenariosModel.findByIdAndUpdate(
       id,
-      { category, scenario, $set: { videos } },
+      { $set: { videos } },
       { new: true, runValidators: true }
     );
 

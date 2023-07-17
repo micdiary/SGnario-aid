@@ -39,6 +39,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	const values = Form.useWatch([], form);
 	useEffect(() => {
+		console.log(values);
 		if (values !== undefined) {
 			if (
 				values.patient !== "" &&
@@ -49,9 +50,13 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				values.recommendedLength !== undefined
 			) {
 				if (
-					Object.keys(values.recommendedLength).length >= values.videos.length
+					Object.keys(values.recommendedLength).length >= values.videos.length &&
+					Object.values(values.recommendedLength).every((val) => val !== null)
 				) {
 					setIsFormValid(true);
+				}
+				else{
+					setIsFormValid(false);
 				}
 			} else {
 				setIsFormValid(false);
@@ -484,7 +489,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				onOk={handleOk}
 				okButtonProps={{ disabled: !isFormValid }}
 				confirmLoading={confirmLoading}
-				onCancel={handleCancel}
+				onCancel={handleCancel}videosOnChange
 			>
 				<Form form={form} onFinish={onFormFinish} layout="vertical">
 					{modalForm(formItem)}
@@ -503,7 +508,16 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 								selectedScenario &&
 								selectedScenario.map((video, i) => {
 									return (
-										<Form.Item key={i} name={video}>
+										<Form.Item
+											key={i}
+											name={video}
+											rules={[
+												{
+													required: true,
+													message: `Please input duration for ${video}!`,
+												},
+											]}
+										>
 											<InputNumber
 												style={{ width: "100%" }}
 												placeholder={`${video}`}

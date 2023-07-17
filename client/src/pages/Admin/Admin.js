@@ -42,7 +42,7 @@ const Admin = () => {
 					theme="light"
 					collapsedWidth="0"
 					style={{
-						backgroundColor: "white",
+						height: "30vh",
 					}}
 				>
 					<Space

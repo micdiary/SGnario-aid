@@ -1,4 +1,15 @@
-import { Button, Checkbox, Form, Input, Radio, DatePicker, Select } from "antd";
+import {
+	Button,
+	Form,
+	Input,
+	Radio,
+	DatePicker,
+	Select,
+	Row,
+	Divider,
+	Typography,
+	Space,
+} from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
@@ -45,6 +56,15 @@ const Register = () => {
 					required: true,
 					message: "Please input your password!",
 				},
+				{
+					min: 8,
+					message: "Password must be at least 8 characters!",
+				},
+				{
+					pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+					message:
+						"Password must contain at least one uppercase letter, one lowercase letter and one number!",
+				},
 			],
 			input: <Input.Password />,
 		},
@@ -72,7 +92,7 @@ const Register = () => {
 			dependencies: ["password"],
 		},
 		{
-			label: "Date Of Birth",
+			label: "Date of Birth",
 			name: "dob",
 			rules: [
 				{
@@ -115,7 +135,7 @@ const Register = () => {
 			],
 			input: (
 				<Select
-					mode="tags"
+					mode="multiple"
 					showSearch={false}
 					options={[
 						{ value: "Stuttering", label: "Stuttering" },
@@ -125,35 +145,15 @@ const Register = () => {
 				/>
 			),
 		},
-		{
-			label: (
-				<>
-					I have read and agreed to the&nbsp;
-					<Link
-						to={constants.TERMS_CONDITIONS_URL}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Terms and Conditions
-					</Link>
-				</>
-			),
-			name: "termsAndConditions",
-			valuePropName: "checked",
-			rules: [
-				{
-					required: true,
-					message: "Please accept terms & conditions!",
-				},
-			],
-			input: <Checkbox />,
-		},
 	];
 
 	const generateForm = (formItem) => {
 		return formItem.map((item, index) => {
 			return (
 				<Form.Item
+					style={{
+						marginBottom: "12px",
+					}}
 					name={item.name}
 					label={item.label}
 					rules={item.rules}
@@ -189,34 +189,44 @@ const Register = () => {
 	};
 
 	return (
-		<>
-			<Form
-				labelCol={{
-					span: 6,
-				}}
-				wrapperCol={{
-					span: 14,
-				}}
-				layout="horizontal"
-				style={{
-					textAlign: "left",
-				}}
-				onFinish={onFinish}
-				scrollToFirstError
-			>
-				{generateForm(formItem)}
-				<Form.Item
-					wrapperCol={{
-						span: 12,
-						offset: 6,
-					}}
+		<Row justify={"center"}>
+			<Space direction="vertical" style={{ textAlign: "center" }}>
+				<Typography.Title level={2} style={{marginBottom:"-2px"}}>Create an account</Typography.Title>
+				<Typography.Text>
+					Create an account today to fully the services of our website
+				</Typography.Text>
+				<Form
+					layout="vertical"
+					onFinish={onFinish}
+					scrollToFirstError
+					style={{ textAlign: "left" }}
 				>
-					<Button type="primary" htmlType="submit">
-						Sign up
-					</Button>
-				</Form.Item>
-			</Form>
-		</>
+					{generateForm(formItem)}
+
+					<Form.Item
+						wrapperCol={{
+							span: 12,
+							offset: 6,
+						}}
+					>
+						<Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+							Sign up
+						</Button>
+					</Form.Item>
+					<Divider></Divider>
+					<Form.Item>
+						By creating an account, you agree to our{" "}
+						<Link
+							to={constants.TERMS_CONDITIONS_URL}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Terms & Conditions
+						</Link>
+					</Form.Item>
+				</Form>
+			</Space>
+		</Row>
 	);
 };
 

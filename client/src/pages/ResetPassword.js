@@ -1,5 +1,4 @@
-import { Button, Form, Input, Typography } from "antd";
-import { LockOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Row, Space, Typography } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { resetPassword } from "../api/account";
 import * as constants from "../constants";
@@ -27,30 +26,67 @@ const ResetPassword = () => {
 	};
 
 	return (
-		<div style={{ width: "50%", margin: "0 auto" }}>
-			<Typography.Title level={4}>Reset Password</Typography.Title>
-			<Form onFinish={onFinish}>
-				<Form.Item
-					name="password"
-					rules={[
-						{
-							required: true,
-							message: "Please enter your new password!",
-						},
-					]}
-				>
-					<Input.Password
-						prefix={<LockOutlined />}
-						placeholder="New Password"
-					/>
-				</Form.Item>
-				<Form.Item>
-					<Button type="primary" htmlType="submit">
-						Reset
-					</Button>
-				</Form.Item>
-			</Form>
-		</div>
+		<Row justify={"center"}>
+			<Space direction="vertical" style={{ textAlign: "center" }}>
+				<Typography.Title level={2} style={{ margin: "10px" }}>
+					Reset Password
+				</Typography.Title>
+				<Form onFinish={onFinish} layout="vertical">
+					<Form.Item
+						label="New Password"
+						name="password"
+						wrapperCol={{ span: 24 }}
+						rules={[
+							{
+								required: true,
+								message: "Please enter your new password!",
+							},
+							{
+								min: 8,
+								message: "Password must be at least 8 characters!",
+							},
+							{
+								pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+								message:
+									"Password must contain at least one uppercase letter, one lowercase letter and one number!",
+							},
+						]}
+					>
+						<Input.Password />
+					</Form.Item>
+					<Form.Item
+						label="Confirm Password"
+						name="confirmPassword"
+						rules={[
+							{
+								required: true,
+								message: "Please confirm your new password!",
+							},
+							({ getFieldValue }) => ({
+								validator(_, value) {
+									if (!value || getFieldValue("password") === value) {
+										return Promise.resolve();
+									}
+									return Promise.reject(
+										new Error("The new password that you entered do not match!")
+									);
+								},
+							}),
+						]}
+						dependencies={["password"]}
+					>
+						<Input.Password />
+					</Form.Item>
+					<Form.Item>
+						<Button type="primary" htmlType="submit" style={{
+							width:"100%"
+						}}>
+							Reset
+						</Button>
+					</Form.Item>
+				</Form>
+			</Space>
+		</Row>
 	);
 };
 

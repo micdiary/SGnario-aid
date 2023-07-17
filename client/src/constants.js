@@ -1,5 +1,9 @@
+export const GOOGLE_DRIVE_VIDEO_URL =
+	"https://drive.google.com/file/d/1O4ecM79AYcfGJFTixXMaOQKxXReetbPn/view?usp=sharing";
+
 export const HOME_URL = "/";
 export const ABOUT_US_URL = "/about-us";
+export const CONTACT_US_URL = "/contact-us";
 export const TERMS_CONDITIONS_URL = "/terms-conditions";
 export const ACCOUNT_URL = "/account";
 export const PROFILE_URL = `${ACCOUNT_URL}/profile`;

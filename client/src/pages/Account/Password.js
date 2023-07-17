@@ -26,6 +26,15 @@ const Password = () => {
 					required: true,
 					message: "Please input your new password!",
 				},
+				{
+					min: 8,
+					message: "Password must be at least 8 characters!",
+				},
+				{
+					pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+					message:
+						"Password must contain at least one uppercase letter, one lowercase letter and one number!",
+				},
 			],
 			input: <Input.Password />,
 		},
@@ -82,7 +91,7 @@ const Password = () => {
 			<Typography.Title level={4}>Change password</Typography.Title>
 			<Divider />
 			{generateForm(passwordFormItem)}
-			<Button type={"default"} onClick={() => passwordForm.submit()}>
+			<Button type={"primary"} onClick={() => passwordForm.submit()}>
 				Update password
 			</Button>
 		</Form>

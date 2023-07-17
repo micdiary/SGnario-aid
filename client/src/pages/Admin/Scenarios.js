@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Table,
 	Button,
@@ -6,13 +6,11 @@ import {
 	Form,
 	Input,
 	Select,
-	Divider,
 	Space,
 	Popconfirm,
 	Typography,
-	Tooltip,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import {
 	getScenarios,
 	deleteScenario,
@@ -21,15 +19,10 @@ import {
 import AddScenariosModal from "./AddScenariosModal";
 import { showNotification } from "../../components/Notification";
 
-const { Option } = Select;
-
 const Scenarios = () => {
 	const [addScenarioModalVisible, setAddScenarioModalVisible] = useState(false);
 	const [data, setData] = useState([]);
 	const [confirmLoading, setConfirmLoading] = useState(false);
-	const [categoryOptions, setCategoryOptions] = useState([]);
-	const [categorySelected, setCategorySelected] = useState(null);
-	const [scenarioOptions, setScenarioOptions] = useState([]);
 	const [editScenario, setEditScenario] = useState({});
 	const [editOpen, setEditOpen] = useState(false);
 
@@ -52,38 +45,20 @@ const Scenarios = () => {
 	const getScenariosData = async () => {
 		getScenarios().then((res) => {
 			setData(res);
-			for (const scenario of res) {
-				if (!categoryOptions.includes(scenario.category)) {
-					setCategoryOptions([...categoryOptions, scenario.category]);
-				}
-			}
 		});
 	};
 
 	useEffect(() => {
 		getScenariosData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [categoryOptions]);
-
-	useEffect(() => {
-		let temp = [];
-		for (const scenario of data) {
-			if (scenario.category === categorySelected) {
-				temp.push(scenario.scenario);
-			}
-		}
-		setScenarioOptions(temp);
-		editForm.setFieldValue("scenario", "");
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data, categorySelected]);
+	}, []);
 
 	useEffect(() => {
 		if (editScenario) {
 			editForm.setFieldsValue({
+				category: editScenario.category,
 				scenario: editScenario.scenario,
 				videos: editScenario.videos,
 			});
-			setScenarioOptions([editScenario.scenario]);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [editScenario]);
@@ -93,11 +68,9 @@ const Scenarios = () => {
 	};
 
 	const onEditFormFinish = async (values) => {
-		const { category, scenario, videos } = values;
+		const { videos } = values;
 
 		// Update the scenario
-		editScenario.category = category;
-		editScenario.scenario = scenario;
 		editScenario.videos = videos;
 
 		// Perform API call to update the scenario
@@ -113,30 +86,6 @@ const Scenarios = () => {
 				setConfirmLoading(false);
 				setEditOpen(false);
 			});
-	};
-
-	const [name, setName] = useState("");
-	const inputRef = useRef(null);
-	const onNameChange = (event) => {
-		setName(event.target.value);
-	};
-
-	const addCategoryOption = (e) => {
-		e.preventDefault();
-		setCategoryOptions([...categoryOptions, name || `New item`]);
-		setName("");
-		setTimeout(() => {
-			inputRef.current?.focus();
-		}, 0);
-	};
-
-	const addScenarioOption = (e) => {
-		e.preventDefault();
-		setScenarioOptions([...scenarioOptions, name || `New item`]);
-		setName("");
-		setTimeout(() => {
-			inputRef.current?.focus();
-		}, 0);
 	};
 
 	const expandedRowRender = (record) => {
@@ -172,51 +121,7 @@ const Scenarios = () => {
 					message: "Please input your category!",
 				},
 			],
-			input: (
-				<Select
-					onChange={(value) => {
-						setCategorySelected(value);
-					}}
-					placeholder="Select a category"
-					dropdownRender={(menu) => (
-						<>
-							{menu}
-							<Divider
-								style={{
-									margin: "8px 0",
-								}}
-							/>
-							<Space
-								style={{
-									padding: "0 8px 4px",
-								}}
-							>
-								<Input
-									placeholder="Please enter item"
-									ref={inputRef}
-									value={name}
-									onChange={onNameChange}
-								/>
-								<Button
-									type="text"
-									icon={<PlusOutlined />}
-									onClick={addCategoryOption}
-								>
-									Add Category
-								</Button>
-							</Space>
-						</>
-					)}
-				>
-					{categoryOptions.map((item, index) => {
-						return (
-							<Option value={item} key={index}>
-								{item}
-							</Option>
-						);
-					})}
-				</Select>
-			),
+			input: <Select disabled placeholder={editScenario.category} />,
 		},
 		{
 			label: "Scenario",
@@ -227,48 +132,7 @@ const Scenarios = () => {
 					message: "Please input your scenario!",
 				},
 			],
-			input: (
-				<Select
-					placeholder="Select a scenario"
-					dropdownRender={(menu) => (
-						<>
-							{menu}
-							<Divider
-								style={{
-									margin: "8px 0",
-								}}
-							/>
-							<Space
-								style={{
-									padding: "0 8px 4px",
-								}}
-							>
-								<Input
-									placeholder="Please enter item"
-									ref={inputRef}
-									value={name}
-									onChange={onNameChange}
-								/>
-								<Button
-									type="text"
-									icon={<PlusOutlined />}
-									onClick={addScenarioOption}
-								>
-									Add Scenario
-								</Button>
-							</Space>
-						</>
-					)}
-				>
-					{scenarioOptions.map((item, index) => {
-						return (
-							<Option value={item} key={index}>
-								{item}
-							</Option>
-						);
-					})}
-				</Select>
-			),
+			input: <Select disabled placeholder={editScenario.scenario} />,
 		},
 	];
 

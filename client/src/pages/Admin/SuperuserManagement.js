@@ -111,6 +111,15 @@ const SuperuserManagement = () => {
 					required: true,
 					message: "Please input your password!",
 				},
+				{
+					min: 8,
+					message: "Password must be at least 8 characters!",
+				},
+				{
+					pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+					message:
+						"Password must contain at least one uppercase letter, one lowercase letter and one number!",
+				},
 			],
 			input: <Input.Password />,
 		},

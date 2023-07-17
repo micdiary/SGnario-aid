@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Checkbox, Form, Input, Row, Space, Typography } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -45,73 +45,89 @@ const Login = () => {
 	};
 
 	return (
-		<>
-			<Form
-				name="normal_login"
-				className="login-form"
-				initialValues={{
-					remember: true,
-				}}
-				onFinish={onFinish}
-				style={{ width: "50%", margin: "auto" }}
-			>
-				<Form.Item
-					name="email"
-					rules={[
-						{
-							required: true,
-							message: "Please input your Email!",
-						},
-					]}
+		<Row justify={"center"}>
+			<Space direction="vertical" style={{ textAlign: "center", width: "20%" }}>
+				<Typography.Title level={2} style={{ marginBottom: "-2px" }}>
+					Log in
+				</Typography.Title>
+				<Form
+					layout="vertical"
+					name="normal_login"
+					className="login-form"
+					initialValues={{
+						remember: true,
+					}}
+					onFinish={onFinish}
 				>
-					<Input
-						prefix={<UserOutlined className="site-form-item-icon" />}
-						placeholder="Email"
-					/>
-				</Form.Item>
-				<Form.Item
-					name="password"
-					rules={[
-						{
-							required: true,
-							message: "Please input your Password!",
-						},
-					]}
-				>
-					<Input
-						prefix={<LockOutlined className="site-form-item-icon" />}
-						type="password"
-						placeholder="Password"
-					/>
-				</Form.Item>
-				<Form.Item>
-					<Form.Item name="remember" valuePropName="checked" noStyle>
-						<Checkbox>Remember me</Checkbox>
+					<Form.Item
+						label="Email"
+						name="email"
+						rules={[
+							{
+								required: true,
+								message: "Please input your Email!",
+							},
+						]}
+					>
+						<Input prefix={<UserOutlined className="site-form-item-icon" />} />
 					</Form.Item>
-					<Typography.Link
-						className="login-form-forgot"
-						href={constants.FORGET_PASSWORD_URL}
-						style={{ float: "right" }}
+					<Form.Item
+						label="Password"
+						name="password"
+						rules={[
+							{
+								required: true,
+								message: "Please input your Password!",
+							},
+						]}
 					>
-						Forgot password
-					</Typography.Link>
-				</Form.Item>
-				<Form.Item>
-					<Button
-						type="primary"
-						htmlType="submit"
-						className="login-form-button"
-						style={{ width: "100%" }}
-					>
-						Log in
-					</Button>
-					Or{" "}
-					<Typography.Link href={constants.REGISTER_URL}>
-						register now!
-					</Typography.Link>
-				</Form.Item>
-			</Form>
-		</>
+						<Input
+							prefix={<LockOutlined className="site-form-item-icon" />}
+							type="password"
+						/>
+					</Form.Item>
+					<Form.Item>
+						<Form.Item
+							name="remember"
+							valuePropName="checked"
+							style={{
+								float: "left",
+								marginBottom: "0px",
+							}}
+						>
+							<Checkbox>Remember me</Checkbox>
+						</Form.Item>
+						<Typography.Link
+							className="login-form-forgot"
+							href={constants.FORGET_PASSWORD_URL}
+							style={{ float: "right" }}
+						>
+							Forgot password
+						</Typography.Link>
+					</Form.Item>
+					<Form.Item>
+						<Button
+							type="primary"
+							htmlType="submit"
+							className="login-form-button"
+							style={{ width: "100%", marginTop: "-10px" }}
+						>
+							Log in
+						</Button>
+						<div
+							style={{
+								float: "left",
+							}}
+						>
+							Or{" "}
+							<Typography.Link href={constants.REGISTER_URL}>
+								register now!
+							</Typography.Link>
+						</div>
+					</Form.Item>
+				</Form>
+			</Space>
+		</Row>
 	);
 };
 

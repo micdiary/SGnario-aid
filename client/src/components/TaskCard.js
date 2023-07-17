@@ -108,7 +108,14 @@ const TaskCard = ({ record, editCard }) => {
 				>
 					<LinkOutlined />
 					&nbsp;
-					{record.videoName}
+					<Typography.Text
+						strong
+						style={{
+							fontSize: "1.15rem",
+						}}
+					>
+						{record.videoName}
+					</Typography.Text>
 				</Link>
 			}
 			tabList={tabList}
@@ -116,6 +123,7 @@ const TaskCard = ({ record, editCard }) => {
 			onTabChange={(key) => onTabChangeCard(key, record)}
 			extra={
 				<EditOutlined
+					style={{ fontSize: "1.5rem" }}
 					onClick={() => {
 						editCard(record);
 					}}

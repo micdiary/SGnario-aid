@@ -161,6 +161,7 @@ const UserTaskModal = ({
 			// ],
 			input: (
 				<Upload
+					maxCount={1}
 					customRequest={customRequest}
 					disabled={modalData.recordingLink}
 				>

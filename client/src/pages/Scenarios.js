@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import YouTube from "react-youtube";
-import { Card, List, Pagination, Input, Select } from "antd";
+import { Card, List, Pagination, Input, Select, Typography } from "antd";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -27,7 +27,7 @@ const Scenarios = ({ allScenarios, filteredScenarios }) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOption, setSortOption] = useState("nameAsc"); // Set default sort option
-	const itemsPerPage = 4;
+	const itemsPerPage = 8;
 
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
@@ -88,8 +88,8 @@ const Scenarios = ({ allScenarios, filteredScenarios }) => {
 									<div
 										key={`${scenarioItem.category}-${scenarioItem.scenario}`}
 									>
-										<h1>{scenarioItem.category}</h1>
-										<p>{scenarioItem.scenario}</p>
+										<Typography.Title level={2}>{scenarioItem.category}</Typography.Title>
+										<Typography.Title level={4}>{scenarioItem.scenario}</Typography.Title>
 										<div style={{ display: "flex", marginBottom: "16px" }}>
 											<Search
 												placeholder="Search video name"
@@ -153,7 +153,7 @@ const Scenarios = ({ allScenarios, filteredScenarios }) => {
 						})
 					) : (
 						<>
-							<h1>All Scenarios</h1>
+							<Typography.Title level={2}>All Scenarios</Typography.Title>
 							<div style={{ display: "flex", marginBottom: "16px" }}>
 								<Search
 									placeholder="Search video name"
@@ -181,7 +181,7 @@ const Scenarios = ({ allScenarios, filteredScenarios }) => {
 									<List.Item key={`${scenario.scenario}-${video.videoId}`}>
 										<Card title={video.videoName}>
 											<YouTube videoId={video.videoId} opts={opts} />
-											<p>Created on: {formatDate(scenario.dateAdded)}</p>
+											<p>Added on: {formatDate(scenario.dateAdded)}</p>
 										</Card>
 									</List.Item>
 								)}

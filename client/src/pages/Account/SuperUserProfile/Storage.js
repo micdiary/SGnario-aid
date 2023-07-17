@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Form, Typography, Divider, Upload, Spin } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import {
+	Input,
+	Button,
+	Form,
+	Typography,
+	Divider,
+	Upload,
+	Spin,
+	Tooltip,
+	Row,
+	Col,
+} from "antd";
+import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { setStorageConfigurations } from "../../../api/profile";
 import { generateForm } from "../../../utils/form";
 import { testGoogleDrive } from "../../../api/therapist";
 import { showNotification } from "../../../components/Notification";
-
+import { Link } from "react-router-dom";
+import * as constants from "../../../constants";
 const Storage = ({ profile, setProfile }) => {
 	const [storageForm] = Form.useForm();
 	const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +116,29 @@ const Storage = ({ profile, setProfile }) => {
 				onFinish={onStorageFinish}
 				scrollToFirstError
 			>
-				<Typography.Title level={4}>Storage configurations</Typography.Title>
+				<Row>
+					<Col>
+						<Typography.Title level={4}>
+							Storage configurations&nbsp;
+						</Typography.Title>
+					</Col>
+					<Col>
+						<Tooltip
+							color="white"
+							title={
+								<Link
+									to={constants.GOOGLE_DRIVE_VIDEO_URL}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									Tutorial video
+								</Link>
+							}
+						>
+							<InfoCircleOutlined />
+						</Tooltip>
+					</Col>
+				</Row>
 				<Divider />
 				{generateForm(storageFormItem)}
 				<Button

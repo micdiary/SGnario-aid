@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	Button,
 	Typography,
@@ -8,7 +8,9 @@ import {
 	Divider,
 	Breadcrumb,
 	Spin,
+	Tour,
 } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import UserTaskModal from "./TaskModal";
 import { updateStatus } from "../../../api/task";
 import { populateTaskData } from "../../../utils/task";
@@ -70,22 +72,53 @@ const Task = ({ task, setTask, setView }) => {
 		}
 	};
 
+	// tour
+	const statusBtn = useRef(null);
+	const newSubmissionBtn = useRef(null);
+	const cards = useRef(null);
+	const [tourVisible, setTourVisible] = useState(false);
+	const tourSteps = [
+		{
+			title: "Task Status",
+			description:
+				"Click here to change the status of the task once you have submitted your recording.",
+			target: () => statusBtn.current,
+		},
+		{
+			title: "New Submission",
+			description:
+				"Click here to submit a new recording for the task. You can submit multiple recordings for the same task.",
+			target: () => newSubmissionBtn.current,
+		},
+		{
+			title: "Task Submissions",
+			description:
+				"Click on the card tabs to view the details of the submission. You can also edit the submission by clicking on the icon.",
+			target: () => cards.current,
+		},
+	];
+
 	return (
 		<Spin spinning={formLoading}>
-			<Breadcrumb
-				items={[
-					{
-						href: "#",
-						title: "Dashboard",
-						onClick: () => {
-							setView("dashboard");
+			<Row justify={"space-between"}>
+				<Breadcrumb
+					items={[
+						{
+							href: "#",
+							title: "Dashboard",
+							onClick: () => {
+								setView("dashboard");
+							},
 						},
-					},
-					{
-						title: task.title,
-					},
-				]}
-			/>
+						{
+							title: task.title,
+						},
+					]}
+				/>
+				<Typography.Text strong onClick={() => setTourVisible(true)}>
+					Need help? <QuestionCircleOutlined />
+				</Typography.Text>
+			</Row>
 			<Divider />
 			<Row justify={"space-between"} gutter={[0, 12]}>
 				<Col span={16}>
@@ -99,7 +132,6 @@ const Task = ({ task, setTask, setView }) => {
 						<Col>
 							<Typography.Title
 								style={{
-									minWidth: 120,
 									margin: 0,
 									marginRight: 4,
 								}}
@@ -108,7 +140,7 @@ const Task = ({ task, setTask, setView }) => {
 								{task.title}
 							</Typography.Title>
 						</Col>
-						<Col>
+						<Col lg={8} xs={24}>
 							<Tag color={constants.TAG[task.status]}>{task.status}</Tag>
 						</Col>
 					</Row>
@@ -120,6 +152,7 @@ const Task = ({ task, setTask, setView }) => {
 					}}
 				>
 					<Button
+						ref={statusBtn}
 						onClick={() => {
 							updateBtnOnclick(task.status);
 						}}
@@ -132,7 +165,7 @@ const Task = ({ task, setTask, setView }) => {
 						{renderStatusBtn(task.status)}
 					</Button>
 					<Button
-						task
+						ref={newSubmissionBtn}
 						onClick={() => {
 							setRecordingModalVisible(true);
 						}}
@@ -144,7 +177,7 @@ const Task = ({ task, setTask, setView }) => {
 				</Col>
 			</Row>
 			<Divider />
-			<Row gutter={[16, 16]}>
+			<Row gutter={[16, 16]} ref={cards}>
 				{populateData &&
 					populateData.map((record) => {
 						return (
@@ -167,6 +200,11 @@ const Task = ({ task, setTask, setView }) => {
 				modalData={modalData}
 				setPopulateData={setPopulateData}
 			/>
+			<Tour
+				open={tourVisible}
+				onClose={() => setTourVisible(false)}
+				steps={tourSteps}
+			></Tour>
 		</Spin>
 	);
 };

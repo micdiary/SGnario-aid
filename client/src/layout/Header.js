@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Menu, Row, Button, Space, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, DownOutlined } from "@ant-design/icons";
 import * as constants from "../constants";
 import { getUserID, getUserType } from "../utils/account";
 import { userStore } from "../utils/store";
+import logo from "../assets/logo.jpg";
 
 import { getScenarios } from "../api/scenarios";
 
@@ -99,7 +100,17 @@ const Header = ({ handleCategoryFilter }) => {
 
 	const menuItems = [
 		{
-			label: <a href={constants.HOME_URL}>Home</a>,
+			label: (
+				<a href={constants.HOME_URL}>
+					<img
+						src={logo}
+						alt="logo"
+						style={{
+							width: "50px",
+						}}
+					/>
+				</a>
+			),
 			key: "home",
 		},
 		{
@@ -108,24 +119,36 @@ const Header = ({ handleCategoryFilter }) => {
 					className="ant-dropdown-link"
 					href={constants.SCENARIOS_URL}
 					style={{
-						color: "white",
-						opacity: 0.65,
+						color: "#436A71",
 					}}
 				>
-					Scenarios
+					Scenarios{" "}
+					<DownOutlined
+						style={{
+							fontSize: "10px",
+						}}
+					/>
 				</a>
 			),
 			key: "scenarios",
 			children: submenuItems,
 		},
-
 		{
-			label: "Others",
-			key: "others",
+			label: (
+				<>
+					About{" "}
+					<DownOutlined
+						style={{
+							fontSize: "10px",
+						}}
+					/>
+				</>
+			),
+			key: "about",
 			children: [
 				{
-					label: <a href={constants.ABOUT_US_URL}>About Us</a>,
-					key: "about-us",
+					label: <a href={constants.ABOUT_US_URL}>Speech Therapy</a>,
+					key: "speech-therapy",
 				},
 				{
 					label: (
@@ -134,6 +157,10 @@ const Header = ({ handleCategoryFilter }) => {
 					key: "terms-conditions",
 				},
 			],
+		},
+		{
+			label: <a href={constants.CONTACT_US_URL}>Contact Us</a>,
+			key: "contact-us",
 		},
 	];
 
@@ -160,7 +187,9 @@ const Header = ({ handleCategoryFilter }) => {
 		<>
 			<Row justify={"space-between"} align={"middle"}>
 				<Menu
-					theme="dark"
+					style={{
+						backgroundColor: "transparent",
+					}}
 					mode="horizontal"
 					disabledOverflow
 					selectedKeys={[-1]}
@@ -172,15 +201,7 @@ const Header = ({ handleCategoryFilter }) => {
 					{userID === null ? (
 						<>
 							<Link to={constants.REGISTER_URL}>
-								<Button
-									type={"text"}
-									style={{
-										color: "white",
-										opacity: 0.65,
-									}}
-								>
-									Register
-								</Button>
+								<Button type={"text"}>Register</Button>
 							</Link>
 							<Link to={constants.LOGIN_URL}>
 								<Button type={"primary"}>Login</Button>
@@ -195,14 +216,13 @@ const Header = ({ handleCategoryFilter }) => {
 								icon={
 									<UserOutlined
 										style={{
-											color: "black",
-											opacity: 0.88,
+											color: "#FFEBC9",
 										}}
 									/>
 								}
 								style={{
-									opacity: 0.65,
-									backgroundColor: "white",
+									backgroundColor: "#2F4858",
+									opacity: 0.8,
 								}}
 							/>
 						</Link>

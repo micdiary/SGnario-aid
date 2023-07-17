@@ -85,6 +85,17 @@ const Account = () => {
 		},
 	];
 
+	const tourSteps = [
+		{
+			title: "Tools",
+			description: "This is the tools menu.",
+		},
+		{
+			title: "Settings",
+			description: "This is the settings menu.",
+		},
+	];
+
 	const generateContent = () => {
 		if (userType === "user") {
 			switch (view) {
@@ -138,7 +149,7 @@ const Account = () => {
 					top: "50px",
 				}}
 				style={{
-					backgroundColor: "white",
+					backgroundColor: "#F5F5F5",
 					height: "calc(100vh - 152px)",
 				}}
 			>
