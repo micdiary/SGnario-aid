@@ -99,14 +99,14 @@ const Contact = () => {
 
 	return (
 		<Row>
-			<Col span={8}>
+			<Col span={8} xs={24} md={8}>
 				<Typography.Title level={2}>Contact Us</Typography.Title>
 				<Typography.Text>
 					Fill up the form below with your inquiry and we will get back to you
 					soon.
 				</Typography.Text>
 			</Col>
-			<Col span={16}>
+			<Col span={16} xs={24} md={16}>
 				<Form
 					layout="vertical"
 					style={{

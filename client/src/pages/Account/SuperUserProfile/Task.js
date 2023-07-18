@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Typography, Tag, Row, Col, Divider, Breadcrumb } from "antd";
+import {
+	Button,
+	Typography,
+	Tag,
+	Row,
+	Col,
+	Divider,
+	Breadcrumb,
+	Spin,
+} from "antd";
 import SuperTaskTaskModal from "./TaskModal";
 import { populateTaskData } from "../../../utils/task";
 import * as constants from "../../../constants";
@@ -11,6 +20,7 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 	const [populateData, setPopulateData] = useState([]);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalData, setModalData] = useState({});
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		setPopulateData(populateTaskData(task));
@@ -59,7 +69,7 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 	};
 
 	return (
-		<>
+		<Spin spinning={isLoading}>
 			<Breadcrumb
 				items={[
 					{
@@ -118,7 +128,7 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 					populateData.map((record) => {
 						return (
 							<Col span={24} lg={8}>
-								<TaskCard record={record} editCard={edit} />
+								<TaskCard record={record} editCard={edit} setIsLoading={setIsLoading}/>
 							</Col>
 						);
 					})}
@@ -129,7 +139,7 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 				modalData={modalData}
 				setPopulateData={setPopulateData}
 			/>
-		</>
+		</Spin>
 	);
 };
 

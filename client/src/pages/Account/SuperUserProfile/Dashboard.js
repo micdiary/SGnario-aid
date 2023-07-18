@@ -39,7 +39,6 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 
 	const values = Form.useWatch([], form);
 	useEffect(() => {
-		console.log(values);
 		if (values !== undefined) {
 			if (
 				values.patient !== "" &&
@@ -50,12 +49,12 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				values.recommendedLength !== undefined
 			) {
 				if (
-					Object.keys(values.recommendedLength).length >= values.videos.length &&
+					Object.keys(values.recommendedLength).length ===
+						values.videos.length &&
 					Object.values(values.recommendedLength).every((val) => val !== null)
 				) {
 					setIsFormValid(true);
-				}
-				else{
+				} else {
 					setIsFormValid(false);
 				}
 			} else {
@@ -188,11 +187,25 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 	};
 
 	const videosOnChange = (value) => {
+		console.log("onchange");
+
 		let temp = [];
 		for (let i = 0; i < value.length; i++) {
 			temp.push(value[i][2]);
 		}
 		setSelectedScenario(temp);
+
+		// Update recommendedLength to match the selected videos
+		const updatedRecommendedLength = form.getFieldValue("recommendedLength");
+		if (!updatedRecommendedLength) return;
+		Object.keys(updatedRecommendedLength).forEach((key) => {
+			if (!temp.includes(key)) {
+				delete updatedRecommendedLength[key];
+			}
+		});
+		form.setFieldsValue({
+			recommendedLength: updatedRecommendedLength,
+		});
 	};
 
 	const formItem = [
@@ -489,7 +502,8 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 				onOk={handleOk}
 				okButtonProps={{ disabled: !isFormValid }}
 				confirmLoading={confirmLoading}
-				onCancel={handleCancel}videosOnChange
+				onCancel={handleCancel}
+				videosOnChange
 			>
 				<Form form={form} onFinish={onFormFinish} layout="vertical">
 					{modalForm(formItem)}

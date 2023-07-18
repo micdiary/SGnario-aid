@@ -105,7 +105,7 @@ const SuperUserProfile = ({ profile, setProfile }) => {
 			<Form
 				form={profileForm}
 				wrapperCol={{
-					span: 12,
+					span: 6,
 				}}
 				layout="vertical"
 				onFinish={onProfileFinish}

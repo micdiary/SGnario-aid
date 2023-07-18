@@ -76,6 +76,7 @@ const UserTaskModal = ({
 			})
 			.finally(() => {
 				setConfirmLoading(false);
+				setModalVisible(false);
 			});
 	};
 
@@ -87,7 +88,6 @@ const UserTaskModal = ({
 
 	const handleOk = () => {
 		form.submit();
-		setModalVisible(false);
 	};
 
 	const handleCancel = () => {
@@ -153,12 +153,6 @@ const UserTaskModal = ({
 		{
 			label: "Recording",
 			name: "recordingLink",
-			// rules: [
-			// 	{
-			// 		required: true,
-			// 		message: "Please input your recording link!",
-			// 	},
-			// ],
 			input: (
 				<Upload
 					maxCount={1}

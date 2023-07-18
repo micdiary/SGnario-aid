@@ -67,7 +67,16 @@ const ForgetPassword = () => {
 				<Typography.Text>
 					No worries, we'll send you reset instructions.
 				</Typography.Text>
-				<Form form={form} onFinish={onFinish} layout="vertical">
+				<Form
+					form={form}
+					onFinish={onFinish}
+					layout="vertical"
+					style={{
+						textAlign: "left",
+						width: "400px",
+						maxWidth: "400px",
+					}}
+				>
 					<Form.Item
 						label="Email"
 						name="email"
@@ -94,20 +103,15 @@ const ForgetPassword = () => {
 						>
 							Reset Password
 						</Button>
-						<Button
-							type="text"
-							style={{
-								marginTop: "12px",
-							}}
-						>
-							<Link to={constants.LOGIN_URL}>
-								<Typography>
-									<ArrowLeftOutlined /> Back to Login
-								</Typography>
-							</Link>
-						</Button>
 					</Form.Item>
 				</Form>
+				<Button type="text">
+					<Link to={constants.LOGIN_URL}>
+						<Typography>
+							<ArrowLeftOutlined /> Back to Login
+						</Typography>
+					</Link>
+				</Button>
 			</Space>
 		</Row>
 	);

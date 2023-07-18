@@ -27,11 +27,21 @@ const ResetPassword = () => {
 
 	return (
 		<Row justify={"center"}>
-			<Space direction="vertical" style={{ textAlign: "center" }}>
-				<Typography.Title level={2} style={{ margin: "10px" }}>
+			<Space direction="vertical">
+				<Typography.Title
+					level={2}
+					style={{ textAlign: "center", margin: "10px" }}
+				>
 					Reset Password
 				</Typography.Title>
-				<Form onFinish={onFinish} layout="vertical">
+				<Form
+					onFinish={onFinish}
+					layout="vertical"
+					style={{
+						width: "400px",
+						maxWidth: "400px",
+					}}
+				>
 					<Form.Item
 						label="New Password"
 						name="password"
@@ -78,9 +88,13 @@ const ResetPassword = () => {
 						<Input.Password />
 					</Form.Item>
 					<Form.Item>
-						<Button type="primary" htmlType="submit" style={{
-							width:"100%"
-						}}>
+						<Button
+							type="primary"
+							htmlType="submit"
+							style={{
+								width: "100%",
+							}}
+						>
 							Reset
 						</Button>
 					</Form.Item>

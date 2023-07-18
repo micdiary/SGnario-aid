@@ -191,7 +191,9 @@ const Register = () => {
 	return (
 		<Row justify={"center"}>
 			<Space direction="vertical" style={{ textAlign: "center" }}>
-				<Typography.Title level={2} style={{marginBottom:"-2px"}}>Create an account</Typography.Title>
+				<Typography.Title level={2} style={{ marginBottom: "-2px" }}>
+					Create an account
+				</Typography.Title>
 				<Typography.Text>
 					Create an account today to fully the services of our website
 				</Typography.Text>
@@ -199,7 +201,7 @@ const Register = () => {
 					layout="vertical"
 					onFinish={onFinish}
 					scrollToFirstError
-					style={{ textAlign: "left" }}
+					style={{ textAlign: "left", width: "400px", maxWidth: "400px" }}
 				>
 					{generateForm(formItem)}
 

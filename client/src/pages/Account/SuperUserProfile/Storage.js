@@ -110,7 +110,7 @@ const Storage = ({ profile, setProfile }) => {
 			<Form
 				form={storageForm}
 				wrapperCol={{
-					span: 12,
+					span: 6,
 				}}
 				layout="vertical"
 				onFinish={onStorageFinish}

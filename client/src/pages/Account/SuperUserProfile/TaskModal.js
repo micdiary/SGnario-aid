@@ -66,7 +66,6 @@ const SuperUserTaskModal = ({
 
 	const handleOk = () => {
 		form.submit();
-		setModalVisible(false);
 	};
 
 	const handleCancel = () => {

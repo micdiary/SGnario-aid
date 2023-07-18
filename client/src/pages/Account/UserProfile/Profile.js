@@ -50,7 +50,7 @@ const Profile = ({ profile, setProfile }) => {
 			input: <Input disabled />,
 		},
 		{
-			label: "Date Of Birth",
+			label: "Date of Birth",
 			name: "dob",
 			rules: [
 				{
@@ -128,8 +128,9 @@ const Profile = ({ profile, setProfile }) => {
 			<Form
 				form={profileForm}
 				wrapperCol={{
-					span: 12,
+					span: 6,
 				}}
+
 				layout="vertical"
 				onFinish={onProfileFinish}
 				scrollToFirstError

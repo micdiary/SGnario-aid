@@ -46,8 +46,11 @@ const Login = () => {
 
 	return (
 		<Row justify={"center"}>
-			<Space direction="vertical" style={{ textAlign: "center", width: "20%" }}>
-				<Typography.Title level={2} style={{ marginBottom: "-2px" }}>
+			<Space direction="vertical" style={{ width: "20%" }}>
+				<Typography.Title
+					level={2}
+					style={{ textAlign: "center", marginBottom: "-2px" }}
+				>
 					Log in
 				</Typography.Title>
 				<Form
@@ -66,6 +69,10 @@ const Login = () => {
 							{
 								required: true,
 								message: "Please input your Email!",
+							},
+							{
+								type: "email",
+								message: "Please enter a valid email address!",
 							},
 						]}
 					>
@@ -87,23 +94,23 @@ const Login = () => {
 						/>
 					</Form.Item>
 					<Form.Item>
-						<Form.Item
-							name="remember"
-							valuePropName="checked"
-							style={{
-								float: "left",
-								marginBottom: "0px",
-							}}
-						>
-							<Checkbox>Remember me</Checkbox>
-						</Form.Item>
-						<Typography.Link
-							className="login-form-forgot"
-							href={constants.FORGET_PASSWORD_URL}
-							style={{ float: "right" }}
-						>
-							Forgot password
-						</Typography.Link>
+						<Row justify={"space-between"} align={"middle"}>
+							<Form.Item
+								name="remember"
+								valuePropName="checked"
+								style={{
+									marginBottom: "0px",
+								}}
+							>
+								<Checkbox>Remember me</Checkbox>
+							</Form.Item>
+							<Typography.Link
+								className="login-form-forgot"
+								href={constants.FORGET_PASSWORD_URL}
+							>
+								Forgot password
+							</Typography.Link>
+						</Row>
 					</Form.Item>
 					<Form.Item>
 						<Button

@@ -185,16 +185,20 @@ const Header = ({ handleCategoryFilter }) => {
 
 	return (
 		<>
-			<Row justify={"space-between"} align={"middle"}>
+			<Row justify={"space-between"} align={"middle"} style={{ width: "100%" }}>
 				<Menu
 					style={{
 						backgroundColor: "transparent",
+						minWidth: "0",
+						display: "flex",
+						alignItems: "center",
+						margin: "0 -32px",
 					}}
+					forceSubMenuRender
+					inlineIndent={1}
 					mode="horizontal"
-					disabledOverflow
 					selectedKeys={[-1]}
 					triggerSubMenuAction="hover"
-					forceSubMenuRender
 					items={userRole === "admin" ? adminMenuItems : menuItems}
 				/>
 				<Space>

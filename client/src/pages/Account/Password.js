@@ -82,7 +82,7 @@ const Password = () => {
 		<Form
 			form={passwordForm}
 			wrapperCol={{
-				span: 12,
+				span: 6,
 			}}
 			layout="vertical"
 			onFinish={onPasswordFinish}
