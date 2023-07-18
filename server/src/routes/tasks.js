@@ -170,7 +170,7 @@ router.post("/user/submission", upload.single("file"), async (req, res) => {
             if (!uploadDetails) {
                 return res
                     .status(400)
-                    .json({ error: "Only video files are accepted" });
+                    .json({ error: "Only video/audio files are accepted" });
             }
 
             const recordingWebLink = uploadDetails.responseData.webViewLink;
