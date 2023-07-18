@@ -127,7 +127,7 @@ const SuperUserTask = ({ task, setTask, setView }) => {
 				{populateData &&
 					populateData.map((record) => {
 						return (
-							<Col span={24} lg={8}>
+							<Col span={24} md={12} lg={8}>
 								<TaskCard record={record} editCard={edit} setIsLoading={setIsLoading}/>
 							</Col>
 						);

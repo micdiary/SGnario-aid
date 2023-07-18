@@ -98,7 +98,7 @@ const Contact = () => {
 	};
 
 	return (
-		<Row>
+		<Row gutter={[24,12]}>
 			<Col span={8} xs={24} md={8}>
 				<Typography.Title level={2}>Contact Us</Typography.Title>
 				<Typography.Text>
