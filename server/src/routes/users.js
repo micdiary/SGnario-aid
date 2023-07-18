@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 import { UserModel } from "../models/Users.js";
 import { SuperuserModel } from "../models/Superusers.js";
+import { TaskModel } from "../models/Tasks.js";
 import { encrypt, decrypt } from "../utils/cryptography.js";
 import { getDrive, createFolder, deleteFolder } from "../utils/driveHelper.js";
 
@@ -357,6 +358,11 @@ router.delete("/", async (req, res) => {
                         error: "Internal Server Error. Could not delete folder.",
                     });
                 }
+
+                // Delete all tasks
+                const tasks = await TaskModel.deleteMany({
+                    patient: deletedUser.email,
+                });
             }
             await deletedUser.deleteOne();
         } else {
