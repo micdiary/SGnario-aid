@@ -13,7 +13,25 @@ import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 const router = express.Router();
 
 // Configure Multer to handle file uploads
-const upload = multer({ dest: "uploads/" });
+const maxMB = 100;
+const upload = multer({
+    dest: "uploads/",
+    limits: {
+        fileSize: maxMB*1024*1024
+    }
+});
+
+// Custom error handling function for multer
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ error: "File size limit exceeded. Maximum file size allowed is" + maxMB + "MB." });
+    }
+    // Handle other multer errors if needed
+    return res.status(500).json({ error: "File upload error" });
+  }
+  next(err);
+};
 
 // Create a Task
 router.post("/create", async (req, res) => {
@@ -359,5 +377,7 @@ router.post("/status", async (req, res) => {
         return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
     }
 });
+
+router.use(handleMulterError);
 
 export { router as taskRouter };
