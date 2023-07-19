@@ -129,7 +129,7 @@ const Account = () => {
 				case "password":
 					return <Password profile={profile} setProfile={setProfile} />;
 				case "storage":
-					return <SuperUserStorage profile={profile} />;
+					return <SuperUserStorage profile={profile} setProfile={setProfile}/>;
 				default:
 					return <Spin spinning />;
 			}
