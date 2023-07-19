@@ -7,6 +7,7 @@ import { scenariosRouter } from "./routes/scenarios.js";
 import { userRouter } from "./routes/users.js";
 import { taskRouter } from "./routes/tasks.js";
 import { uploadRouter } from "./routes/upload.js";
+import { contactRouter } from "./routes/contact.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
@@ -21,6 +22,7 @@ app.use("/scenarios", scenariosRouter);
 app.use("/users", userRouter);
 app.use("/tasks", taskRouter);
 app.use("/upload", uploadRouter);
+app.use("/contact", contactRouter);
 
 mongoose.connect(MONGODB_CONNECTION, {
     useNewUrlParser: true,
