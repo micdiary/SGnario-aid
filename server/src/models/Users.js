@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     therapistName: { type: String },
     therapistEmail: { type: String },
     currentFolder: { type: String },
+    therapistRequests: { type: [String] },
     prevTherapists: [
         {
             email: { type: String },
