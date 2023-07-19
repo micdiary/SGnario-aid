@@ -162,9 +162,10 @@ router.post("/set-drive-credentials", async (req, res) => {
         const { id, role } = decodedToken;
 
         const { clientEmail, privateKey, rootFolderId } = fields;
-
+        const cleanedPrivateKey = privateKey.replaceAll("\\n", "\n").replaceAll("\"", "");
+        console.log(cleanedPrivateKey);
         if (role == "therapist") {
-            const encryptedKey = encrypt(privateKey);
+            const encryptedKey = encrypt(cleanedPrivateKey);
             const updatedUser = await SuperuserModel.findByIdAndUpdate(
                 id,
                 {
