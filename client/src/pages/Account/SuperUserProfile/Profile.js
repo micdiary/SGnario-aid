@@ -111,7 +111,7 @@ const SuperUserProfile = ({ profile, setProfile }) => {
 				onFinish={onProfileFinish}
 				scrollToFirstError
 			>
-				<Typography.Title level={4}>{profile.name}'s Profile</Typography.Title>
+				<Typography.Title level={4} style={{textTransform:"capitalize"}}>Welcome {profile.name}</Typography.Title>
 				<Divider />
 				{generateForm(profileFormItem)}
 				<Button type={"primary"} onClick={() => profileForm.submit()}>
