@@ -17,7 +17,7 @@ import {
 	InfoCircleOutlined,
 	QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { setStorageConfigurations } from "../../../api/profile";
+import { setStorageConfigurations } from "../../../api/therapist";
 import { generateForm } from "../../../utils/form";
 import { testGoogleDrive } from "../../../api/therapist";
 import { showNotification } from "../../../components/Notification";
@@ -197,7 +197,7 @@ const Storage = ({ profile, setProfile }) => {
 			</Button>
 			<Upload customRequest={customRequest} showUploadList={false}>
 				<Button icon={<UploadOutlined />} ref={testUploadBtnRef}>
-					Test upload
+					Test upload (max 100mb)
 				</Button>
 			</Upload>
 			<Tour

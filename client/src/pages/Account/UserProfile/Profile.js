@@ -20,6 +20,7 @@ const Profile = ({ profile, setProfile }) => {
 
 	useEffect(() => {
 		profileForm.setFieldsValue({
+			id: profile._id,
 			name: profile.name,
 			email: profile.email,
 			dob: dayjs(profile.dob),
@@ -33,6 +34,11 @@ const Profile = ({ profile, setProfile }) => {
 	}, [profile.dob]);
 
 	const profileFormItem = [
+		{
+			label: "ID",
+			name: "id",
+			input: <Input disabled />,
+		},
 		{
 			label: "Name",
 			name: "name",

@@ -39,9 +39,9 @@ router.post("/", async (req, res) => {
 
         transporter.sendMail(mailOptions, (err) => {
             if (err) {
-                res.status(500).json({ error: "Failed to send reset email" });
+                res.status(500).json({ error: "Failed to send email" });
             } else {
-                res.status(200).json({ message: "Reset email sent" });
+                res.status(200).json({ message: "Email sent" });
             }
         });
     } catch (err) {

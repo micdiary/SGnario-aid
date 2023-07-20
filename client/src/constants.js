@@ -31,11 +31,15 @@ export const THERAPISTS_API = `${URL}/users/therapists`;
 export const GET_PATIENTS_API = `${URL}/users/patients`;
 export const DRIVE_CREDENTIALS_API = `${URL}/users/set-drive-credentials`;
 export const GET_PATIENTS_BY_THERAPIST_API = `${URL}/users/patients`;
-export const GET_PATIENTS_WITHOUT_THERAPIST_API = `${URL}/users/newPatients`;
+export const GET_PATIENTS_WITHOUT_THERAPIST_API = `${URL}/users/newPatientsId`;
 export const SET_THERAPIST_API = `${URL}/users/set-therapist`;
 export const REMOVE_USER_API = `${URL}/users/remove-user`;
+export const SEND_REQUEST_API = `${URL}/users/send-request`;
+export const REQUEST_ACTION_API = `${URL}/users/request-action`;
 
 export const UPLOAD_API = `${URL}/upload`;
+
+export const CONTACT_API = `${URL}/contact`;
 
 export const CREATE_SCENARIOS_API = `${URL}/scenarios/create-scenario`;
 export const SCENARIOS_URL_API = `${URL}/scenarios/all`;

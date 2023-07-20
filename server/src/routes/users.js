@@ -152,8 +152,7 @@ router.post("/request-action", async (req, res) => {
         });
 
         if (!therapist) {
-            return res.stat;
-            us(404).json({ error: "Therapist not found" });
+            return res.status(404).json({ error: "Therapist not found" });
         }
 
         // User declines request

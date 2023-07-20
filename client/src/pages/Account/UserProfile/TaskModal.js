@@ -151,7 +151,7 @@ const UserTaskModal = ({
 			input: <Input.TextArea rows={3} />,
 		},
 		{
-			label: "Recording",
+			label: "Recording (max 100mb)",
 			name: "recordingLink",
 			input: (
 				<Upload

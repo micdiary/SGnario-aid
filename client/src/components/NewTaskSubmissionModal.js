@@ -160,14 +160,8 @@ const NewTaskSubmissionModal = ({
 				input: <Input.TextArea rows={3} />,
 			},
 			{
-				label: "Recording",
+				label: "Recording (max 100mb)",
 				name: "recordingLink",
-				// rules: [
-				// 	{
-				// 		required: true,
-				// 		message: "Please input your recording link!",
-				// 	},
-				// ],
 				input: (
 					<Upload customRequest={customRequest}>
 						<Button icon={<UploadOutlined />}>Upload</Button>
