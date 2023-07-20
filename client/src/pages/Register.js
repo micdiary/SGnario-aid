@@ -138,8 +138,12 @@ const Register = () => {
 					mode="multiple"
 					showSearch={false}
 					options={[
-						{ value: "Stuttering", label: "Stuttering" },
+						{ value: "Fluency Disorder", label: "Fluency Disorder" },
 						{ value: "Voice Disorder", label: "Voice Disorder" },
+						{
+							value: "Speech & Language Disorder",
+							label: "Speech & Language Disorder",
+						},
 						{ value: "Stroke Recovery", label: "Stroke Recovery" },
 					]}
 				/>

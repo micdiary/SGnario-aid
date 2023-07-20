@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	Input,
 	Button,
@@ -10,8 +10,13 @@ import {
 	Tooltip,
 	Row,
 	Col,
+	Tour,
 } from "antd";
-import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+	UploadOutlined,
+	InfoCircleOutlined,
+	QuestionCircleOutlined,
+} from "@ant-design/icons";
 import { setStorageConfigurations } from "../../../api/profile";
 import { generateForm } from "../../../utils/form";
 import { testGoogleDrive } from "../../../api/therapist";
@@ -105,18 +110,39 @@ const Storage = ({ profile, setProfile }) => {
 			});
 	};
 
+	const storageConfigIconRef = useRef(null);
+	const updateConfigBtnRef = useRef(null);
+	const testUploadBtnRef = useRef(null);
+
+	const [tourVisible, setTourVisible] = useState(false);
+	const tourSteps = [
+		{
+			title: "Step 1",
+			description:
+				"Fill in the form with your Google Drive configurations. You can find the tutorial video by clicking the info icon.",
+			placement: "top",
+			target: () => storageConfigIconRef.current,
+		},
+		{
+			title: "Step 2",
+			description:
+				"Click the 'Update configurations' button to save your configurations.",
+			placement: "top",
+			target: () => updateConfigBtnRef.current,
+		},
+		{
+			title: "Step 3",
+			description:
+				"Click the 'Test upload' button to upload a file. If the upload is successful, you will see the uploaded file in your Google Drive",
+			placement: "top",
+			target: () => testUploadBtnRef.current,
+		},
+	];
+
 	return (
 		<Spin spinning={isLoading}>
-			<Form
-				form={storageForm}
-				wrapperCol={{
-					span: 6,
-				}}
-				layout="vertical"
-				onFinish={onStorageFinish}
-				scrollToFirstError
-			>
-				<Row>
+			<Row justify={"space-between"}>
+				<Row ref={storageConfigIconRef}>
 					<Col>
 						<Typography.Title level={4}>
 							Storage configurations&nbsp;
@@ -139,21 +165,46 @@ const Storage = ({ profile, setProfile }) => {
 						</Tooltip>
 					</Col>
 				</Row>
-				<Divider />
-				{generateForm(storageFormItem)}
-				<Button
-					type={"primary"}
-					onClick={() => storageForm.submit()}
-					style={{
-						marginRight: "10px",
-					}}
+				<Typography.Text
+					strong
+					onClick={() => setTourVisible(true)}
+					style={{ float: "right" }}
 				>
-					Update configurations
-				</Button>
-				<Upload customRequest={customRequest} showUploadList={false}>
-					<Button icon={<UploadOutlined />}>Test upload</Button>
-				</Upload>
+					Need help? <QuestionCircleOutlined />
+				</Typography.Text>
+			</Row>
+			<Divider />
+			<Form
+				form={storageForm}
+				wrapperCol={{
+					span: 6,
+				}}
+				layout="vertical"
+				onFinish={onStorageFinish}
+				scrollToFirstError
+			>
+				{generateForm(storageFormItem)}
 			</Form>
+			<Button
+				ref={updateConfigBtnRef}
+				type={"primary"}
+				onClick={() => storageForm.submit()}
+				style={{
+					marginRight: "10px",
+				}}
+			>
+				Update configurations
+			</Button>
+			<Upload customRequest={customRequest} showUploadList={false}>
+				<Button icon={<UploadOutlined />} ref={testUploadBtnRef}>
+					Test upload
+				</Button>
+			</Upload>
+			<Tour
+				steps={tourSteps}
+				open={tourVisible}
+				onClose={() => setTourVisible(false)}
+			/>
 		</Spin>
 	);
 };

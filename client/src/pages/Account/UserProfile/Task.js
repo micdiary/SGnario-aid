@@ -83,18 +83,21 @@ const Task = ({ task, setTask, setView }) => {
 			description:
 				"Click here to change the status of the task once you have submitted your recording.",
 			target: () => statusBtn.current,
+			placement: "top",
 		},
 		{
 			title: "New Submission",
 			description:
 				"Click here to submit a new recording for the task. You can submit multiple recordings for the same task.",
 			target: () => newSubmissionBtn.current,
+			placement: "top",
 		},
 		{
 			title: "Task Submissions",
 			description:
 				"Click on the card tabs to view the details of the submission. You can also edit the submission by clicking on the icon.",
 			target: () => cards.current,
+			placement: "top",
 		},
 	];
 
@@ -115,7 +118,13 @@ const Task = ({ task, setTask, setView }) => {
 						},
 					]}
 				/>
-				<Typography.Text strong onClick={() => setTourVisible(true)}>
+				<Typography.Text
+					strong
+					onClick={() => setTourVisible(true)}
+					style={{
+						cursor: "pointer",
+					}}
+				>
 					Need help? <QuestionCircleOutlined />
 				</Typography.Text>
 			</Row>

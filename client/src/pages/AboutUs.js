@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Carousel, Card, Row, Col, Typography } from "antd";
+import React from "react";
+import { Card, Row, Col, Typography } from "antd";
 
 import card1 from "../assets/card1.jpg";
 import card2 from "../assets/card2.jpg";

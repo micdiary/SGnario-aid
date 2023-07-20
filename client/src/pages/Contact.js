@@ -10,27 +10,11 @@ const Contact = () => {
 		{
 			label: "Name",
 			name: "name",
-			rules: [
-				{
-					required: true,
-					message: "Please input your name!",
-				},
-			],
 			input: <Input />,
 		},
 		{
 			label: "Email",
 			name: "email",
-			rules: [
-				{
-					type: "email",
-					message: "The input is not valid E-mail!",
-				},
-				{
-					required: true,
-					message: "Please input your email!",
-				},
-			],
 			input: <Input />,
 		},
 		{
@@ -98,7 +82,7 @@ const Contact = () => {
 	};
 
 	return (
-		<Row gutter={[24,12]}>
+		<Row gutter={[24, 12]}>
 			<Col span={8} xs={24} md={8}>
 				<Typography.Title level={2}>Contact Us</Typography.Title>
 				<Typography.Text>
@@ -108,6 +92,7 @@ const Contact = () => {
 			</Col>
 			<Col span={16} xs={24} md={16}>
 				<Form
+					requiredMark={"optional"}
 					layout="vertical"
 					style={{
 						textAlign: "left",

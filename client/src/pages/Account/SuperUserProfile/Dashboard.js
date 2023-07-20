@@ -295,7 +295,7 @@ const SuperUserDashboard = ({ profile, setView, setTask }) => {
 			key: "email",
 		},
 		{
-			title: "Pending Tasks",
+			title: "Pending Reviews",
 			dataIndex: "taskStatusCount",
 			key: "taskStatusCount",
 			render: (tasks) => (tasks.status.Pending ? tasks.status.Pending : 0),

@@ -96,7 +96,7 @@ const UserTaskModal = ({
 
 	const formItem = [
 		{
-			label: "Stutter",
+			label: "Stuttering Severity",
 			name: "patientStutter",
 			rules: [
 				{
@@ -118,7 +118,7 @@ const UserTaskModal = ({
 			),
 		},
 		{
-			label: "Fluency",
+			label: "Fluency Technique",
 			name: "patientFluency",
 			rules: [
 				{
@@ -210,11 +210,11 @@ const UserTaskModal = ({
 					current={-1}
 					items={Object.values(fluencyMarks).map((item, index) => {
 						return {
-							title: `LV${index}`,
+							title: index,
 							description: (
 								<Space direction={"vertical"}>
-									<span>Stutter: {stutterMarks[index]}</span>
-									<span>Fluency: {item}</span>
+									<span>Stuttering Severity: {stutterMarks[index]}</span>
+									<span>Fluency Technique: {item}</span>
 								</Space>
 							),
 						};

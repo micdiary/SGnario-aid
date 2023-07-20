@@ -74,7 +74,7 @@ const SuperUserTaskModal = ({
 
 	const formItem = [
 		{
-			label: "Stutter",
+			label: "Stuttering Severity",
 			name: "therapistStutter",
 			rules: [
 				{
@@ -96,7 +96,7 @@ const SuperUserTaskModal = ({
 			),
 		},
 		{
-			label: "Fluency",
+			label: "Fluency Technique",
 			name: "therapistFluency",
 			rules: [
 				{
