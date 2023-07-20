@@ -1,23 +1,63 @@
 ### Get profile details
-GET http://localhost:3001/users/profile/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzM5MWY0ODJhNWU2NzAxZjM4NTMyZiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY1ODE2NTh9.rg2QQWmu2s8KKQA0cMdvyomByIjZibB4B5DUjTmoNyU
+GET http://localhost:3001/users/profile/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjRiYWMwMjhkMTAzNTA3MTIzOCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg3ODU2MjI0fQ.kpW4yNeV7zDoHoYX20F-tsb_SXFmDQ5F0ZBNAmkdfLM
 
 ### Edit profile details
 POST http://localhost:3001/users/edit-profile
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzM5MWY0ODJhNWU2NzAxZjM4NTMyZiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY1ODE2NTh9.rg2QQWmu2s8KKQA0cMdvyomByIjZibB4B5DUjTmoNyU",
-    "fields": {"name": "therapist2", "organisation": "SIT"}
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg3OTc1NDM4fQ.uIEwYER18FR3i9E0MEpCnNkPBvCVRj_BlLzj0UNMSfM",
+    "fields": {"name": "zemus", "dob": "01-01-1999", "gender": "male", "issue": ["Stuttering"], "therapistName": "testsuperuser", "therapistEmail": "testsuperuser@gmail.com"}
 }
 
-### Add API Key (therapist)
-POST http://localhost:3001/users/add-api-key
+### Send request
+POST http://localhost:3001/users/send-request
 Content-Type: application/json
 
 {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzM5MWY0ODJhNWU2NzAxZjM4NTMyZiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY1ODE2NTh9.rg2QQWmu2s8KKQA0cMdvyomByIjZibB4B5DUjTmoNyU",
-        "apiKey": "test"
+   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OWFhYjY0MDlmM2MzYmVmOGNiOGRjNiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODk3NzcyNzJ9.6nA0RsV4KsvOE4O93rFrRbTnpLY-I1vcTxioO2gs7JI",
+    "userIds": ["64b6023b4776666b9a532fa0"] 
 }
+
+
+### Request action
+POST http://localhost:3001/users/request-action
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YjYwMjNiNDc3NjY2NmI5YTUzMmZhMCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg5Nzc4NDI0fQ.oQGXVSW_l0aGRQ4BIoFs6lwBubFzgMXSzyIKR4ojoLI",
+    "fields": {
+        "therapistEmail": "testsuperuser@gmail.com",
+        "action": "yes"
+    }
+
+}
+
+### Set therapist
+POST http://localhost:3001/users/set-therapist
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OWFhYjY0MDlmM2MzYmVmOGNiOGRjNiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODkxOTAxNDl9.RlHWr1qkAFUtk4BnJcm9GSi0FMkNYXOitR-j6ktyTgA",
+    "userIds": ["64af070d206bbb3d1749fb04", "64af0713206bbb3d1749fb09"]
+}
+
+
+
+### Add API Key (therapist)
+POST http://localhost:3001/users/set-drive-credentials
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODc4ODI2NzN9.44Bmo9fUwNFkUZyNzxFj29ANRTOWyAGU_4OSaurHsHU",
+    "fields": {
+        "clientEmail": "sgnario-aid@sgnario-aid.iam.gserviceaccount.com",
+        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCnzWyCX75JVaP5\nWh4tzgwq4M+ltZrLUruW/KrTvbQKtgfE8ujoAiIueSz9GrlHu3W70vikNL914gev\niOqNisQNGCR5TYk2JBqIgZf6Giphna1pOK+QBYEPkNl120YzmbCqiWSxiLQdPA2v\nr/UAVxFN9E5ok/XR5kogKeNpZ4DOAQ4fCHEVGz1AkFt3/eFPEliBHW9mLqP/xwnj\nvGz3xxnlP1KO5Kj87nBecCvuFMlptWoZsLBAcgkM9XJvSHLIctdG7d3RlH45yE5+\nWnWb+Nng97lQ65Vyb/8mz3G5MALlJXn3uHVXCc1ytJM6hVcuztSn0M9Qkai0+ALe\nUEg8IQunAgMBAAECggEABsIbxi5z/AEifwb1ozOiwtFWG57yUpEM9BpOCQQhbbMC\nIhkEb1+yn7uKp9D9OFng9oUbNYXYVjeZxqSVicjWd46K3YXVamRO20OY6t5F6bOP\niebaD0thdM6JK5l+vNJKTrwE3a+bTXgfNv23uOFI1aJqzAR1iJQlVSFKwvKDugg5\nHI9vR1nEDkgM+KoaPjuJki6afUc+yWdGsSvztJdhW6Zv4amkhCSrAMWSXkgY7gyU\nDcuQHdVzpAk4JOj9DD+oM4Dcz3q/7EjIsvWVwSAfjYbbZ0PYo02G7ECwQXPmPiUS\nCZf9cBEaQhYnDa1A9gKoi7VZDG8cLZDruwT0mO0zpQKBgQDeMmql3QCoH/GrcIeE\n1bbeNzTqpdCclnZ9fMfvUL02SregSa54ZTRaxGC48omd0PRqmH/ResNq/354DqPE\nL17v1L1F2eemdMGpFwJEBd7tggmTazqW7tSJpcub5hiZR1xdoNWnF30K7qZ8jjpR\nTms5InAU4F/jlVmsKsKrs7udPQKBgQDBVJVGRPNPulXsCzzbNHf2deyG5YoajVbw\nvcs7/MSMKnrweoEYgwzyTdIKyHuVTKp8oauqaJ2MyjeUMCLqg3pgeLr3FGC3eCSR\ni8jTGXvEWUPkax9srZZL90f381+Z6YC9a6/ur2vyQ514ywIr6zESP1B1Nb5kT/Ud\nPeN7qlAiswKBgQDEQqX+sTGmTujotDGPfDHVH9BGvoV/+krY1oHG+XrXXLHLC6nm\nwAW5cqG4WsqBMhLhoKetwRChDuGHa+7tF6Z0kmVIMIuzdIemMiOXL9RT1ztcEiej\nL3tdxasNnfT2VpjYPnrY5x9Uq600cXBDZs/AnJGBbxpjbATT1MU0YkICRQKBgQCe\nXiBNyKubcuNxkZ8PXcKrRNw1gJCJwaAnYwG5qQyEWUQN+/wGTUvsrOzTYnlByuSZ\nZYIO/NWagAfZPzlK69rybdOSFMJJaIRkKaKfsm9dX1YrJck/KE9G+VCd/2If3VRV\nVoJuvoppkRPM4FduDKJM9Up+SUEmQQ1kH89Z/SDZ2wKBgQDSrfH5Jq5Jt9LEPFKN\nL7gtOYuhBLRewMTpw/jPpXS8Rg1FWDzeV50zs/S/AUUNuNPW4z1CTLM3Q8YpGz7p\nLpXZPCyAythCMFuhwajAeJdEIR9wEoXFvUp+ofC8eJDgtBKDmzvtlGaUpzXrPs6j\nt96gAAh5L200a8XEaF+FFw1WbA==\n-----END PRIVATE KEY-----\n",   
+        "rootFolderId": "1DFxwmy2wYp_HYMdgQO0EwtteWimvn8QZ"
+    }
+
+}
+
 
 ### Get therapist names and email
 GET http://localhost:3001/users/therapists
@@ -30,10 +70,33 @@ Content-Type: application/json
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjYwYWMwMjhkMTAzNTA3MTIzZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjgyNzg0NH0.L1T2vpBRGP38e_3PHa6x6pH9_-d75Gi5aeU9C6j2VWI"
 }
 
-### Get patient
-POST http://localhost:3001/users/patients
+### Get users
+GET http://localhost:3001/users/patients/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjRiYWMwMjhkMTAzNTA3MTIzOCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg3MzUzNDExfQ.93zT-yglUW2AmUvh7WeAwW0RmyhMLQEnq5Os8zbJ6jA
+
+
+### Get users without therapist
+GET http://localhost:3001/users/newPatientsId/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OWFhYjY0MDlmM2MzYmVmOGNiOGRjNiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODk3NzcyNzJ9.6nA0RsV4KsvOE4O93rFrRbTnpLY-I1vcTxioO2gs7JI
+
+
+### Remove user
+POST http://localhost:3001/users/remove-user
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY4NDYzOTZ9.9qhxilZ6Z0K6X7UM9xL455Pdg0uoedmsEcjNDQx9yag"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OWFhYjY0MDlmM2MzYmVmOGNiOGRjNiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODk3NzcwNjB9.h1fS9b-BsTdJ5uhE-51xtyHo9V_z3lP8wJ69bn3pWbo" ,
+    "userId": "64b6023b4776666b9a532fa0"
 }
+
+### Delete user
+DELETE http://localhost:3001/users
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjYwYWMwMjhkMTAzNTA3MTIzZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NzM1NTM4Mn0.yUTJx8mP7JiUAxVZFn8ZBrHRcyPtyrEN9zxYn7PnNfY",
+    "userId": "649aab6409f3c3bef8cb8dc6"
+}
+
+
+
+
+

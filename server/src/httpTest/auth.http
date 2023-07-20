@@ -3,14 +3,13 @@ POST http://localhost:3001/auth/register
 Content-Type: application/json
 
 {
-    "email": "testuser@gmail.com",
+    "email": "test3@gmail.com",
     "password": "password",
     "name": "test",
     "role": "user",
     "dob": "01-01-1999",
     "gender": "male",
-    "therapist": "therapist1",
-    "issue": ["issue1"]
+    "issue": ["Stuttering", "Voice Disorder"]
 }
 
 ### Register Therapist
@@ -18,11 +17,11 @@ POST http://localhost:3001/auth/register-superuser
 Content-Type: application/json
 
 {
-    "email": "testsuperuser@gmail.com",
+    "email": "testsuperuser2@gmail.com",
     "password": "password",
-    "name": "testsuperuser",
+    "name": "testsuperuser2",
     "role": "therapist",
-    "purpose": ["treatment", "education"],
+    "purpose": ["treatment"],
     "organisation": "SIT"
 }
 
@@ -41,8 +40,8 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-    "email": "testuser@gmail.com",
-    "password": "password"
+    "email": "zemuskoh99@gmail.com",
+    "password": "Password1"
 }
 
 ### Forgot Password
@@ -64,9 +63,8 @@ Content-Type: application/json
 }
 
 
-
 ### Get Role
-GET http://localhost:3001/auth/role/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzM5MWY0ODJhNWU2NzAxZjM4NTMyZiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY0NTcyMDJ9.qpyQu-iQFX5NM44jAMCMd8q7msJBb_WTldnTeWVzNbo
+GET http://localhost:3001/auth/role/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODgyMDYzOTV9.7-4zgwZYuXdrEPWUPyM-Yf-AgkO33uFo_nzlGivLKC8
 
 
 

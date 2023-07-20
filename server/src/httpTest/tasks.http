@@ -3,20 +3,76 @@ POST http://localhost:3001/tasks/create
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODY4MjY2MDV9.UI7NQEsEFlp5bWQqHgVeNq8QCnqbMYKtc9TKyNllMTo",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODczMDQ5MzF9.AgD1jt_3Op30ZSkTCRpvKagIO1qgiOuZpwlbV7hVMkA",
     "fields": {
-        "email": "zemuskoh9@gmail.com",
-        "scenario": "test3",
-        "dateAssigned": "01-01-1999"
+        "title": "Homework",
+        "name": "test", 
+        "email": "testuser@gmail.com",
+        "videos": [
+            {"category": "Food", "scenario": "Fast Food", "videoName": "McDonalds02 01"},
+            {"category": "Job Interview", "scenario": "One on One", "videoName": "Job Interview 01 Question 02"}
+        ],
+        "recommendedLength": [
+            {"videoName": "McDonalds02 01", "length": 30},
+            {"videoName": "Job Interview 01 Question 02", "length": 5}
+        ]
     }
-
 }
 
-### Get tasks by patient
-GET http://localhost:3001/tasks/user/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjRiYWMwMjhkMTAzNTA3MTIzOCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg2ODkxNjg5fQ.7RSLPxBfXPqzW5q2B8ze5EhDo9Q-LS_h_uAQ7CrP-xs
+### Get tasks by patient by token
+GET http://localhost:3001/tasks/user/token/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg3MzA4MTkzfQ.9OnK1r5QJICnEoAbunfDkrb8ivca1fgNK-t-drIzmn0
+
+### Get tasks by patient by id
+GET http://localhost:3001/tasks/user/id/6474cb674e9aec77ebf51993
+
+### Get task by ID by token
+GET http://localhost:3001/tasks/64a516a374c8b16a455f0354
 
 
-### Get task by ID
-GET http://localhost:3001/tasks/648bec45235af5ddd984c900
+### Submit/Edit task patient
+POST http://localhost:3001/tasks/user/submission
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NzRjYjY3NGU5YWVjNzdlYmY1MTk5MyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg3NDExODQ5fQ.-XtNBCfG3jYcTBWKNtoKhoCMatz9FRKuqewhVn593D0",
+    "fields": {
+        "taskId": "64933d9834f482e306056a8c",
+        "submissionId": "",
+        "videoName": "Job Interview Panel 04 Question 01",
+        "stutter": 8,
+        "fluency": 9,
+        "remark": "test mark" 
+    }
+}
+
+### Edit task therapist
+POST http://localhost:3001/tasks/therapist/evaluation
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODc0MjMyMzJ9.8NXsMApXMZAox7CcmKgNEv6b7o3tdOfEoMde1f9lCcw",
+    "fields": {
+        "taskId": "64933d9834f482e306056a8c",
+        "submissionId": "64933d9834f482e306056a91",
+        "stutter": 3,
+        "fluency": 4,
+        "remark": "test mark" 
+    }
+}
 
 
+### Get task status count
+GET http://localhost:3001/tasks/status/6474cb674e9aec77ebf51993
+
+### Change task status
+POST http://localhost:3001/tasks/status
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OGFjZjZjYWMwMjhkMTAzNTA3MTI0MiIsInJvbGUiOiJ0aGVyYXBpc3QiLCJpYXQiOjE2ODgxOTc3NDZ9.wY4QYPe1VVHcu7Q4s4oqAZsw2b1v1P5fZqRMsXcwZmQ",
+    "fields":
+        {
+            "taskId": "649f87fbd785fbdcb9e2af45",
+            "newStatus": "Pending"
+        }
+}

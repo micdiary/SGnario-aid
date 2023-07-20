@@ -161,12 +161,14 @@ router.post("/request-action", async (req, res) => {
             const newTherapistRequests = user.therapistRequests.filter(
                 (therapist) => therapist !== therapistEmail
             );
+            user.therapistRequests = newTherapistRequests;
             await user.save();
 
             // Remove user from therapist pending requests list
             const newPendingRequests = therapist.pendingRequests.filter(
                 (patient) => patient !== id
             );
+            therapist.pendingRequests = newPendingRequests;
             await therapist.save();
 
             return res
@@ -381,37 +383,6 @@ router.post("/therapists", async (req, res) => {
     }
 });
 
-// Get all patients without therapist
-// Deprecated
-router.get("/newPatients/:token", async (req, res) => {
-    const token = req.params.token;
-    try {
-        const decodedToken = jwt.verify(token, JWT_SECRET);
-        const { id, role } = decodedToken;
-
-        // Validate authorisation
-        if (role == "user" || role == "admin") {
-            return res.status(401).json({ error: "Unauthorised" });
-        }
-
-        // Find patients without a therapist
-        const patients = await UserModel.find({
-            therapistEmail: { $in: ["", null] },
-        });
-
-        const patientArray = patients.map((obj) => ({
-            id: obj._id,
-            name: obj.name,
-            email: obj.email,
-        }));
-
-        return res.status(200).json({ patientArray });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
-    }
-});
-
 // Get all patients IDs without therapist
 router.get("/newPatientsId/:token", async (req, res) => {
     const token = req.params.token;
@@ -555,6 +526,19 @@ router.delete("/", async (req, res) => {
                     patient: deletedUser.email,
                 });
             }
+
+            // Remove user from pendingRequests
+            for (const therapistEmail of deletedUser.therapistRequests) {
+                const therapist = await SuperuserModel.findOne({
+                    email: therapistEmail,
+                });
+                const newPendingRequests = therapist.pendingRequests.filter(
+                    (patient) => patient !== id
+                );
+                therapist.pendingRequests = newPendingRequests;
+                await therapist.save();
+            }
+
             await deletedUser.deleteOne();
         } else {
             const deletedSuperuser = await SuperuserModel.findOne({

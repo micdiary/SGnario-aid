@@ -41,34 +41,15 @@ POST
 {
     "category": "Food",
     "scenario": "Fast Food",
-    "scenarioIndex": 0,
-    "videoName": "Fast Food 1",
-    "videoId": "kJQP7kiw5Fk",
+    "videos": [
+        {"videoName": "Fast Food 1", "videoId": "kJQP7kiw5Fk"},
+        {"videoName": "Fast Food 2", "videoId": "kJQP7kiw5Fk"},
+        {"videoName": "Fast Food 3", "videoId": "kJQP7kiw5Fk"},
+    ],
     "dateAdded": 2022-12-31T16:00:00.000+00:00,
 }
 
-// tasks
-{
-    "therapist": "therapist@gmail.com",
-    "patient": "patient@gmail.com",
-    "dateAssigned": 2022-12-31T16:00:00.000+00:00,
-    "category": "Food",
-    "scenario": "Fast Food",
-    "patientStutter": 5,
-    "patientFluency": 6,
-    "patientRemark": "Feels like I'm getting better. Still struggling at part 2.",
-    "therapistSutter": 5,
-    "therapistFluency": 6,
-    "therapistRemark": "Good job! Perhaps you can try fidgeting less.",
-    "recordingId": [
-        "id1",
-        "id2",
-        "id3",
-        "id4",
-        "id5"
-    ],
-    "status": "Completed"
-}
+
 
 // tasks
 {
@@ -77,22 +58,17 @@ POST
     "dateAssigned": 2022-12-31T16:00:00.000+00:00,
     "category": "Food",
     "scenario": "Fast Food",
-    "patientGrade": [
-        {"video": 0, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 1, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 2, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 999, "stutter": 5, "fluency": 5, "remark": "remark"}
-    ],
-    "therapistGrade": [
-        {"video": 0, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 1, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 2, "stutter": 5, "fluency": 5, "remark": "remark"},
-        {"video": 999, "stutter": 5, "fluency": 5, "remark": "remark"}
-    ],
-    "recordingId": [
-        "id1",
-        "id2",
-        "id3"
+    "videoIds": ["kJQP7kiw5Fk", "kJQP7kiw5Fk", "kJQP7kiw5Fk"],
+    "submission": [
+        {"title": "Fast Food 1", 
+        "recodingLink": "test", 
+        "patientStutter": 5, 
+        "patientFluency": 5, 
+        "patientRemark": "remark",
+        "therapistStutter": 5, 
+        "therapistFluency": 5, 
+        "therapistRemark": "remark",
+        "dateSubmitted": 2022-12-31T16:00:00.000+00:00}
     ],
     "status": "Completed"
 }
