@@ -532,9 +532,12 @@ router.delete("/", async (req, res) => {
                 const therapist = await SuperuserModel.findOne({
                     email: therapistEmail,
                 });
+                console.log(therapist.pendingRequests);
+                console.log(userId);
                 const newPendingRequests = therapist.pendingRequests.filter(
-                    (patient) => patient !== id
+                    (patient) => patient !== userId
                 );
+                console.log(newPendingRequests);
                 therapist.pendingRequests = newPendingRequests;
                 await therapist.save();
             }
