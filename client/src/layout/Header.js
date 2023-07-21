@@ -31,7 +31,6 @@ const Header = ({ handleCategoryFilter }) => {
   )
 
   useEffect(() => {
-    console.log('localUserRole', localUserRole)
     setUserRole(localUserRole !== null ? localUserRole : storeUserRole)
   }, [localUserRole, storeUserRole])
 

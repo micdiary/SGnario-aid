@@ -77,6 +77,11 @@ const Task = ({ task, setTask, setView }) => {
 	const newSubmissionBtn = useRef(null);
 	const cards = useRef(null);
 	const [tourVisible, setTourVisible] = useState(false);
+
+	useEffect(() => {
+		console.log(cards);
+	}, [cards]);
+
 	const tourSteps = [
 		{
 			title: "Task Status",
@@ -186,12 +191,13 @@ const Task = ({ task, setTask, setView }) => {
 				</Col>
 			</Row>
 			<Divider />
-			<Row gutter={[16, 16]} ref={cards}>
+			<Row gutter={[16, 16]}>
 				{populateData &&
-					populateData.map((record) => {
+					populateData.map((record, index) => {
 						return (
 							<Col span={24} md={12} xxl={8}>
 								<TaskCard
+									ref={index === 0 ? cards : null}
 									record={record}
 									editCard={edit}
 									setIsLoading={setFormLoading}

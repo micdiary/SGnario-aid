@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Typography, Tag, Descriptions, Card } from "antd";
 import { EditOutlined, LinkOutlined, FileOutlined } from "@ant-design/icons";
 import * as constants from "../constants";
 
-const TaskCard = ({ record, editCard }) => {
+const TaskCard = forwardRef(({ record, editCard }, ref) => {
 	const [activeTabKeyCard, setActiveTabKeyCard] = useState("Recording");
 
 	const onTabChangeCard = (key, record) => {
@@ -53,14 +53,14 @@ const TaskCard = ({ record, editCard }) => {
 				<Descriptions column={{ xs: 1, sm: 1, md: 2 }}>
 					<Descriptions.Item label="Stutter">
 						{record.patientStutter === "" ? (
-							<Tag color="yellow">Pending</Tag>
+							<Tag color="yellow">Pending Review</Tag>
 						) : (
 							<Tag color="green">{record.patientStutter}</Tag>
 						)}
 					</Descriptions.Item>
 					<Descriptions.Item label="Fluency">
 						{record.patientFluency === "" ? (
-							<Tag color="yellow">Pending</Tag>
+							<Tag color="yellow">Pending Review</Tag>
 						) : (
 							<Tag color="green">{record.patientFluency}</Tag>
 						)}
@@ -74,14 +74,14 @@ const TaskCard = ({ record, editCard }) => {
 				<Descriptions column={{ xs: 1, sm: 1, md: 2 }}>
 					<Descriptions.Item label="Stutter">
 						{record.therapistStutter === "" ? (
-							<Tag color="yellow">Pending</Tag>
+							<Tag color="yellow">Pending Review</Tag>
 						) : (
 							<Tag color="green">{record.therapistStutter}</Tag>
 						)}
 					</Descriptions.Item>
 					<Descriptions.Item label="Fluency">
 						{record.therapistFluency === "" ? (
-							<Tag color="yellow">Pending</Tag>
+							<Tag color="yellow">Pending Review</Tag>
 						) : (
 							<Tag color="green">{record.therapistFluency}</Tag>
 						)}
@@ -98,6 +98,7 @@ const TaskCard = ({ record, editCard }) => {
 
 	return (
 		<Card
+			ref={ref}
 			style={{ minHeight: "300px" }}
 			title={
 				<Link
@@ -133,6 +134,6 @@ const TaskCard = ({ record, editCard }) => {
 			{generateContentCard(record)}
 		</Card>
 	);
-};
+});
 
 export default TaskCard;
