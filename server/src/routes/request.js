@@ -207,21 +207,21 @@ router.post("/delete-request", async (req, res) => {
         const { id, role } = decodedToken;
 
         // Find therapist
-        const therapist = await SuperuserModel.findOne({ _id: id });
+        const therapistToRemove = await SuperuserModel.findOne({ _id: id });
 
         // Remove user from pending requests lis
-        const newPendingRequests = therapist.pendingRequests.filter(
+        const newPendingRequests = therapistToRemove.pendingRequests.filter(
             (patient) => patient !== userId
         );
-        therapist.pendingRequests = newPendingRequests;
-        await therapist.save();
+        therapistToRemove.pendingRequests = newPendingRequests;
+        await therapistToRemove.save();
 
         // Find user
         const user = await UserModel.findOne({ _id: userId });
 
         // Remove therapist from patient therapist requests list
         const newTherapistRequests = user.therapistRequests.filter(
-            (therapist) => therapist !== therapist.email
+            (therapist) => therapist !== therapistToRemove.email
         );
         user.therapistRequests = newTherapistRequests;
         await user.save();

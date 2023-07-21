@@ -17,7 +17,6 @@ export async function editProfile(req) {
 }
 
 export async function sendRequestAction(req) {
-  console.log(req)
   return requestPost(REQUEST_ACTION_API, {
     req: {
       token: getToken(),
