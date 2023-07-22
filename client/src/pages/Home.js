@@ -1,119 +1,137 @@
+import { Card, Col, Row, Typography } from "antd";
 import React from "react";
-
-// import * as constants from "../constants";
-
-// import logo from "../assets/logo.jpg";
-// import videos from "../assets/videos.jpg";
-// import steps from "../assets/steps.jpg";
-// import { Carousel, Col, Row, Typography } from "antd";
-
-// css for intro
-// const styles = {
-// 	// css for carousel
-// 	carouselImageContainer: {
-// 		width: "100%",
-// 		textAlign: "center",
-// 		flexDirection: "column",
-// 		margin: "auto",
-// 		display: "flex",
-// 		justifyContent: "center",
-// 		alignItems: "center",
-// 	},
-// 	carouselImage: {
-// 		width: "100%",
-// 		height: "350px",
-// 	},
-// };
-
-// css for card
+import heroIcon from "../assets/heroIcon.svg";
+import wave from "../assets/wave.svg";
+import feedback from "../assets/feedback.svg";
+import videoStorage from "../assets/videoStorage.svg";
+import taskAssignment from "../assets/taskAssignment.svg";
+import { useMediaQuery } from "react-responsive";
 
 const Home = () => {
+	// media query for mobile
+	const isLaptop = useMediaQuery({
+		query: "(min-width: 1024px)",
+	});
+
 	return (
-    <></>
-		// <Carousel
-		// 	autoplay
-		// 	autoplaySpeed={4000}
-		// 	style={{
-		// 		margin: "0 -50px",
-		// 	}}
-		// >
-		// 	<div>
-		// 		<div style={styles.carouselImageContainer}>
-		// 			{/* <Typography.Title level={2}>
-		// 					Want to try out SGnario-Aid for free?
-		// 				</Typography.Title>
-		// 				<Typography.Title level={4}>
-		// 					Click on the link to sign up now!{" "}
-		// 					<a href={constants.REGISTER_URL}> Sign Up</a>
-		// 				</Typography.Title> */}
-		// 			<img
-		// 				src={maxwellFoodCentre}
-		// 				alt="logo"
-		// 				style={styles.carouselImage}
-		// 			/>
-		// 		</div>
-		// 	</div>
-
-		// 	<div>
-		// 		<div style={styles.carouselImageContainer}>
-		// 			{/* <Typography.Title level={2}>
-		// 					Over 100 staged streaming videos to try
-		// 				</Typography.Title>
-		// 				<Typography.Title level={4}>
-		// 					Scenarios of different categories to try out for free!{" "}
-		// 					<a href={constants.SCENARIOS_URL}> View More</a>
-		// 				</Typography.Title> */}
-		// 			<img src={videos} alt="videos" style={styles.carouselImage} />
-		// 		</div>
-		// 	</div>
-
-		// 	<div>
-		// 		<div style={styles.carouselImageContainer}>
-		// 			{/* <Typography.Title level={2}>
-		// 					Seamless and easy to use
-		// 				</Typography.Title>
-		// 				<Typography.Title level={4}>
-		// 					With a guide to teach you how to use!{" "}
-		// 					<a href={constants.ABOUT_US_URL}> View More</a>
-		// 				</Typography.Title> */}
-		// 			<img src={steps} alt="steps" style={styles.carouselImage} />
-		// 		</div>
-		// 	</div>
-		// </Carousel>
-		// <Typography.Title>THE MISSION</Typography.Title>
-		// <Row>
-		// 	<Col span={8}>
-		// 		<Typography.Title level={2}>Welcome to SGnario-Aid</Typography.Title>
-		// 		<Typography.Title level={3}>
-		// 			The Simulated Scenario System
-		// 		</Typography.Title>
-
-		// 		<Typography.Paragraph
-		// 			style={{
-		// 				fontSize: "18px",
-		// 			}}
-		// 		>
-		// 			Improve your social, interview, and speech skills by practicing
-		// 			real-life interactions with the free SGnario-Aid Simulated Scenario
-		// 			System. SGnario-Aid contains over 100 recorded video scenarios for you
-		// 			to work through. To learn more about this exciting system, visit the{" "}
-		// 			<a href={constants.ABOUT_US_URL}>About Us</a> page.
-		// 			<br />
-		// 			To begin using the simulated scenarios, please{" "}
-		// 			<a href={constants.REGISTER_URL}>Register</a> or{" "}
-		// 			<a href={constants.LOGIN_URL}>Login</a> to your free SGnario-Aid
-		// 			account and then navigate to the scenarios by the scenarios menu item.
-		// 		</Typography.Paragraph>
-		// 	</Col>
-		// 	<Col span={16}>
-		// 		<div>
-		// 			{/* codes for carousel */}
-
-		// 		</div>
-		// 	</Col>
-
-		// 	<br></br>
-		// </Row>
+		<div
+			style={{
+				margin: "0 -50px",
+				marginTop: "-24px",
+			}}
+		>
+			<Row
+				justify={"space-evenly"}
+				align={"middle"}
+				gutter={[0, 24]}
+				style={{
+					padding: "12px 50px",
+					backgroundColor: "rgba(255, 235, 201, 1)",
+				}}
+			>
+				<Col xs={24} md={12}>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							margin: "0 auto",
+							width: "75%",
+						}}
+					>
+						<Typography.Title level={1}>SGnario-Aid</Typography.Title>
+						<Typography.Text
+							style={{
+								fontSize: "18px",
+							}}
+						>
+							A learning management system, enabling speech therapists to engage
+							patients in practice scenarios, and serve as an educational
+							platform for educators and students as well.
+						</Typography.Text>
+					</div>
+				</Col>
+				<Col xs={24} md={12}>
+					<img
+						style={{
+							display: "block",
+							margin: "0 auto",
+						}}
+						width={isLaptop ? "60%" : "80%"}
+						src={heroIcon}
+						alt="hero"
+					/>
+				</Col>
+			</Row>
+			<img
+				width={"100%"}
+				src={wave}
+				alt="wave"
+				style={{
+					marginBottom: "32px",
+				}}
+			/>
+			<Row
+				gutter={[24, 24]}
+				style={{
+					margin: "0 50px",
+				}}
+			>
+				<Col xs={24} md={8}>
+					<Card title="Performance Review System"
+		>
+						<img
+							width="65%"
+							style={{
+								margin: "0 auto",
+								display: "block",
+								aspectRatio: "1/1",
+							}}
+							src={feedback}
+							alt="feedback"
+						/>
+						<Typography.Text>
+							Drive personal and professional growth with comprehensive self and
+							professional evaluation tools
+						</Typography.Text>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card title="Video Storage Management">
+						<img
+							width="65%"
+							style={{
+								margin: "0 auto",
+								display: "block",
+								aspectRatio: "1/1",
+							}}
+							src={videoStorage}
+							alt="video storage"
+						/>
+						<Typography.Text>
+							Streamlined existing video storage processes with efficiently
+							managed solutions
+						</Typography.Text>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card title="Personalised Task Assignment">
+						<img
+							width="65%"
+							style={{
+								margin: "0 auto",
+								display: "block",
+								aspectRatio: "1/1",
+							}}
+							src={taskAssignment}
+							alt="task assignment"
+						/>
+						<Typography.Text>
+							Tailored assignments based on individual requirements
+						</Typography.Text>
+					</Card>
+				</Col>
+			</Row>
+		</div>
 	);
 };
 

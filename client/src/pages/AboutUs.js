@@ -12,34 +12,11 @@ const cardStyle = {
 	height: "100%",
 	marginBottom: 16,
 };
-// css for about us
+
 const AboutUs = () => {
 	return (
 		<>
 			<Typography.Title level={1}>About Speech Therapy</Typography.Title>
-
-			<Typography.Paragraph
-				style={{
-					fontSize: "18px",
-				}}
-			>
-				Sgnario-aid is an updated and improved version of Scenari-Aid, which is
-				a web application created by Grant Meredith of the School of Science,
-				Information Technology & Engineering at Federation University Australia.
-				The application is used as therapy for people with speech disabilities
-				such as stuttering, voice disorders, or those recovering from stroke.
-				The web application contains staged videos of different scenarios
-				ranging from job interviews, to ordering food, and many more.
-				<br></br>
-				{/* Sgnario-aid will be used as a tool for speech therapists and educators
-				as a platform for them to practise different scenarios with their
-				clients and for educational purposes respectively.
-				<br></br>
-				Sgnario-aid’s design will follow Scenari-Aid, and it will contain
-				additional features like scoring and a record storing system to enhance
-				its existing capabilities. The scenarios are tailored to be more in line
-				with scenarios that will be faced in Singapore. */}
-			</Typography.Paragraph>
 			<Row gutter={[16, 16]}>
 				<Col xxl={6} xl={8} md={12} xs={24}>
 					<Card
@@ -53,11 +30,11 @@ const AboutUs = () => {
 							title="What is Speech Therapy?"
 							description={
 								<div>
-									<p align="justify">
-										"Speech-language pathology is a healthcare field of
-										expertise practiced globally.{" "}
-									</p>
-									<p align="justify">
+									<Typography.Paragraph align="justify">
+										Speech-language pathology is a healthcare field of expertise
+										practiced globally.
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
 										Speech therapy, also known as speech-language pathology or
 										speech-language therapy, is a specialized field of
 										healthcare that focuses on diagnosing and treating
@@ -67,8 +44,8 @@ const AboutUs = () => {
 										individuals of all ages, from infants to older adults. The
 										primary goal of speech therapy is to help individuals
 										improve their communication skills and overcome difficulties
-										related to speech, language, and swallowing.{" "}
-									</p>
+										related to speech, language, and swallowing.
+									</Typography.Paragraph>
 								</div>
 							}
 						/>
@@ -86,22 +63,26 @@ const AboutUs = () => {
 							title="What activities are done in speech therapy?"
 							description={
 								<div>
-									<p align="justify">
+									<Typography.Paragraph align="justify">
 										For children, speech therapy usually involves play, like
-										sequencing activities or language-based board games.{" "}
-									</p>
-									<p align="justify">
+										sequencing activities or language-based board games.
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
 										For adults, speech therapy is usually focused on improving
 										or rebuilding particular skill sets like strengthening
-										coordination between your brain and mouth.{" "}
-									</p>
-									<p align="justify">Some activities includes: </p>
-									<ul>
-										<li>Tongue and mouth exercises</li>
-										<li>Facial movements</li>
-										<li>Reading out loud</li>
-										<li>Playing word games</li>
-									</ul>
+										coordination between your brain and mouth.
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
+										Some activities includes:
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
+										<ul>
+											<li>Tongue and mouth exercises</li>
+											<li>Facial movements</li>
+											<li>Reading out loud</li>
+											<li>Playing word games</li>
+										</ul>
+									</Typography.Paragraph>
 								</div>
 							}
 						/>
@@ -119,29 +100,34 @@ const AboutUs = () => {
 							title="What are the benefits?"
 							description={
 								<div>
-									<p align="justify">
+									<Typography.Paragraph align="justify">
 										Speech therapy offers numerous benefits for individuals with
 										communication and swallowing disorders. Here are some key
 										advantages of speech therapy:
-									</p>
-									<p align="justify">Some Benefits includes: </p>
-									<ul>
-										<li>
-											Improved communication skills and clarity of speech.
-										</li>
-										<li>Enhanced language development and understanding.</li>
-										<li>
-											Increased confidence in expressing thoughts and ideas.
-										</li>
-										<li>Increased fluency and smoother speech patterns.</li>
-										<li>
-											Enhanced social skills and ability to connect with others.
-										</li>
-										<li>
-											Support for cognitive skills and overcoming communication
-											challenges.
-										</li>
-									</ul>
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
+										Some Benefits includes:{" "}
+									</Typography.Paragraph>
+									<Typography.Paragraph align="justify">
+										<ul>
+											<li>
+												Improved communication skills and clarity of speech.
+											</li>
+											<li>Enhanced language development and understanding.</li>
+											<li>
+												Increased confidence in expressing thoughts and ideas.
+											</li>
+											<li>Increased fluency and smoother speech patterns.</li>
+											<li>
+												Enhanced social skills and ability to connect with
+												others.
+											</li>
+											<li>
+												Support for cognitive skills and overcoming
+												communication challenges.
+											</li>
+										</ul>
+									</Typography.Paragraph>
 								</div>
 							}
 						/>
@@ -158,7 +144,7 @@ const AboutUs = () => {
 						<Meta
 							title="Tips to Make Speech Therapy Successful"
 							description={
-								<div align="justify">
+								<Typography.Paragraph align="justify">
 									<ul>
 										<li>
 											Carryover
@@ -199,7 +185,7 @@ const AboutUs = () => {
 											</ul>
 										</li>
 									</ul>
-								</div>
+								</Typography.Paragraph>
 							}
 						/>
 					</Card>
