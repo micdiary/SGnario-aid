@@ -48,7 +48,9 @@ const Dashboard = forwardRef(({ setView, setTask }, ref) => {
 			render: (tag) => (
 				<>
 					<Tag color={TAG[tag]} key={tag}>
-						{tag.toUpperCase()}
+						{tag === "Pending"
+							? `${tag.toUpperCase()} REVIEW`
+							: `${tag.toUpperCase()}`}
 					</Tag>
 				</>
 			),
@@ -57,7 +59,7 @@ const Dashboard = forwardRef(({ setView, setTask }, ref) => {
 			title: "Action",
 			key: "action",
 			render: (text, record) => (
-				<Button onClick={() => handleNavigation(record)}>View Task</Button>
+				<Button type="primary" onClick={() => handleNavigation(record)}>View Task</Button>
 			),
 		},
 	];

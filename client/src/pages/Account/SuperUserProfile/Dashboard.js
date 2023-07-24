@@ -516,7 +516,9 @@ const SuperUserDashboard = ({ profile, setProfile, setView, setTask }) => {
 								render: (tag) => (
 									<>
 										<Tag color={TAG[tag]} key={tag}>
-											{tag.toUpperCase()}
+											{tag === "Pending"
+												? `${tag.toUpperCase()} REVIEW`
+												: `${tag.toUpperCase()}`}
 										</Tag>
 									</>
 								),
