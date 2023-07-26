@@ -18,7 +18,7 @@ import Scenarios from "../pages/Scenarios";
 import ForgetPassword from "../pages/ForgetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
-import { getUserID } from "../utils/account";
+import { getToken } from "../utils/account";
 import { userStore } from "../utils/store";
 import ResetPassword from "../pages/ResetPassword";
 
@@ -28,18 +28,16 @@ import Contact from "../pages/Contact";
 const { Header: AntHeader, Footer: AntFooter, Content } = AntLayout;
 
 const Layout = () => {
-	const localUserID = getUserID();
-	const storeUserID = userStore((state) => state.userID);
-	const [userID, setUserID] = useState(
-		localUserID !== null ? localUserID : storeUserID
-	);
+	const localToken = getToken();
+	const storeToken = userStore((state) => state.token);
+	const [userID, setUserID] = useState(localToken !== null ? localToken : storeToken);
 
 	const [allScenarios, setAllScenarios] = useState([]);
 	const [filteredScenarios, setFilteredScenarios] = useState([]);
 
 	useEffect(() => {
-		setUserID(localUserID !== null ? localUserID : storeUserID);
-	}, [localUserID, storeUserID]);
+		setUserID(localToken !== null ? localToken : storeToken);
+	}, [localToken, storeToken]);
 
 	useEffect(() => {
 		const fetchScenarios = async () => {
@@ -68,9 +66,11 @@ const Layout = () => {
 			<AntLayout
 				style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
 			>
-				<AntHeader style={{
-					backgroundColor:"#FFEBC9"
-				}}>
+				<AntHeader
+					style={{
+						backgroundColor: "#FFEBC9",
+					}}
+				>
 					<Header handleCategoryFilter={handleCategoryFilter} />
 				</AntHeader>
 				<Content

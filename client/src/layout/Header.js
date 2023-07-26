@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Menu, Row, Button, Space, Avatar, Typography, Drawer } from "antd";
 import { UserOutlined, DownOutlined, MenuOutlined } from "@ant-design/icons";
 import * as constants from "../constants";
-import { getUserID, getUserType } from "../utils/account";
+import { getToken, getUserType } from "../utils/account";
 import { userStore } from "../utils/store";
 import logo from "../assets/logo.jpg";
 import { useMediaQuery } from "react-responsive";
@@ -12,17 +12,20 @@ import { getScenarios } from "../api/scenarios";
 const Header = ({ handleCategoryFilter }) => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const localUserID = getUserID();
-	const storeUserID = userStore((state) => state.userID);
-	const [userID, setUserID] = useState(
-		localUserID !== null ? localUserID : storeUserID
+	const localToken = getToken();
+	const storeToken = userStore((state) => state.token);
+	const setStoreToken = userStore((state) => state.setToken);
+	const [token, setToken] = useState(
+		localToken !== null ? localToken : storeToken
 	);
 
 	const [scenarios, setScenarios] = useState([]);
 
 	useEffect(() => {
-		setUserID(localUserID !== null ? localUserID : storeUserID);
-	}, [localUserID, storeUserID]);
+		setToken(localToken !== null ? localToken : storeToken);
+		setStoreToken(localToken !== null ? localToken : storeToken);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [localToken, storeToken]);
 
 	const localUserRole = getUserType();
 	const storeUserRole = userStore((state) => state.userType);
@@ -186,7 +189,6 @@ const Header = ({ handleCategoryFilter }) => {
 		{
 			label: <a href={constants.ADMIN_URL}>Admin</a>,
 			key: "admin",
-			hidden: userID === "admin",
 		},
 	];
 
@@ -207,21 +209,17 @@ const Header = ({ handleCategoryFilter }) => {
 				<Menu
 					style={{
 						backgroundColor: "transparent",
-						minWidth: "0",
 						display: "flex",
 						alignItems: "center",
 						margin: "0 -32px",
 						borderBottom: "none",
 					}}
-					forceSubMenuRender
-					inlineIndent={1}
 					mode="horizontal"
-					selectedKeys={[-1]}
 					triggerSubMenuAction="hover"
 					items={userRole === "admin" ? adminMenuItems : menuItems}
 				/>
 				<Space>
-					{userID === null ? (
+					{token === null ? (
 						<>
 							<Link to={constants.REGISTER_URL}>
 								<Button type={"text"}>Register</Button>
@@ -276,7 +274,7 @@ const Header = ({ handleCategoryFilter }) => {
 				</a>
 				<div>
 					<Space>
-						{userID === null ? (
+						{token === null ? (
 							<>
 								<Link to={constants.REGISTER_URL}>
 									<Button type={"text"}>Register</Button>

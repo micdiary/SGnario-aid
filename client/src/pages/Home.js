@@ -16,8 +16,7 @@ const Home = () => {
 	return (
 		<div
 			style={{
-				margin: "0 -50px",
-				marginTop: "-24px",
+				margin: "-24px -50px 0 -50px",
 			}}
 		>
 			<Row
@@ -71,14 +70,13 @@ const Home = () => {
 				}}
 			/>
 			<Row
-				gutter={[24, 24]}
+			gutter={[24,0]}
 				style={{
 					margin: "0 50px",
 				}}
 			>
 				<Col xs={24} md={8}>
-					<Card title="Performance Review System"
-		>
+					<Card title="Performance Review System">
 						<img
 							width="65%"
 							style={{

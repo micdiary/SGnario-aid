@@ -3,15 +3,15 @@ import { Navigate } from "react-router-dom";
 import * as constants from "../constants";
 
 const ProtectedRoute = ({
-  user,
-  redirectPath = constants.HOME_URL,
-  children,
+	user,
+	redirectPath = constants.HOME_URL,
+	children,
 }) => {
-  if (!user) {
-    return <Navigate to={redirectPath} replace />;
-  }
+	if (!user) {
+		return <Navigate to={redirectPath} replace />;
+	}
 
-  return children;
+	return children;
 };
 
 export default ProtectedRoute;

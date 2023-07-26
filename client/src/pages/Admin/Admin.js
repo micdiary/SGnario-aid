@@ -4,7 +4,6 @@ import { LaptopOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 import UserManagement from "./UserManagement";
 import Scenarios from "./Scenarios";
 import SuperuserManagement from "./SuperuserManagement";
-import { Link } from "react-router-dom";
 import { removeToken, removeUserID, removeUserType } from "../../utils/account";
 import { userStore } from "../../utils/store";
 import * as constants from "../../constants";
@@ -59,7 +58,7 @@ const Admin = () => {
 							onSelect={(item) => setSelectedKey(item.key)}
 							items={menuItems}
 						/>
-						<Link to={constants.HOME_URL}>
+						<a href={constants.HOME_URL}>
 							<Button
 								style={{
 									width: "calc(100% - 16px)",
@@ -67,14 +66,13 @@ const Admin = () => {
 								}}
 								onClick={() => {
 									removeToken();
-									removeUserID();
 									removeUserType();
 									removeUserStore();
 								}}
 							>
 								Sign out
 							</Button>
-						</Link>
+						</a>
 					</Space>
 				</Sider>
 				<Content

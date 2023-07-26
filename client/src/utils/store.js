@@ -1,9 +1,9 @@
 import { create } from "zustand";
 
 export const userStore = create((set) => ({
-    userID: null,
+    token: null,
     userType: null,
-    setID: (id) => set((_) => ({ userID: id })),
+    setToken: (id) => set((_) => ({ token: id })),
     setType: (type) => set((_) => ({ userType: type })),
-    removeUser: () => set((_) => ({ userID: null, userType: null })),
+    removeUser: () => set((_) => ({ token: null, userType: null })),
   }));

@@ -15,6 +15,9 @@ export async function createTasks(req) {
 
 export async function getTasksByToken() {
 	const token = getToken();
+	if (token === null) {
+		return [];
+	}
 	return requestGet(`${GET_TASKS_BY_PATIENT_API}/${token}`);
 }
 

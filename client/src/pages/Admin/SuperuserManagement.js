@@ -156,7 +156,7 @@ const SuperuserManagement = () => {
 			),
 		},
 		{
-			label: "Organisiation",
+			label: "Organisation",
 			name: "organisation",
 			rules: [
 				{

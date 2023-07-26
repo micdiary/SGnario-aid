@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import { login, getUserType } from "../api/account";
 import * as constants from "../constants";
-import { setToken, setUserID, setUserType } from "../utils/account";
+import { setToken, setUserType } from "../utils/account";
 import { userStore } from "../utils/store";
 import { showNotification } from "../components/Notification";
 
 const Login = () => {
 	let navigate = useNavigate();
-	const updateUserID = userStore((state) => state.setID);
+	const setStoreToken = userStore((state) => state.setToken);
 	const updateUserType = userStore((state) => state.setType);
 
 	const onFinish = (values) => {
@@ -22,9 +22,7 @@ const Login = () => {
 		login(req)
 			.then((res) => {
 				setToken(res.token);
-				setUserID(res.userID);
-				updateUserID(res.userID);
-
+				setStoreToken(res.token);
 				getUserType(res.userID)
 					.then((res) => {
 						setUserType(res.role);

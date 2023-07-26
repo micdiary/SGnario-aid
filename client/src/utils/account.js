@@ -11,19 +11,6 @@ export function removeToken() {
   localStorage.removeItem("token");
 }
 
-// USER ID
-export function getUserID() {
-  return localStorage.getItem("userID");
-}
-
-export function setUserID(userID) {
-  localStorage.setItem("userID", userID);
-}
-
-export function removeUserID() {
-  localStorage.removeItem("userID");
-}
-
 // USER TYPE
 export function getUserType(){
   return localStorage.getItem("userType");

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { Menu, Layout, Button, Space, Spin } from "antd";
 import {
 	UserOutlined,
@@ -8,7 +7,7 @@ import {
 	AppstoreOutlined,
 	MailOutlined,
 } from "@ant-design/icons";
-
+import { Navigate } from "react-router-dom";
 import SuperUserProfile from "./SuperUserProfile/Profile";
 import SuperUserDashboard from "./SuperUserProfile/Dashboard";
 import SuperUserTask from "./SuperUserProfile/Task";
@@ -22,14 +21,15 @@ import Request from "./UserProfile/Request";
 import Password from "./Password";
 
 import {
+	getToken,
 	getUserType,
 	removeToken,
-	removeUserID,
 	removeUserType,
 } from "../../utils/account";
 import { getProfile } from "../../api/profile";
 import { userStore } from "../../utils/store";
 import * as constants from "../../constants";
+import { showNotification } from "../../components/Notification";
 
 const Account = () => {
 	const [view, setView] = useState("dashboard");
@@ -44,14 +44,26 @@ const Account = () => {
 		setView(e.key);
 	};
 
+	const storeToken = userStore((state) => state.token);
 	const removeUserStore = userStore((state) => state.removeUser);
-
 	useEffect(() => {
-		setUserType(getUserType());
-		getProfile().then((res) => {
-			setProfile(res);
-		});
-	}, []);
+		if (storeToken !== null) {
+			setUserType(getUserType());
+			getProfile()
+				.then((res) => {
+					setProfile(res);
+				})
+				.catch((err) => {
+					showNotification(
+						"Your account has been deleted. Please contact administrator for more information.",
+						"error"
+					);
+					removeToken();
+					removeUserType();
+					removeUserStore();
+				});
+		}
+	}, [storeToken]);
 
 	const menuItems = [
 		{
@@ -176,7 +188,7 @@ const Account = () => {
 						mode="inline"
 						items={menuItems}
 					/>
-					<Link to={constants.HOME_URL}>
+					<a href={constants.HOME_URL}>
 						<Button
 							style={{
 								width: "calc(100% - 16px)",
@@ -184,14 +196,13 @@ const Account = () => {
 							}}
 							onClick={() => {
 								removeToken();
-								removeUserID();
 								removeUserType();
 								removeUserStore();
 							}}
 						>
 							Sign out
 						</Button>
-					</Link>
+					</a>
 				</Space>
 			</Layout.Sider>
 			<Layout.Content

@@ -27,6 +27,9 @@ router.get("/profile/:token", async (req, res) => {
         );
 
         const user = userFound || superuserFound;
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
         return res.status(200).json(user);
     } catch (err) {
         console.log(err);
