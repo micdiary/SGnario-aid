@@ -199,7 +199,7 @@ const Register = () => {
 					Create an account
 				</Typography.Title>
 				<Typography.Text>
-					Create an account today to fully the services of our website
+					Create an account today to fully enjoy the services of our website
 				</Typography.Text>
 				<Form
 					layout="vertical"
@@ -220,7 +220,7 @@ const Register = () => {
 						</Button>
 					</Form.Item>
 					<Divider></Divider>
-					<Form.Item>
+					<Form.Item style={{ textAlign: "center"}}>
 						By creating an account, you agree to our{" "}
 						<Link
 							to={constants.TERMS_CONDITIONS_URL}
